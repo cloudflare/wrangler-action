@@ -1,7 +1,7 @@
 #!/bin/sh -l
 
-apt install update
-apt install curl
+apt-get update
+apt-get install curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | sh
 nvm install latest
 npm i
