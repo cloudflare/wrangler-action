@@ -1,0 +1,5 @@
+name: 'Cloudflare Workers Deploy'
+description: 'Cloudflare Workers Deploy'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
