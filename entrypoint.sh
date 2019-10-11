@@ -7,8 +7,9 @@ export NVM_DIR="/github/workspace/nvm"
 export WRANGLER_HOME="/github/workspace"
 
 # h/t https://github.com/elgohr/Publish-Docker-Github-Action
-function sanitize () {
-  if [ -z "${1}" ]; then
+sanitize() {
+  if [ -z "${1}" ]
+  then
     >&2 echo "Unable to find the ${2}. Did you set with.${2}?"
     exit 1
   fi
