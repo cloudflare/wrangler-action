@@ -1,4 +1,4 @@
-FROM node:10.14.1-alpine
+FROM node:12
 ENV XDG_CONFIG_HOME /github/workspace
 RUN "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash"
 RUN "nvm install latest"
