@@ -10,7 +10,7 @@ export WRANGLER_HOME="/github/workspace"
 sanitize() {
   if [ -z "${1}" ]
   then
-    >&2 echo "Unable to find the ${2}. Did you set with.${2}?"
+    >&2 echo "Unable to find ${2}. Did you set secrets.${2}?"
     exit 1
   fi
 }
@@ -22,10 +22,8 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
 mkdir -p "$HOME/.wrangler"
 chmod -R 777 "$HOME/.wrangler"
 
-sanitize "${INPUT_EMAIL}" "email"
-export CLOUDFLARE_EMAIL="$INPUT_EMAIL"
-sanitize "${INPUT_APIKEY}" "apiKey"
-export CLOUDFLARE_API_KEY="$INPUT_APIKEY"
+sanitize "${CLOUDFLARE_EMAIL}" "CLOUDFLARE_EMAIL"
+sanitize "${CLOUDFLARE_API_KEY}" "CLOUDFLARE_API_KEY"
 
 npm i @cloudflare/wrangler -g
 npm i
