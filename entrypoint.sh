@@ -7,7 +7,7 @@ export NVM_DIR="/github/workspace/nvm"
 export WRANGLER_HOME="/github/workspace"
 
 mkdir -p "$HOME/.wrangler"
-chown root: "$HOME/.wrangler"
+chmod -R 777 "$HOME/.wrangler"
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
