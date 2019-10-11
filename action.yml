@@ -3,3 +3,10 @@ description: 'Cloudflare Workers Deploy'
 runs:
   using: 'docker'
   image: 'Dockerfile'
+inputs:
+  apiKey:
+    description: "Your Cloudflare API Key"
+    required: true
+  email:
+    description: "Your Cloudflare Email"
+    required: true
