@@ -69,7 +69,7 @@ To deploy static sites and frontend applications to Workers, check out the docum
 
 Note that this action makes no assumptions about _how_ your project is built! **If you need to run a pre-publish step, like building your application, you need to specify a build step in your Workflow.** For instance, if I have an NPM command called `build`, my workflow TOML might resemble the following:
 
-```toml
+```yaml
 jobs:
   deploy:
     runs-on: ubuntu-latest
