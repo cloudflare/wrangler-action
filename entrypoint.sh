@@ -22,8 +22,8 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
 mkdir -p "$HOME/.wrangler"
 chmod -R 777 "$HOME/.wrangler"
 
-sanitize "${INPUT_CLOUDFLAREEMAIL}" "CLOUDFLARE_EMAIL"
-sanitize "${INPUT_CLOUDFLAREAPI_KEY}" "CLOUDFLARE_API_KEY"
+sanitize "${INPUT_EMAIL}" "email"
+sanitize "${INPUT_APIKEY}" "apiKey"
 
 export CF_EMAIL="$INPUT_EMAIL"
 export CF_API_KEY="$INPUT_APIKEY"
