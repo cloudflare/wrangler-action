@@ -25,8 +25,8 @@ chmod -R 777 "$HOME/.wrangler"
 sanitize "${INPUT_CLOUDFLAREEMAIL}" "CLOUDFLARE_EMAIL"
 sanitize "${INPUT_CLOUDFLAREAPI_KEY}" "CLOUDFLARE_API_KEY"
 
-export CF_EMAIL="$INPUT_CLOUDFLAREEMAIL"
-export CF_API_KEY="$INPUT_CLOUDFLAREAPIKEY"
+export CF_EMAIL="$INPUT_EMAIL"
+export CF_API_KEY="$INPUT_APIKEY"
 
 npm i @cloudflare/wrangler -g
 npm i
