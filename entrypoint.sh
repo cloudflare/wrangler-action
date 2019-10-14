@@ -29,14 +29,11 @@ export CF_EMAIL="$INPUT_EMAIL"
 export CF_API_KEY="$INPUT_APIKEY"
 
 npm i @cloudflare/wrangler -g
-npm i
-
-ls
 
 if [ -z "$INPUT_ENVIRONMENT" ]
 then
-  wrangler publish -e "$INPUT_ENVIRONMENT"
-else
   wrangler publish
+else
+  wrangler publish -e "$INPUT_ENVIRONMENT"
 fi
 
