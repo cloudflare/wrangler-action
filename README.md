@@ -61,7 +61,7 @@ This action is in beta, and I'm looking for folks to use it! If something goes w
 
 ### "I just started using Workers/Wrangler and I don't know what this is!"
 
-No problem! Check out the [Quick Start guide](https://developers.cloudflare.com/workers/quickstart) in our docs, and if you hvaen't
+No problem! Check out the [Quick Start guide](https://developers.cloudflare.com/workers/quickstart) in our docs to get started. Once you have a Workers application, you may want to set it up to automatically deploy from GitHub whenever you change your project. That's where this action comes in - nice!
 
 ### "I'm trying to deploy my static site but it isn't working!"
 
