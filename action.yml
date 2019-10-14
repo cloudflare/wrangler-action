@@ -4,9 +4,9 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
 inputs:
-  apiKey:
+  CLOUDFLARE_API_KEY:
     description: "Your Cloudflare API Key"
     required: true
-  email:
+  CLOUDFLARE_EMAIL:
     description: "Your Cloudflare Email"
     required: true

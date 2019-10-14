@@ -22,8 +22,11 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
 mkdir -p "$HOME/.wrangler"
 chmod -R 777 "$HOME/.wrangler"
 
-sanitize "${CLOUDFLARE_EMAIL}" "CLOUDFLARE_EMAIL"
-sanitize "${CLOUDFLARE_API_KEY}" "CLOUDFLARE_API_KEY"
+sanitize "${INPUT_CLOUDFLARE_EMAIL}" "CLOUDFLARE_EMAIL"
+sanitize "${INPUT_CLOUDFLARE_API_KEY}" "CLOUDFLARE_API_KEY"
+
+export CLOUDFLARE_EMAIL="$INPUT_CLOUDFLARE_EMAIL"
+export CLOUDFLARE_API_KEY="$INPUT_CLOUDFLARE_API_KEY"
 
 npm i @cloudflare/wrangler -g
 npm i
