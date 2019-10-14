@@ -4,9 +4,11 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
 inputs:
-  CLOUDFLARE_API_KEY:
+  apiKey:
     description: "Your Cloudflare API Key"
     required: true
-  CLOUDFLARE_EMAIL:
+  email:
     description: "Your Cloudflare Email"
     required: true
+  environment:
+    description: "The environment you'd like to publish your Workers project to - must be defined in wrangler.toml"
