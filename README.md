@@ -10,36 +10,36 @@ Add `wrangler-action` to the workflow for your Workers application. The below ex
 on:
   push:
     branches:
-    - master
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-    - uses: actions/checkout@master
-    - name: Publish
-      uses: signalnerve/wrangler-action@0.1.0
-      with:
-        apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
-        email: ${{ secrets.CLOUDFLARE_EMAIL }}
+      - uses: actions/checkout@master
+      - name: Publish
+        uses: signalnerve/wrangler-action@0.1.4
+        with:
+          apiKey: ${{ secrets.apiKey }}
+          email: ${{ secrets.email }}
 ```
 
 ## Configuration
 
 You'll need to configure Wrangler using GitHub's Secrets feature - go to "Settings -> Secrets" and add your Cloudflare API key and email (for help finding these, see the [Workers documentation](https://developers.cloudflare.com/workers/quickstart/#finding-your-cloudflare-api-keys)). Your API key and email are encrypted by GitHub, and the action won't print them into logs, so they should be safe!
 
-With your API key and email set as secrets for your repository, pass them to the action in the `with` block of your workflow:
+With your API key and email set as secrets for your repository, pass them to the action in the `with` block of your workflow. Below, I've set the secret names to `apiKey` and `email`:
 
 ```yaml
 jobs:
   deploy:
     name: Deploy
     steps:
-      uses: signalnerve/wrangler-action@0.1.0
+      uses: signalnerve/wrangler-action@0.1.4
       with:
-        apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
-        email: ${{ secrets.CLOUDFLARE_EMAIL }}
+        apiKey: ${{ secrets.apiKey }}
+        email: ${{ secrets.email }}
 ```
 
 Optionally, you can also pass an `environment` key to the action. If you're using Wrangler's [environments](https://github.com/cloudflare/wrangler/blob/master/docs/content/environments.md) feature, you can customize _where_ the action deploys to by passing the matching environment in the `with` block of your workflow:
@@ -49,10 +49,10 @@ jobs:
   deploy:
     # ... previous configuration ...
     steps:
-      uses: signalnerve/wrangler-action@0.1.0
+      uses: signalnerve/wrangler-action@0.1.4
       with:
         # ... api key and email ...
-        environment: "production"
+        environment: 'production'
 ```
 
 ## Troubleshooting
@@ -75,12 +75,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-    - uses: actions/checkout@master
-    - name: Build site
-      run: "npm run build"
-    - name: Publish
-      uses: signalnerve/wrangler-action@0.1.0
-      with:
-        apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
-        email: ${{ secrets.CLOUDFLARE_EMAIL }}
+      - uses: actions/checkout@master
+      - name: Build site
+        run: 'npm run build'
+      - name: Publish
+        uses: signalnerve/wrangler-action@0.1.4
+        with:
+          apiKey: ${{ secrets.apiKey }}
+          email: ${{ secrets.email }}
 ```

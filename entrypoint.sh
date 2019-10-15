@@ -10,7 +10,7 @@ export WRANGLER_HOME="/github/workspace"
 sanitize() {
   if [ -z "${1}" ]
   then
-    >&2 echo "Unable to find ${2}. Did you set secrets.${2}?"
+    >&2 echo "Unable to find ${2}. Did you add a GitHub secret called key ${2}, and pass in secrets.${2} in your workflow?"
     exit 1
   fi
 }
