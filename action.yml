@@ -1,8 +1,8 @@
-name: 'Cloudflare Workers Deploy'
+name: 'Deploy to Cloudflare Workers with Wrangler'
 branding:
   icon: 'upload-cloud'
   color: 'orange'
-description: 'Cloudflare Workers Deploy'
+description: 'Deploy your Cloudflare Workers applications and sites directly from GitHub, using Wrangler'
 runs:
   using: 'docker'
   image: 'Dockerfile'
