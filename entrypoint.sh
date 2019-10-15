@@ -20,7 +20,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 mkdir -p "$HOME/.wrangler"
-chmod -R 777 "$HOME/.wrangler"
+chmod -R 770 "$HOME/.wrangler"
 
 sanitize "${INPUT_EMAIL}" "email"
 sanitize "${INPUT_APIKEY}" "apiKey"
