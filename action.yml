@@ -1,4 +1,7 @@
 name: 'Cloudflare Workers Deploy'
+branding:
+  icon: 'upload-cloud'
+  color: 'orange'
 description: 'Cloudflare Workers Deploy'
 runs:
   using: 'docker'
