@@ -55,6 +55,100 @@ jobs:
         environment: 'production'
 ```
 
+## Use cases
+
+### Deploying when commits are merged to master
+
+The above workflow examples have already shown how to run `wrangler-action` when new commits are merged to the master branch. For most developers, this workflow will easily replace manual deploys and be a great first integration step with `wrangler-action`:
+
+```yaml
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish
+        uses: signalnerve/wrangler-action@0.1.4
+        with:
+          apiKey: ${{ secrets.apiKey }}
+          email: ${{ secrets.email }}
+```
+
+Note that there are a number of possible events, like `push`, that can be used to trigger a workflow. For more details on the events available, check out the [GitHub Actions documentation](https://help.github.com/en/articles/workflow-syntax-for-github-actions#on).
+
+### Deploying on a schedule
+
+If you'd like to deploy your Workers application on a recurring basis – for instance, every hour, or daily – the `schedule` trigger allows you to use cron syntax to define a workflow schedule. The below example will deploy at the beginning of every hour:
+
+```yaml
+on:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish app
+        uses: signalnerve/wrangler-action@0.1.4
+        with:
+          apiKey: ${{ secrets.apiKey }}
+          email: ${{ secrets.email }}
+```
+
+If you need help defining the correct cron syntax, check out [crontab.guru](https://crontab.guru/), which provides a friendly user interface for validating your cron schedule.
+
+### Deploying on a "dispatched" event
+
+If you need to trigger a deployment at-will, you can use GitHub's API to fire a `repository_dispatch` event on your repository. By setting your workflow to trigger on that event, you'll be able to deploy your application via an API call:
+
+```yaml
+on:
+  repository_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish app
+        uses: signalnerve/wrangler-action@0.1.4
+        with:
+          apiKey: ${{ secrets.apiKey }}
+          email: ${{ secrets.email }}
+```
+
+To make the GitHub API request, you can deploy a custom [Cloudflare Workers](https://workers.cloudflare.com) function, which will send a `POST` request to GitHub's API and trigger a new deploy:
+
+```js
+const headers = {
+  Accept: 'application/vnd.github.everest-preview+json',
+  Authorization: 'Bearer $token',
+}
+
+const body = JSON.stringify({ event_type: 'repository_dispatch' })
+
+const url = `https://api.github.com/repos/$owner/$repo/dispatches`
+
+const handleRequest = async evt => {
+  await fetch(url, { method: 'POST', headers, body })
+  return new Response('OK')
+}
+
+addEventListener('fetch', handleRequest)
+```
+
+Note that `$token` in this code sample is a GitHub "Personal Access Token". For information on how to generate this token, see the [GitHub documentation on "repository_dispatch"](https://developer.github.com/v3/repos/#create-a-repository-dispatch-event).
+
 ## Troubleshooting
 
 This action is in beta, and I'm looking for folks to use it! If something goes wrong, please file an issue! That being said, there's a couple things you should know:
