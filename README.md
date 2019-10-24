@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish
-        uses: signalnerve/wrangler-action@0.1.4
+        uses: cloudflare/wrangler-action@1.0.0
         with:
           apiKey: ${{ secrets.apiKey }}
           email: ${{ secrets.email }}
@@ -36,7 +36,7 @@ jobs:
   deploy:
     name: Deploy
     steps:
-      uses: signalnerve/wrangler-action@0.1.4
+      uses: cloudflare/wrangler-action@1.0.0
       with:
         apiKey: ${{ secrets.apiKey }}
         email: ${{ secrets.email }}
@@ -49,7 +49,7 @@ jobs:
   deploy:
     # ... previous configuration ...
     steps:
-      uses: signalnerve/wrangler-action@0.1.4
+      uses: cloudflare/wrangler-action@1.0.0
       with:
         # ... api key and email ...
         environment: 'production'
@@ -74,7 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish
-        uses: signalnerve/wrangler-action@0.1.4
+        uses: cloudflare/wrangler-action@1.0.0
         with:
           apiKey: ${{ secrets.apiKey }}
           email: ${{ secrets.email }}
@@ -98,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish app
-        uses: signalnerve/wrangler-action@0.1.4
+        uses: cloudflare/wrangler-action@1.0.0
         with:
           apiKey: ${{ secrets.apiKey }}
           email: ${{ secrets.email }}
@@ -121,7 +121,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish app
-        uses: signalnerve/wrangler-action@0.1.4
+        uses: cloudflare/wrangler-action@1.0.0
         with:
           apiKey: ${{ secrets.apiKey }}
           email: ${{ secrets.email }}
@@ -173,7 +173,7 @@ jobs:
       - name: Build site
         run: 'npm run build'
       - name: Publish
-        uses: signalnerve/wrangler-action@0.1.4
+        uses: cloudflare/wrangler-action@1.0.0
         with:
           apiKey: ${{ secrets.apiKey }}
           email: ${{ secrets.email }}
