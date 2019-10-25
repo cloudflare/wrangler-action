@@ -7,6 +7,8 @@
 Add `wrangler-action` to the workflow for your Workers application. The below example will publish your application on pushes to the `master` branch:
 
 ```yaml
+name: Deploy
+
 on:
   push:
     branches:
