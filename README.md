@@ -23,15 +23,15 @@ jobs:
       - name: Publish
         uses: cloudflare/wrangler-action@1.0.0
         with:
-          apiKey: ${{ secrets.apiKey }}
-          email: ${{ secrets.email }}
+          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+          email: ${{ secrets.CLOUDFLARE_EMAIL }}
 ```
 
 ## Configuration
 
 You'll need to configure Wrangler using GitHub's Secrets feature - go to "Settings -> Secrets" and add your Cloudflare API key and email (for help finding these, see the [Workers documentation](https://developers.cloudflare.com/workers/quickstart/#finding-your-cloudflare-api-keys)). Your API key and email are encrypted by GitHub, and the action won't print them into logs, so they should be safe!
 
-With your API key and email set as secrets for your repository, pass them to the action in the `with` block of your workflow. Below, I've set the secret names to `apiKey` and `email`:
+With your API key and email set as secrets for your repository, pass them to the action in the `with` block of your workflow. Below, I've set the secret names to `CLOUDFLARE_API_KEY` and `CLOUDFLARE_EMAIL`:
 
 ```yaml
 jobs:
@@ -40,8 +40,8 @@ jobs:
     steps:
       uses: cloudflare/wrangler-action@1.0.0
       with:
-        apiKey: ${{ secrets.apiKey }}
-        email: ${{ secrets.email }}
+        apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+        email: ${{ secrets.CLOUDFLARE_EMAIL }}
 ```
 
 Optionally, you can also pass an `environment` key to the action. If you're using Wrangler's [environments](https://github.com/cloudflare/wrangler/blob/master/docs/content/environments.md) feature, you can customize _where_ the action deploys to by passing the matching environment in the `with` block of your workflow:
@@ -78,8 +78,8 @@ jobs:
       - name: Publish
         uses: cloudflare/wrangler-action@1.0.0
         with:
-          apiKey: ${{ secrets.apiKey }}
-          email: ${{ secrets.email }}
+          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+          email: ${{ secrets.CLOUDFLARE_EMAIL }}
 ```
 
 Note that there are a number of possible events, like `push`, that can be used to trigger a workflow. For more details on the events available, check out the [GitHub Actions documentation](https://help.github.com/en/articles/workflow-syntax-for-github-actions#on).
@@ -102,8 +102,8 @@ jobs:
       - name: Publish app
         uses: cloudflare/wrangler-action@1.0.0
         with:
-          apiKey: ${{ secrets.apiKey }}
-          email: ${{ secrets.email }}
+          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+          email: ${{ secrets.CLOUDFLARE_EMAIL }}
 ```
 
 If you need help defining the correct cron syntax, check out [crontab.guru](https://crontab.guru/), which provides a friendly user interface for validating your cron schedule.
@@ -125,8 +125,8 @@ jobs:
       - name: Publish app
         uses: cloudflare/wrangler-action@1.0.0
         with:
-          apiKey: ${{ secrets.apiKey }}
-          email: ${{ secrets.email }}
+          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+          email: ${{ secrets.CLOUDFLARE_EMAIL }}
 ```
 
 To make the GitHub API request, you can deploy a custom [Cloudflare Workers](https://workers.cloudflare.com) function, which will send a `POST` request to GitHub's API and trigger a new deploy:
@@ -177,6 +177,6 @@ jobs:
       - name: Publish
         uses: cloudflare/wrangler-action@1.0.0
         with:
-          apiKey: ${{ secrets.apiKey }}
-          email: ${{ secrets.email }}
+          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+          email: ${{ secrets.CLOUDFLARE_EMAIL }}
 ```
