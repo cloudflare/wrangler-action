@@ -2,9 +2,18 @@
 
 set -e
 
-export HOME="/github/workspace"
-export NVM_DIR="/github/workspace/nvm"
-export WRANGLER_HOME="/github/workspace"
+if [ -z "$INPUT_WORKINGDIRECTORY" ]
+then
+  export HOME="/github/workspace/"$INPUT_WORKINGDIRECTORY
+  export NVM_DIR="/github/workspace/nvm"/$INPUT_WORKINGDIRECTORY
+  export WRANGLER_HOME="/github/workspace"/$INPUT_WORKINGDIRECTORY
+else
+  export HOME="/github/workspace"
+  export NVM_DIR="/github/workspace/nvm"
+  export WRANGLER_HOME="/github/workspace"
+fi
+
+echo $WRANGLER_HOME
 
 # h/t https://github.com/elgohr/Publish-Docker-Github-Action
 sanitize() {
@@ -36,4 +45,3 @@ then
 else
   wrangler publish -e "$INPUT_ENVIRONMENT"
 fi
-
