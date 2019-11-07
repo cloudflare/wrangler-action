@@ -15,3 +15,5 @@ inputs:
     required: true
   environment:
     description: "The environment you'd like to publish your Workers project to - must be defined in wrangler.toml"
+  workingDirectory:
+    description: "The relative path which Wrangler commands should be run from"

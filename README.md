@@ -57,6 +57,19 @@ jobs:
         environment: 'production'
 ```
 
+Optionally, you can also pass a `workingDirectory` key to the action. This will allow you to specify a subdirectory of the repo to run the Wrangler command from.
+
+```yaml
+jobs:
+  deploy:
+    # ... previous configuration ...
+    steps:
+      uses: cloudflare/wrangler-action@1.0.0
+      with:
+        # ... api key and email ...
+        workingDirectory: 'subfoldername'
+```
+
 ## Use cases
 
 ### Deploying when commits are merged to master
