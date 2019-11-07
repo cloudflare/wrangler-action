@@ -2,9 +2,15 @@
 
 set -e
 
-export HOME="/github/workspace"
 export NVM_DIR="/github/workspace/nvm"
-export WRANGLER_HOME="/github/workspace"
+export HOME="/github/workspace"
+
+if [ -z "$INPUT_WORKINGDIRECTORY" ]
+then
+  export WRANGLER_HOME="/github/workspace"
+else
+  export WRANGLER_HOME="/github/workspace"/$INPUT_WORKINGDIRECTORY
+fi
 
 # h/t https://github.com/elgohr/Publish-Docker-Github-Action
 sanitize() {
@@ -19,8 +25,8 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-mkdir -p "$HOME/.wrangler"
-chmod -R 770 "$HOME/.wrangler"
+mkdir -p "$WRANGLER_HOME/.wrangler"
+chmod -R 770 "$WRANGLER_HOME/.wrangler"
 
 sanitize "${INPUT_EMAIL}" "email"
 sanitize "${INPUT_APIKEY}" "apiKey"
@@ -30,6 +36,11 @@ export CF_API_KEY="$INPUT_APIKEY"
 
 npm i @cloudflare/wrangler -g
 
+if ! [ -z "$INPUT_WORKINGDIRECTORY" ]
+then
+  cd $WRANGLER_HOME
+fi
+
 if [ -z "$INPUT_ENVIRONMENT" ]
 then
   wrangler publish
@@ -37,3 +48,7 @@ else
   wrangler publish -e "$INPUT_ENVIRONMENT"
 fi
 
+if ! [ -z "$INPUT_WORKINGDIRECTORY" ]
+then
+  cd $HOME
+fi
