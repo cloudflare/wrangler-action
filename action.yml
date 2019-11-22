@@ -8,12 +8,14 @@ runs:
   image: 'Dockerfile'
 inputs:
   apiKey:
-    description: "Your Cloudflare API Key"
-    required: true
+    description: "(Legacy) Your Cloudflare API Key"
+  apiToken:
+    description: "Your Cloudflare API Token"
   email:
-    description: "Your Cloudflare Email"
-    required: true
+    description: "(Legacy) Your Cloudflare Email"
   environment:
     description: "The environment you'd like to publish your Workers project to - must be defined in wrangler.toml"
   workingDirectory:
     description: "The relative path which Wrangler commands should be run from"
+  wranglerVersion:
+    description: "The version of Wrangler you'd like to use to publish your Workers project"
