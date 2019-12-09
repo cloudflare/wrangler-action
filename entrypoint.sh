@@ -70,7 +70,7 @@ then
   cd "$INPUT_WORKINGDIRECTORY"
 fi
 
-# If an environmentdirectory is detected as input
+# If an environment is detected as input
 if [ -z "$INPUT_ENVIRONMENT" ]
 then
   wrangler publish
