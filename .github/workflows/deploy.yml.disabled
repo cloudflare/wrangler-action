@@ -1,0 +1,33 @@
+on: push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+    - uses: actions/checkout@master
+    - name: Lint shell script
+      uses: azohra/shell-linter@v0.1.0
+      with:
+        path: "entrypoint.sh"
+    - name: Publish app with api token
+      uses: signalnerve/wrangler-action@1.1.0
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        environment: "production"
+        workingDirectory: 'test'
+    - name: Publish app with legacy credentials
+      uses: signalnerve/wrangler-action@1.1.0
+      with:
+        apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+        email: ${{ secrets.CLOUDFLARE_EMAIL }}
+        environment: "production"
+        workingDirectory: 'test'
+    - name: Publish app with hardcoded Wrangler version
+      uses: signalnerve/wrangler-action@1.1.0
+      with:
+        apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+        email: ${{ secrets.CLOUDFLARE_EMAIL }}
+        environment: "production"
+        wranglerVersion: '1.5.0'
+        workingDirectory: 'test'

@@ -21,40 +21,64 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish
-        uses: cloudflare/wrangler-action@1.0.0
+        uses: cloudflare/wrangler-action@1.1.0
         with:
-          apiKey: ${{ secrets.CF_API_KEY }}
-          email: ${{ secrets.CF_EMAIL }}
+          apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
 
-## Configuration
+## Authentication
 
-You'll need to configure Wrangler using GitHub's Secrets feature - go to "Settings -> Secrets" and add your Cloudflare API key and email (for help finding these, see the [Workers documentation](https://developers.cloudflare.com/workers/quickstart/#finding-your-cloudflare-api-keys)). Your API key and email are encrypted by GitHub, and the action won't print them into logs, so they should be safe!
+You'll need to configure Wrangler using GitHub's Secrets feature - go to "Settings -> Secrets" and add your Cloudflare API token (for help finding this, see the [Workers documentation](https://developers.cloudflare.com/workers/quickstart/#api-token)). Your API token is encrypted by GitHub, and the action won't print it into logs, so it should be safe!
 
-With your API key and email set as secrets for your repository, pass them to the action in the `with` block of your workflow. Below, I've set the secret names to `CF_API_KEY` and `CF_EMAIL`:
+With your API token set as a secret for your repository, pass it to the action in the `with` block of your workflow. Below, I've set the secret name to `CF_API_TOKEN`:
 
 ```yaml
 jobs:
   deploy:
     name: Deploy
     steps:
-      uses: cloudflare/wrangler-action@1.0.0
+      uses: cloudflare/wrangler-action@1.1.0
+      with:
+        apiToken: ${{ secrets.CF_API_TOKEN }}
+```
+
+`wrangler-action` also supports using your [global API key and email](https://developers.cloudflare.com/workers/quickstart/#global-api-key) as an authentication method, although API tokens are preferred. Pass in `apiKey` and `email` to the GitHub Action to use this method:
+
+```yaml
+jobs:
+  deploy:
+    name: Deploy
+    steps:
+      uses: cloudflare/wrangler-action@1.1.0
       with:
         apiKey: ${{ secrets.CF_API_KEY }}
         email: ${{ secrets.CF_EMAIL }}
 ```
 
-Optionally, you can also pass an `environment` key to the action. If you're using Wrangler's [environments](https://github.com/cloudflare/wrangler/blob/master/docs/content/environments.md) feature, you can customize _where_ the action deploys to by passing the matching environment in the `with` block of your workflow:
+## Configuration
+
+If you're using Wrangler's [environments](https://github.com/cloudflare/wrangler/blob/master/docs/content/environments.md) feature, you can customize _where_ the action deploys to by passing an `environment` in the `with` block of your workflow:
 
 ```yaml
 jobs:
   deploy:
-    # ... previous configuration ...
     steps:
-      uses: cloudflare/wrangler-action@1.0.0
+      uses: cloudflare/wrangler-action@1.1.0
       with:
-        # ... api key and email ...
+        apiToken: ${{ secrets.CF_API_TOKEN }}
         environment: 'production'
+```
+
+If you need to install a specific version of Wrangler to use for deployment, you can also pass the input `wranglerVersion` to install a specific version of Wrangler from NPM. This should be a [SemVer](https://semver.org/)-style version number, such as `1.6.0`:
+
+```yaml
+jobs:
+  deploy:
+    steps:
+      uses: cloudflare/wrangler-action@1.1.0
+      with:
+        apiToken: ${{ secrets.CF_API_TOKEN }}
+        wranglerVersion: '1.6.0'
 ```
 
 Optionally, you can also pass a `workingDirectory` key to the action. This will allow you to specify a subdirectory of the repo to run the Wrangler command from.
@@ -62,11 +86,10 @@ Optionally, you can also pass a `workingDirectory` key to the action. This will 
 ```yaml
 jobs:
   deploy:
-    # ... previous configuration ...
     steps:
-      uses: cloudflare/wrangler-action@1.0.0
+      uses: cloudflare/wrangler-action@1.1.0
       with:
-        # ... api key and email ...
+        apiToken: ${{ secrets.CF_API_TOKEN }}
         workingDirectory: 'subfoldername'
 ```
 
@@ -89,10 +112,9 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish
-        uses: cloudflare/wrangler-action@1.0.0
+        uses: cloudflare/wrangler-action@1.1.0
         with:
-          apiKey: ${{ secrets.CF_API_KEY }}
-          email: ${{ secrets.CF_EMAIL }}
+          apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
 
 Note that there are a number of possible events, like `push`, that can be used to trigger a workflow. For more details on the events available, check out the [GitHub Actions documentation](https://help.github.com/en/articles/workflow-syntax-for-github-actions#on).
@@ -113,10 +135,9 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish app
-        uses: cloudflare/wrangler-action@1.0.0
+        uses: cloudflare/wrangler-action@1.1.0
         with:
-          apiKey: ${{ secrets.CF_API_KEY }}
-          email: ${{ secrets.CF_EMAIL }}
+          apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
 
 If you need help defining the correct cron syntax, check out [crontab.guru](https://crontab.guru/), which provides a friendly user interface for validating your cron schedule.
@@ -136,10 +157,9 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish app
-        uses: cloudflare/wrangler-action@1.0.0
+        uses: cloudflare/wrangler-action@1.1.0
         with:
-          apiKey: ${{ secrets.CF_API_KEY }}
-          email: ${{ secrets.CF_EMAIL }}
+          apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
 
 To make the GitHub API request, you can deploy a custom [Cloudflare Workers](https://workers.cloudflare.com) function, which will send a `POST` request to GitHub's API and trigger a new deploy:
@@ -188,8 +208,7 @@ jobs:
       - name: Build site
         run: 'npm run build'
       - name: Publish
-        uses: cloudflare/wrangler-action@1.0.0
+        uses: cloudflare/wrangler-action@1.1.0
         with:
-          apiKey: ${{ secrets.CF_API_KEY }}
-          email: ${{ secrets.CF_EMAIL }}
+          apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
