@@ -31,3 +31,21 @@ jobs:
         environment: "production"
         wranglerVersion: '1.5.0'
         workingDirectory: 'test'
+    - name: Publish app (fails with missing auth)
+      uses: signalnerve/wrangler-action@1.1.0
+      with:
+        environment: "production"
+        wranglerVersion: '1.5.0'
+      continue-on-error: true
+    - name: Publish app (fails with api key, missing email)
+      uses: signalnerve/wrangler-action@1.1.0
+      with:
+        apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+        environment: "production"
+      continue-on-error: true
+    - name: Publish app (fails with email, missing api key)
+      uses: signalnerve/wrangler-action@1.1.0
+      with:
+        email: ${{ secrets.CLOUDFLARE_EMAIL }}
+        environment: "production"
+      continue-on-error: true
