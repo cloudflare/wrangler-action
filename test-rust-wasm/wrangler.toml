@@ -1,0 +1,4 @@
+name = "test-rust-wasm"
+type = "rust"
+account_id = ""
+workers_dev = true

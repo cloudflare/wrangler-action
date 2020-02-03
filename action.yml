@@ -5,8 +5,12 @@ branding:
 description: 'Deploy your Cloudflare Workers applications and sites directly from GitHub, using Wrangler'
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  image: 'docker://alank976/rust-and-node:${{ inputs.rustAndNodeImageVersion }}'
 inputs:
+  rustAndNodeImageVersion:
+    description: ""
+    required: false
+    default: "latest"
   apiKey:
     description: "(Legacy) Your Cloudflare API Key"
   apiToken:

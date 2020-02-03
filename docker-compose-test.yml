@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  combined:
+    build: .
+    volumes:
+      # - ./test-rust-wasm:/github/workspace
+      - ./test:/github/workspace
+    environment:
+      INPUT_APITOKEN: foo
