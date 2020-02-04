@@ -1,11 +1,8 @@
-name: 'Deploy to Cloudflare Workers with Wrangler'
+name: "Deploy to Cloudflare Workers with Wrangler"
 branding:
-  icon: 'upload-cloud'
-  color: 'orange'
-description: 'Deploy your Cloudflare Workers applications and sites directly from GitHub, using Wrangler'
-runs:
-  using: 'docker'
-  image: 'docker://docker.pkg.github.com/alank976/wrangler-action/rust-and-node:${{ inputs.rustAndNodeImageVersion }}'
+  icon: "upload-cloud"
+  color: "orange"
+description: "Deploy your Cloudflare Workers applications and sites directly from GitHub, using Wrangler"
 inputs:
   rustAndNodeImageVersion:
     description: ""
@@ -23,3 +20,6 @@ inputs:
     description: "The relative path which Wrangler commands should be run from"
   wranglerVersion:
     description: "The version of Wrangler you'd like to use to publish your Workers project"
+runs:
+  using: "docker"
+  image: "docker://docker.pkg.github.com/alank976/wrangler-action/rust-and-node:${{ inputs.rustAndNodeImageVersion }}"
