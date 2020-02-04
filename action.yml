@@ -4,10 +4,6 @@ branding:
   color: "orange"
 description: "Deploy your Cloudflare Workers applications and sites directly from GitHub, using Wrangler"
 inputs:
-  rustAndNodeImageVersion:
-    description: ""
-    required: false
-    default: "latest"
   apiKey:
     description: "(Legacy) Your Cloudflare API Key"
   apiToken:
@@ -22,4 +18,6 @@ inputs:
     description: "The version of Wrangler you'd like to use to publish your Workers project"
 runs:
   using: "docker"
-  image: "docker://docker.pkg.github.com/alank976/wrangler-action/rust-and-node:${{ inputs.rustAndNodeImageVersion }}"
+  image: "alank976/wrangler-action/wrangler@1.6.0"
+  env: 
+    WRANGLER_VERSION: ${{ inputs.wranglerVersion }}

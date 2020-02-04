@@ -13,8 +13,8 @@ jobs:
       uses: machine-learning-apps/gpr-docker-publish@master
       id: docker
       with:
-        IMAGE_NAME: 'rust-and-node'
-        TAG: 'latest'
+        IMAGE_NAME: 'wrangler'
+        BRANCH_TAG: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
