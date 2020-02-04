@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 export HOME="/github/workspace"
 export NVM_DIR="/github/workspace/nvm"
 
