@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 export HOME="/github/workspace"
 export NVM_DIR="/github/workspace/nvm"
