@@ -5,7 +5,7 @@ branding:
 description: 'Deploy your Cloudflare Workers applications and sites directly from GitHub, using Wrangler'
 runs:
   using: 'docker'
-  image: 'docker://alank976/rust-and-node:${{ inputs.rustAndNodeImageVersion }}'
+  image: 'docker://docker.pkg.github.com/alank976/wrangler-action/rust-and-node:${{ inputs.rustAndNodeImageVersion }}'
 inputs:
   rustAndNodeImageVersion:
     description: ""
