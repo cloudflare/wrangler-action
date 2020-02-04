@@ -10,5 +10,6 @@ ENV NODE_PATH $NODE_HOME/lib/node_modules
 
 COPY entrypoint.sh /entrypoint.sh
 COPY install.sh /install.sh
+RUN chmod +x /install.sh /entrypoint.sh
 RUN /install.sh
 ENTRYPOINT ["/entrypoint.sh"]
