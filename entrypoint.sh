@@ -39,14 +39,6 @@ else
   echo "Using $API_CREDENTIALS authentication"
 fi
 
-# If a Wrangler version is detected as input
-if [ -z "$INPUT_WRANGLERVERSION" ]; then
-  # npm i @cloudflare/wrangler -g
-  cargo install wrangler
-else
-  cargo install --version $INPUT_WRANGLERVERSION wrangler
-fi
-
 # If a working directory is detected as input
 if [ -n "$INPUT_WORKINGDIRECTORY" ]; then
   cd "$INPUT_WORKINGDIRECTORY"

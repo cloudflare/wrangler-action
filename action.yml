@@ -14,10 +14,6 @@ inputs:
     description: "The environment you'd like to publish your Workers project to - must be defined in wrangler.toml"
   workingDirectory:
     description: "The relative path which Wrangler commands should be run from"
-  wranglerVersion:
-    description: "The version of Wrangler you'd like to use to publish your Workers project"
 runs:
   using: "docker"
-  image: "alank976/wrangler-action/wrangler@1.6.0"
-  env: 
-    WRANGLER_VERSION: ${{ inputs.wranglerVersion }}
+  image: "docker://alank976/wrangler:1.6.0"
