@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Publish
         uses: cloudflare/wrangler-action@1.1.0
         with:
@@ -57,7 +57,7 @@ jobs:
 
 ## Configuration
 
-If you're using Wrangler's [environments](https://github.com/cloudflare/wrangler/blob/master/docs/content/environments.md) feature, you can customize _where_ the action deploys to by passing an `environment` in the `with` block of your workflow:
+If you're using Wrangler's [environments](https://developers.cloudflare.com/workers/tooling/wrangler/configuration/environments/) feature, you can customize _where_ the action deploys to by passing an `environment` in the `with` block of your workflow:
 
 ```yaml
 jobs:
