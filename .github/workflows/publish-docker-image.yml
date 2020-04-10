@@ -1,0 +1,14 @@
+name: Push wrangler docker image
+on: push
+jobs:
+  docker-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy Repo Files
+        uses: actions/checkout@master
+      - name: Publish Docker Image
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: alank976/wrangler
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
