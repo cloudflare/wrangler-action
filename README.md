@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Publish
-        uses: cloudflare/wrangler-action@1.1.0
+        uses: cloudflare/wrangler-action@1.2.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -37,7 +37,7 @@ jobs:
   deploy:
     name: Deploy
     steps:
-      uses: cloudflare/wrangler-action@1.1.0
+      uses: cloudflare/wrangler-action@1.2.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -49,7 +49,7 @@ jobs:
   deploy:
     name: Deploy
     steps:
-      uses: cloudflare/wrangler-action@1.1.0
+      uses: cloudflare/wrangler-action@1.2.0
       with:
         apiKey: ${{ secrets.CF_API_KEY }}
         email: ${{ secrets.CF_EMAIL }}
@@ -63,7 +63,7 @@ If you're using Wrangler's [environments](https://developers.cloudflare.com/work
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.1.0
+      uses: cloudflare/wrangler-action@1.2.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         environment: 'production'
@@ -75,7 +75,7 @@ If you need to install a specific version of Wrangler to use for deployment, you
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.1.0
+      uses: cloudflare/wrangler-action@1.2.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         wranglerVersion: '1.6.0'
@@ -87,7 +87,7 @@ Optionally, you can also pass a `workingDirectory` key to the action. This will 
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.1.0
+      uses: cloudflare/wrangler-action@1.2.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         workingDirectory: 'subfoldername'
@@ -99,7 +99,7 @@ jobs:
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.1.0
+      uses: cloudflare/wrangler-action@1.2.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         workingDirectory: 'subfoldername'
@@ -130,7 +130,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish
-        uses: cloudflare/wrangler-action@1.1.0
+        uses: cloudflare/wrangler-action@1.2.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -153,7 +153,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish app
-        uses: cloudflare/wrangler-action@1.1.0
+        uses: cloudflare/wrangler-action@1.2.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -175,7 +175,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish app
-        uses: cloudflare/wrangler-action@1.1.0
+        uses: cloudflare/wrangler-action@1.2.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -226,7 +226,7 @@ jobs:
       - name: Build site
         run: 'npm run build'
       - name: Publish
-        uses: cloudflare/wrangler-action@1.1.0
+        uses: cloudflare/wrangler-action@1.2.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
