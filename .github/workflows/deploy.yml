@@ -46,3 +46,20 @@ jobs:
         environment: "production"
         wranglerVersion: '1.5.0'
         workingDirectory: 'test'
+  publish_secrets:
+    runs-on: ubuntu-latest
+    name: Publish app with secrets
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish app
+        uses: ./
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          environment: "production"
+          workingDirectory: "test"
+          secrets: |
+            SECRET1
+            SECRET2
+        env:
+          SECRET1: ${{ secrets.SECRET1 }}
+          SECRET2: ${{ secrets.SECRET2 }}

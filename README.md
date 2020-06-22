@@ -93,6 +93,24 @@ jobs:
         workingDirectory: 'subfoldername'
 ```
 
+[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can be optionally passed as a new line deliminated string of names in `secrets`.  Each secret name must match an environment variable name specified in the `env` attribute.  Creates or replaces the value for the Worker secret using the `wrangler secret put` command.
+
+```yaml
+jobs:
+  deploy:
+    steps:
+      uses: cloudflare/wrangler-action@1.1.0
+      with:
+        apiToken: ${{ secrets.CF_API_TOKEN }}
+        workingDirectory: 'subfoldername'
+        secrets: |
+            SECRET1
+            SECRET2
+      env:
+        SECRET1: ${{ secrets.SECRET1 }}
+        SECRET2: ${{ secrets.SECRET2 }}
+```
+
 ## Use cases
 
 ### Deploying when commits are merged to master

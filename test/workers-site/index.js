@@ -34,6 +34,14 @@ async function handleEvent(event) {
    */
   // options.mapRequestToAsset = handlePrefix(/^\/docs/)
 
+  // Path to test secrets passed through Wrangler Action.  Create SECRET1 and SECRET2 secrets
+  // in the Action repo to something innocuous like "Hello" and "World!".
+  if (url.pathname === "/secret") {
+    let sec1 = (typeof SECRET1 !== 'undefined') ? SECRET1 : ""
+    let sec2 = (typeof SECRET2 !== 'undefined') ? SECRET2 : ""
+    return new Response(`${sec1} ${sec2}`)
+  }
+  
   try {
     if (DEBUG) {
       // customize caching
