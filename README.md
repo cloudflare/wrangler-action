@@ -102,7 +102,6 @@ jobs:
       uses: cloudflare/wrangler-action@1.2.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
-        workingDirectory: 'subfoldername'
         secrets: |
             SECRET1
             SECRET2
