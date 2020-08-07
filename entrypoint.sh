@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -9,6 +9,27 @@ mkdir -p "$HOME/.wrangler"
 chmod -R 770 "$HOME/.wrangler"
 
 export API_CREDENTIALS=""
+
+# Used to execute any specified pre and post commands
+execute_commands() {
+  COMMANDS=$1
+  while IFS= read -r COMMAND; do
+    CHUNKS=()
+
+    for CHUNK in $COMMAND; do
+      CHUNKS+=("$CHUNK")
+    done
+
+    "${CHUNKS[@]}"
+
+    CHUNKS=()
+  done <<< "$COMMANDS"
+}
+
+secret_not_found() {
+  echo "::error::Specified secret \"$1\" not found in environment variables."
+  exit 1
+}
 
 # If an API token is detected as input
 if [ -n "$INPUT_APITOKEN" ]
@@ -58,10 +79,11 @@ then
   cd "$INPUT_WORKINGDIRECTORY"
 fi
 
-secret_not_found() {
-  echo "::error::Specified secret \"$1\" not found in environment variables."
-  exit 1
-}
+# If precommands is detected as input
+if [ -n "$INPUT_PRECOMMANDS" ]
+then
+  execute_commands "$INPUT_PRECOMMANDS"
+fi
 
 # If an environment is detected as input, for each secret specified get the value of
 # the matching named environment variable then configure using wrangler secret put.
@@ -80,6 +102,12 @@ else
     VALUE=$(printenv "$SECRET") || secret_not_found "$SECRET"
     echo "$VALUE" | wrangler secret put "$SECRET" --env "$INPUT_ENVIRONMENT"
   done
+fi
+
+# If postcommands is detected as input
+if [ -n "$INPUT_POSTCOMMANDS" ]
+then
+  execute_commands "$INPUT_POSTCOMMANDS"
 fi
 
 # If a working directory is detected as input, revert to the

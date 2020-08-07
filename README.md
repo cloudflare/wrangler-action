@@ -110,6 +110,22 @@ jobs:
         SECRET2: ${{ secrets.SECRET2 }}
 ```
 
+If you need to run additional shell commands before or after `wrangler publish`, you can specify them as input to `preCommands` (before publish) or `postCommands` (after publish). These can include additional `wrangler` commands (i.e. `build`, `kv:key put`) or any other commands available inside the `wrangler-action` context.
+
+```yaml
+jobs:
+  deploy:
+    steps:
+      uses: cloudflare/wrangler-action@1.2.0
+      with:
+        apiToken: ${{ secrets.CF_API_TOKEN }}
+        preCommands: echo "*** pre command ***"
+        postCommands: |
+          echo "*** post commands ***"
+          wrangler kv:key put --binding=MY_KV key2 value2
+          echo "******"
+```
+
 ## Use cases
 
 ### Deploying when commits are merged to master

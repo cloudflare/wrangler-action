@@ -60,6 +60,11 @@ jobs:
           secrets: |
             SECRET1
             SECRET2
+          preCommands: echo "*** pre command ***"
+          postCommands: |
+            echo "*** post commands ***"
+            wrangler build
+            echo "******"
         env:
           SECRET1: ${{ secrets.SECRET1 }}
           SECRET2: ${{ secrets.SECRET2 }}
