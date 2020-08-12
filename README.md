@@ -126,7 +126,7 @@ jobs:
           echo "******"
 ```
 
-Set the optional `publish` input to false to skip publishing your Worker project and secrets.
+Set the optional `publish` input to false to skip publishing your Worker project and secrets.  Useful in conjunction with pre and post commands.  For example, if you only wanted to run `wrangler build` against your project:
 
 ```yaml
 jobs:
@@ -136,6 +136,7 @@ jobs:
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         publish: false
+        preCommands: wrangler build
 ```
 
 ## Use cases
