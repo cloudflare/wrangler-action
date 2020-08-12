@@ -126,6 +126,18 @@ jobs:
           echo "******"
 ```
 
+Set the optional `publish` input to false to skip publishing your Worker project and secrets.
+
+```yaml
+jobs:
+  deploy:
+    steps:
+      uses: cloudflare/wrangler-action@1.2.0
+      with:
+        apiToken: ${{ secrets.CF_API_TOKEN }}
+        publish: false
+```
+
 ## Use cases
 
 ### Deploying when commits are merged to master

@@ -28,3 +28,6 @@ inputs:
   postCommands:
     description: "Commands to execute after publishing the Workers project"
     required: false
+  publish:
+    description: "Set to false to skip publishing your Worker project and secrets.  Defaults to true."
+    required: false
