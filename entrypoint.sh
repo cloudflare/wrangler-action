@@ -20,7 +20,7 @@ execute_commands() {
       CHUNKS+=("$CHUNK")
     done
 
-    "${CHUNKS[@]}"
+    eval "${CHUNKS[@]}"
 
     CHUNKS=()
   done <<< "$COMMANDS"
