@@ -5,11 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Lint
     steps:
-    - uses: actions/checkout@v2
-    - name: Lint shell script
-      uses: azohra/shell-linter@v0.3.0
-      with:
-        path: "entrypoint.sh"
+      - uses: actions/checkout@v2
+      - name: Lint shell script
+        uses: azohra/shell-linter@v0.3.0
+        with:
+          path: "entrypoint.sh"
   build-only:
     runs-on: ubuntu-latest
     name: Only build the app
@@ -36,38 +36,38 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish app
     steps:
-    - uses: actions/checkout@v2
-    - name: Publish app
-      uses: ./
-      with:
-        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        environment: "production"
-        workingDirectory: 'test'
+      - uses: actions/checkout@v2
+      - name: Publish app
+        uses: ./
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          environment: "production"
+          workingDirectory: 'test'
   publish_legacy_credentials:
     runs-on: ubuntu-latest
     name: Publish app with legacy credentials
     steps:
-    - uses: actions/checkout@v2
-    - name: Publish app
-      uses: ./
-      with:
-        apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
-        email: ${{ secrets.CLOUDFLARE_EMAIL }}
-        environment: "production"
-        workingDirectory: 'test'
+      - uses: actions/checkout@v2
+      - name: Publish app
+        uses: ./
+        with:
+          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+          email: ${{ secrets.CLOUDFLARE_EMAIL }}
+          environment: "production"
+          workingDirectory: 'test'
   publish_hardcoded_wrangler_version:
     runs-on: ubuntu-latest
     name: Publish app with hardcoded Wrangler version
     steps:
-    - uses: actions/checkout@v2
-    - name: Publish app
-      uses: ./
-      with:
-        apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
-        email: ${{ secrets.CLOUDFLARE_EMAIL }}
-        environment: "production"
-        wranglerVersion: '1.5.0'
-        workingDirectory: 'test'
+      - uses: actions/checkout@v2
+      - name: Publish app
+        uses: ./
+        with:
+          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+          email: ${{ secrets.CLOUDFLARE_EMAIL }}
+          environment: "production"
+          wranglerVersion: '1.5.0'
+          workingDirectory: 'test'
   publish_secrets:
     runs-on: ubuntu-latest
     name: Publish app with secrets
