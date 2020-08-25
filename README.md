@@ -258,3 +258,19 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
+
+`wrangler-action` also provides `preCommands` for running additional shell commands before publish, so my workflow TOML might also resemble the following:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish
+        uses: cloudflare/wrangler-action@1.2.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          preCommands: npm run build
+```
