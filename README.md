@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Publish
-        uses: cloudflare/wrangler-action@1.2.0
+        uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -37,7 +37,7 @@ jobs:
   deploy:
     name: Deploy
     steps:
-      uses: cloudflare/wrangler-action@1.2.0
+      uses: cloudflare/wrangler-action@1.3.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -49,7 +49,7 @@ jobs:
   deploy:
     name: Deploy
     steps:
-      uses: cloudflare/wrangler-action@1.2.0
+      uses: cloudflare/wrangler-action@1.3.0
       with:
         apiKey: ${{ secrets.CF_API_KEY }}
         email: ${{ secrets.CF_EMAIL }}
