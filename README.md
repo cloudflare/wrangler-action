@@ -190,12 +190,16 @@ If you need help defining the correct cron syntax, check out [crontab.guru](http
 
 ### Deploying on a "dispatched" event
 
-If you need to trigger a deployment at-will, you can use GitHub's API to fire a `repository_dispatch` event on your repository. By setting your workflow to trigger on that event, you'll be able to deploy your application via an API call:
+If you need to trigger a workflow at-will, you can use GitHub's `workflow_dispatch` [event](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch) in your workflow file. By setting your workflow to trigger on that event, you'll be able to deploy your application via the GitHub UI.  The UI also accepts inputs that can be used to configure the action  :
 
 ```yaml
 on:
-  repository_dispatch:
-
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose an environment to deploy to: <dev|staging|prod>'
+        required: true
+        default: 'dev'
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -206,29 +210,10 @@ jobs:
         uses: cloudflare/wrangler-action@1.2.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
+          environment: ${{ github.event.inputs.environment }}
 ```
 
-To make the GitHub API request, you can deploy a custom [Cloudflare Workers](https://workers.cloudflare.com) function, which will send a `POST` request to GitHub's API and trigger a new deploy:
-
-```js
-const headers = {
-  Accept: 'application/vnd.github.everest-preview+json',
-  Authorization: 'Bearer $token',
-}
-
-const body = JSON.stringify({ event_type: 'repository_dispatch' })
-
-const url = `https://api.github.com/repos/$owner/$repo/dispatches`
-
-const handleRequest = async evt => {
-  await fetch(url, { method: 'POST', headers, body })
-  return new Response('OK')
-}
-
-addEventListener('fetch', handleRequest)
-```
-
-Note that `$token` in this code sample is a GitHub "Personal Access Token". For information on how to generate this token, see the [GitHub documentation on "repository_dispatch"](https://developer.github.com/v3/repos/#create-a-repository-dispatch-event).
+For more advanced usage or to programmatically trigger the workflow from scripts, check out [the docs](https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event) for making API calls
 
 ## Troubleshooting
 
