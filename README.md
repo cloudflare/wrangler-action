@@ -63,7 +63,7 @@ If you're using Wrangler's [environments](https://developers.cloudflare.com/work
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.2.0
+      uses: cloudflare/wrangler-action@1.3.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         environment: 'production'
@@ -75,7 +75,7 @@ If you need to install a specific version of Wrangler to use for deployment, you
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.2.0
+      uses: cloudflare/wrangler-action@1.3.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         wranglerVersion: '1.6.0'
@@ -87,7 +87,7 @@ Optionally, you can also pass a `workingDirectory` key to the action. This will 
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.2.0
+      uses: cloudflare/wrangler-action@1.3.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         workingDirectory: 'subfoldername'
@@ -99,7 +99,7 @@ jobs:
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.2.0
+      uses: cloudflare/wrangler-action@1.3.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         secrets: |
@@ -116,7 +116,7 @@ If you need to run additional shell commands before or after `wrangler publish`,
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.2.0
+      uses: cloudflare/wrangler-action@1.3.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         preCommands: echo "*** pre command ***"
@@ -132,7 +132,7 @@ Set the optional `publish` input to false to skip publishing your Worker project
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.2.0
+      uses: cloudflare/wrangler-action@1.3.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         publish: false
@@ -158,7 +158,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish
-        uses: cloudflare/wrangler-action@1.2.0
+        uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -181,7 +181,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish app
-        uses: cloudflare/wrangler-action@1.2.0
+        uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -207,7 +207,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Publish app
-        uses: cloudflare/wrangler-action@1.2.0
+        uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           environment: ${{ github.event.inputs.environment }}
@@ -227,7 +227,7 @@ No problem! Check out the [Quick Start guide](https://developers.cloudflare.com/
 
 To deploy static sites and frontend applications to Workers, check out the documentation for [Workers Sites](https://developers.cloudflare.com/workers/sites).
 
-Note that this action makes no assumptions about _how_ your project is built! **If you need to run a pre-publish step, like building your application, you need to specify a build step in your Workflow.** For instance, if I have an NPM command called `build`, my workflow TOML might resemble the following:
+Note that this action makes no assumptions about _how_ your project is built! **If you need to run a pre-publish step, like building your application, you need to specify a build step in your Workflow.** For instance, if I have an NPM command called `build`, my workflow YAML might resemble the following:
 
 ```yaml
 jobs:
@@ -239,7 +239,7 @@ jobs:
       - name: Build site
         run: 'npm run build'
       - name: Publish
-        uses: cloudflare/wrangler-action@1.2.0
+        uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
