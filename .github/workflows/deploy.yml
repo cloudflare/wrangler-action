@@ -3,19 +3,19 @@ on: push
 jobs:
   lint:
     runs-on: ubuntu-latest
-    name: Lint
+    name: 🧹 Lint
     steps:
     - uses: actions/checkout@v2
-    - name: Lint shell script
+    - name: 🐚 Lint shell script
       uses: azohra/shell-linter@v0.3.0
       with:
         path: "entrypoint.sh"
   build-only:
     runs-on: ubuntu-latest
-    name: Only build the app
+    name: ❄️ Only build the app
     steps:
       - uses: actions/checkout@v2
-      - name: Build app
+      - name: 🏗️ Build app
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -34,10 +34,10 @@ jobs:
           SECRET2: ${{ secrets.SECRET2 }}
   publish:
     runs-on: ubuntu-latest
-    name: Publish app
+    name: ✈️ Publish app
     steps:
     - uses: actions/checkout@v2
-    - name: Publish app
+    - name: 🚀 Publish app
       uses: ./
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -45,10 +45,10 @@ jobs:
         workingDirectory: 'test'
   publish_legacy_credentials:
     runs-on: ubuntu-latest
-    name: Publish app with legacy credentials
+    name: 🛫 Publish app with legacy credentials
     steps:
     - uses: actions/checkout@v2
-    - name: Publish app
+    - name: 🚀 Publish app
       uses: ./
       with:
         apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
@@ -57,10 +57,10 @@ jobs:
         workingDirectory: 'test'
   publish_hardcoded_wrangler_version:
     runs-on: ubuntu-latest
-    name: Publish app with hardcoded Wrangler version
+    name: 🛩️ Publish app with hardcoded Wrangler version
     steps:
     - uses: actions/checkout@v2
-    - name: Publish app
+    - name: 🚀 Publish app
       uses: ./
       with:
         apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
@@ -70,10 +70,10 @@ jobs:
         workingDirectory: 'test'
   publish_secrets:
     runs-on: ubuntu-latest
-    name: Publish app with secrets
+    name: 🚁 Publish app with secrets
     steps:
       - uses: actions/checkout@v2
-      - name: Publish app
+      - name: 🚀 Publish app
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
