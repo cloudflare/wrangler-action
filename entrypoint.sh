@@ -98,17 +98,16 @@ if [ -n "$INPUT_CONFIGFILE" ] ; then
   export FLAGS="$FLAGS --config $INPUT_CONFIGFILE"
 fi
 
-# If an environment is detected as input, for each secret specified get the value of
-# the matching named environment variable then configure using wrangler secret put.
-# Skip if publish is set to false.
+# Skip if publish is set to false
 if [ "$INPUT_PUBLISH" != "false" ]
 then
-  echo "Executing: wrangler publish $FLAGS"
   wrangler publish $FLAGS
 
+  # If an environment is detected as input, for each secret specified get the value of
+  # the matching named environment variable then configure using wrangler secret put
   for SECRET in $INPUT_SECRETS; do
     VALUE=$(printenv "$SECRET") || secret_not_found "$SECRET"
-    echo "$VALUE" | wrangler secret put "$SECRET" $FLAGS
+    echo "$VALUE" | wrangler secret $FLAGS put "$SECRET"
   done
 fi
 
