@@ -9,16 +9,25 @@ runs:
 inputs:
   apiKey:
     description: "(Legacy) Your Cloudflare API Key"
+    required: false
   apiToken:
     description: "Your Cloudflare API Token"
+    required: false
   email:
     description: "(Legacy) Your Cloudflare Email"
+    required: false
   environment:
     description: "The environment you'd like to publish your Workers project to - must be defined in wrangler.toml"
+    required: false
+  configFile:
+    description: "The path to the config file - defaults to wrangler.toml"
+    required: false
   workingDirectory:
     description: "The relative path which Wrangler commands should be run from"
+    required: false
   wranglerVersion:
     description: "The version of Wrangler you'd like to use to publish your Workers project"
+    required: false
   secrets:
     description: "A new line deliminated string of environment variable names that should be configured as Worker secrets"
     required: false
