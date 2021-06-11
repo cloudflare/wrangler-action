@@ -86,7 +86,7 @@ then
 fi
 
 # Flags that are passed to the wrangler command
-export FLAGS=""
+export FLAGS=
 
 # Environment was specified
 if [ -n "$INPUT_ENVIRONMENT" ] ; then
@@ -103,11 +103,12 @@ fi
 # Skip if publish is set to false.
 if [ "$INPUT_PUBLISH" != "false" ]
 then
-  wrangler publish "$FLAGS"
+  echo "Executing: wrangler publish $FLAGS"
+  wrangler publish $FLAGS
 
   for SECRET in $INPUT_SECRETS; do
     VALUE=$(printenv "$SECRET") || secret_not_found "$SECRET"
-    echo "$VALUE" | wrangler secret put "$SECRET" "$FLAGS"
+    echo "$VALUE" | wrangler secret put "$SECRET" $FLAGS
   done
 fi
 
