@@ -79,36 +79,39 @@ then
   cd "$INPUT_WORKINGDIRECTORY"
 fi
 
-# If precommands is detected as input
+# If preCommands is detected as input
 if [ -n "$INPUT_PRECOMMANDS" ]
 then
   execute_commands "$INPUT_PRECOMMANDS"
 fi
 
-# If an environment is detected as input, for each secret specified get the value of
-# the matching named environment variable then configure using wrangler secret put.
-# Skip if publish is set to false.
-if [ "$INPUT_PUBLISH" != "false" ]
-then
-  if [ -z "$INPUT_ENVIRONMENT" ]
-  then
-    wrangler publish
+# Flags that are passed to the wrangler command
+export FLAGS=
 
-    for SECRET in $INPUT_SECRETS; do
-      VALUE=$(printenv "$SECRET") || secret_not_found "$SECRET"
-      echo "$VALUE" | wrangler secret put "$SECRET"
-    done
-  else
-    wrangler publish -e "$INPUT_ENVIRONMENT"
-
-    for SECRET in $INPUT_SECRETS; do
-      VALUE=$(printenv "$SECRET") || secret_not_found "$SECRET"
-      echo "$VALUE" | wrangler secret put "$SECRET" --env "$INPUT_ENVIRONMENT"
-    done
-  fi
+# Environment was specified
+if [ -n "$INPUT_ENVIRONMENT" ] ; then
+  export FLAGS="$FLAGS --env $INPUT_ENVIRONMENT"
 fi
 
-# If postcommands is detected as input
+# A non-default configuration file was specified
+if [ -n "$INPUT_CONFIGFILE" ] ; then
+  export FLAGS="$FLAGS --config $INPUT_CONFIGFILE"
+fi
+
+# Skip if publish is set to false
+if [ "$INPUT_PUBLISH" != "false" ]
+then
+  wrangler publish $FLAGS
+
+  # If an environment is detected as input, for each secret specified get the value of
+  # the matching named environment variable then configure using wrangler secret put
+  for SECRET in $INPUT_SECRETS; do
+    VALUE=$(printenv "$SECRET") || secret_not_found "$SECRET"
+    echo "$VALUE" | wrangler secret $FLAGS put "$SECRET"
+  done
+fi
+
+# If postCommands is detected as input
 if [ -n "$INPUT_POSTCOMMANDS" ]
 then
   execute_commands "$INPUT_POSTCOMMANDS"

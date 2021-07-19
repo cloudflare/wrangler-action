@@ -69,6 +69,18 @@ jobs:
         environment: 'production'
 ```
 
+To use a non-default configuration file, specify `configFile` like so:
+
+```yaml
+jobs:
+  deploy:
+    steps:
+      uses: cloudflare/wrangler-action@1.2.0
+      with:
+        apiToken: ${{ secrets.CF_API_TOKEN }}
+        configFile: 'wrangler.secondary.toml'
+```
+
 If you need to install a specific version of Wrangler to use for deployment, you can also pass the input `wranglerVersion` to install a specific version of Wrangler from NPM. This should be a [SemVer](https://semver.org/)-style version number, such as `1.6.0`:
 
 ```yaml
