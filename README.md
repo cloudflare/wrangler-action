@@ -243,3 +243,36 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
+
+### "Wrangler fails to publish Rust/wasm workers!"
+
+The action currently uses a docker image without the Rust toolchain (and thus without `rustc`) preinstalled, which can in the case of wasm-based workers lead to errors such as `Error: 'rustc' not found: cannot find binary path. Installation documentation can be found here: https://www.rust-lang.org/tools/install`. Since the action is mostly a wrapper around `npm i @cloudflare/wrangler`, the following workflow can be used instead of the action:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npm i @cloudflare/wrangler && npx wrangler publish
+```
+
+Configuration options can be passed to wrangler as in any other Github action. For example, the following workflow installs wrangler version 1.6.0 and runs `wrangler publish` in the directory `some_dir/some_subdir` while using the `production` environment:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        working-directory: some_dir/some_subdir
+        run: npm i @cloudflare/wrangler@1.6.0 && npx wrangler publish --env production
+```
