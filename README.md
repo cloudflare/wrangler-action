@@ -37,9 +37,9 @@ jobs:
   deploy:
     name: Deploy
     steps:
-      uses: cloudflare/wrangler-action@1.3.0
-      with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
+      - uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
 
 `wrangler-action` also supports using your [global API key and email](https://developers.cloudflare.com/workers/quickstart/#global-api-key) as an authentication method, although API tokens are preferred. Pass in `apiKey` and `email` to the GitHub Action to use this method:
@@ -49,10 +49,10 @@ jobs:
   deploy:
     name: Deploy
     steps:
-      uses: cloudflare/wrangler-action@1.3.0
-      with:
-        apiKey: ${{ secrets.CF_API_KEY }}
-        email: ${{ secrets.CF_EMAIL }}
+      - uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiKey: ${{ secrets.CF_API_KEY }}
+          email: ${{ secrets.CF_EMAIL }}
 ```
 
 ## Configuration
@@ -63,10 +63,10 @@ If you're using Wrangler's [environments](https://developers.cloudflare.com/work
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.3.0
-      with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
-        environment: 'production'
+      - uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          environment: 'production'
 ```
 
 If you need to install a specific version of Wrangler to use for deployment, you can also pass the input `wranglerVersion` to install a specific version of Wrangler from NPM. This should be a [SemVer](https://semver.org/)-style version number, such as `1.6.0`:
@@ -75,10 +75,10 @@ If you need to install a specific version of Wrangler to use for deployment, you
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.3.0
-      with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
-        wranglerVersion: '1.6.0'
+      - uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          wranglerVersion: '1.6.0'
 ```
 
 Optionally, you can also pass a `workingDirectory` key to the action. This will allow you to specify a subdirectory of the repo to run the Wrangler command from.
@@ -87,10 +87,10 @@ Optionally, you can also pass a `workingDirectory` key to the action. This will 
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.3.0
-      with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
-        workingDirectory: 'subfoldername'
+      - uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          workingDirectory: 'subfoldername'
 ```
 
 [Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can be optionally passed as a new line deliminated string of names in `secrets`.  Each secret name must match an environment variable name specified in the `env` attribute.  Creates or replaces the value for the Worker secret using the `wrangler secret put` command.
@@ -99,15 +99,15 @@ jobs:
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.3.0
-      with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
-        secrets: |
-            SECRET1
-            SECRET2
-      env:
-        SECRET1: ${{ secrets.SECRET1 }}
-        SECRET2: ${{ secrets.SECRET2 }}
+      - uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          secrets: |
+              SECRET1
+              SECRET2
+        env:
+          SECRET1: ${{ secrets.SECRET1 }}
+          SECRET2: ${{ secrets.SECRET2 }}
 ```
 
 If you need to run additional shell commands before or after `wrangler publish`, you can specify them as input to `preCommands` (before publish) or `postCommands` (after publish). These can include additional `wrangler` commands (i.e. `build`, `kv:key put`) or any other commands available inside the `wrangler-action` context.
@@ -116,14 +116,14 @@ If you need to run additional shell commands before or after `wrangler publish`,
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.3.0
-      with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
-        preCommands: echo "*** pre command ***"
-        postCommands: |
-          echo "*** post commands ***"
-          wrangler kv:key put --binding=MY_KV key2 value2
-          echo "******"
+      - uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          preCommands: echo "*** pre command ***"
+          postCommands: |
+            echo "*** post commands ***"
+            wrangler kv:key put --binding=MY_KV key2 value2
+            echo "******"
 ```
 
 Set the optional `publish` input to false to skip publishing your Worker project and secrets.  Useful in conjunction with pre and post commands.  For example, if you only wanted to run `wrangler build` against your project:
@@ -132,11 +132,11 @@ Set the optional `publish` input to false to skip publishing your Worker project
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@1.3.0
-      with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
-        publish: false
-        preCommands: wrangler build
+      - uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          publish: false
+          preCommands: wrangler build
 ```
 
 ## Use cases
