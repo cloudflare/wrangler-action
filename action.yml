@@ -2,23 +2,32 @@ name: "Deploy to Cloudflare Workers with Wrangler"
 branding:
   icon: "upload-cloud"
   color: "orange"
-description: "Deploy your Cloudflare Workers applications and sites directly from GitHub, using Wrangler"
+description: "Deploy your Cloudflare Workers and Pages projects from GitHub using Wrangler"
 runs:
   using: "docker"
   image: "Dockerfile"
 inputs:
   apiKey:
     description: "(Legacy) Your Cloudflare API Key"
-  apiToken:
-    description: "Your Cloudflare API Token"
+    required: false
   email:
     description: "(Legacy) Your Cloudflare Email"
+    required: false
+  apiToken:
+    description: "Your Cloudflare API Token"
+    required: false
+  accountId:
+    description: "Your Cloudflare Account ID"
+    required: false
+
   environment:
     description: "The environment you'd like to publish your Workers project to - must be defined in wrangler.toml"
   workingDirectory:
     description: "The relative path which Wrangler commands should be run from"
+    required: false
   wranglerVersion:
     description: "The version of Wrangler you'd like to use to publish your Workers project"
+    required: false
   secrets:
     description: "A new line deliminated string of environment variable names that should be configured as Worker secrets"
     required: false
@@ -28,6 +37,6 @@ inputs:
   postCommands:
     description: "Commands to execute after publishing the Workers project"
     required: false
-  publish:
-    description: "Set to false to skip publishing your Worker project and secrets.  Defaults to true."
+  command:
+    description: "The Wrangler command you wish to run. For example: \"publish\" - this will publish your Worker"
     required: false
