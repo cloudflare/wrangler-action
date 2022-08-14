@@ -30,9 +30,11 @@ jobs:
 
 ## Authentication
 
-You'll need to configure Wrangler using GitHub's Secrets feature - go to "Settings -> Secrets" and add your Cloudflare API token (for help finding this, see the [Workers documentation](https://developers.cloudflare.com/workers/quickstart/#api-token)). Your API token is encrypted by GitHub, and the action won't print it into logs, so it should be safe!
+You'll need to configure Wrangler using GitHub's Secrets feature. Go to your [Cloudflare account page](https://dash.cloudflare.com/profile/api-tokens). Click "Create Token" and use the "Edit Cloudflare Workers" template. After configuring the template, finish the creation pocess and copy your API token.
 
-With your API token set as a secret for your repository, pass it to the action in the `with` block of your workflow. Below, I've set the secret name to `CF_API_TOKEN`:
+Now go back to your GitHub repository. Go to "Settings -> Secrets" and add your API token with the name `CF_API_TOKEN`. Your API token is encrypted by GitHub, and the action won't print it into logs, so it should be safe!
+
+With your API token set as a secret for your repository, pass it to the action in the `with` block of your workflow:
 
 ```yaml
 jobs:
