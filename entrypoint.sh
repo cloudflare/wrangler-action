@@ -32,6 +32,9 @@ secret_not_found() {
   exit 1
 }
 
+# Make sure we have the most up-to-date versions of Wrangler available
+npm update wrangler
+
 WRANGLER_VERSION=2
 
 # If no Wrangler version is specified install v2.
