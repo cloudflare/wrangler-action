@@ -219,8 +219,9 @@ jobs:
       - name: Publish app
         uses: cloudflare/wrangler-action@2.0.0
         with:
+          environment: ${{ github.event.inputs.environment }}
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          command: publish --env ${{ github.event.inputs.environment }}
+          command: publish
 ```
 
 For more advanced usage or to programmatically trigger the workflow from scripts, refer to [the GitHub documentation](https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event) for making API calls.
