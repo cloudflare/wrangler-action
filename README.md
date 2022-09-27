@@ -91,6 +91,9 @@ jobs:
     steps:
       uses: cloudflare/wrangler-action@2.0.0
       with:
+        # - if you have multiple deploy targets (environments) you
+        #   may need to specify which one secrets get pushed to
+        # environment: "production"
         apiToken: ${{ secrets.CF_API_TOKEN }}
         secrets: |
             SECRET1
