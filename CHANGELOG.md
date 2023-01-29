@@ -3,9 +3,15 @@
     * automatically adds `wrangler pages publish` (inptu command included)
 * New `pagesProject` input
     * adds `--project-name=<>`to default command (input command included)
+
+* All 2 inputs are for Cloudflare pages, you can deploy to pages without using command.
+    * populating the above inputs will change the use if command function to an extenstion.
+    For example - if you use pagesDirectory and pagesProject along with command. it will exec `wrangler pages publish <dir> <command>`
+    If you use the command input without the 2 pages variables, it will exec `wrangler <command>`
+    Order pagesDirectory > command > pagesProject > pagesBranch > env
+
 * New `pagesBranch` input
     * workaround for Cloudflare Pages not detecting branches (input command included)
-
 # 2.0.0 (Breaking update)
 
 ## Additions
