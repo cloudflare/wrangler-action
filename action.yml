@@ -37,6 +37,15 @@ inputs:
   postCommands:
     description: "Commands to execute after publishing the Workers project"
     required: false
+  pagesDirectory:
+    description: "The directory you wish to publish your Pages project. adds: \"pages publish directory\""
+    required: false
+  pagesProject:
+    description: "The Name of the Workers project you wish to publish to"
+    required: false
+  pagesBranch:
+    description: "set to true if Cloudflare fails to recognize thee git branch"
+    required: false
   command:
     description: "The Wrangler command you wish to run. For example: \"publish\" - this will publish your Worker"
     required: false

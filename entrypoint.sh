@@ -8,6 +8,9 @@ export WRANGLER_HOME="/github/workspace"
 mkdir -p "$HOME/.wrangler"
 chmod -R 770 "$HOME/.wrangler"
 
+# Detect GIT branch - cloudflare/wrangler2 issues - #2569 
+BRANCH_OUTPUT=$(git branch)
+
 export API_CREDENTIALS=""
 
 # Used to execute any specified pre and post commands
@@ -32,9 +35,9 @@ secret_not_found() {
   exit 1
 }
 
-WRANGLER_VERSION=2
+WRANGLER_VERSION=2.8.1
 
-# If no Wrangler version is specified install v2.
+# If no Wrangler version is specified install v2+.
 if [ -z "$INPUT_WRANGLERVERSION" ]; then
   npm i -g wrangler
 
@@ -46,13 +49,13 @@ elif [[ "$INPUT_WRANGLERVERSION" == 1* ]]; then
 # Else install Wrangler 2
 else
   npm i -g "wrangler@$INPUT_WRANGLERVERSION"
-  WRANGLER_VERSION=2
+  WRANGLER_VERSION=2.8.1
 fi
 
 # If an API token is detected as input
 if [ -n "$INPUT_APITOKEN" ]; then
 
-  # Wrangler v1 uses CF_API_TOKEN but v2 uses CLOUDFLARE_API_TOKEN
+  # Wrangler v1 uses CF_API_TOKEN but v2+ uses CLOUDFLARE_API_TOKEN
   if [ $WRANGLER_VERSION == 1 ]; then
     export CF_API_TOKEN="$INPUT_APITOKEN"
   else
@@ -65,12 +68,12 @@ fi
 # If an API key and email are detected as input
 if [ -n "$INPUT_APIKEY" ] && [ -n "$INPUT_EMAIL" ]; then
 
-  # Wrangler v1 uses CF_ but v2 uses CLOUDFLARE_
+  # Wrangler v1 uses CF_ but v2+ uses CLOUDFLARE_
   if [ $WRANGLER_VERSION == 1 ]; then
     export CF_EMAIL="$INPUT_EMAIL"
     export CF_API_KEY="$INPUT_APIKEY"
   else
-    echo "::error::Wrangler v2 does not support using the API Key. You should instead use an API token."
+    echo "::error::Wrangler v2+ does not support using the API Key. You should instead use an API token."
     exit 1
   fi
   
@@ -130,22 +133,35 @@ for SECRET in $INPUT_SECRETS; do
 done
 
 # If there's no input command then default to publish otherwise run it
-if [ -z "$INPUT_COMMAND" ]; then
-  echo "::notice:: No command was provided, defaulting to 'publish'"
-
- if [ -z "$INPUT_ENVIRONMENT" ]; then
-    wrangler publish
-  else
-    wrangler publish --env "$INPUT_ENVIRONMENT"
-  fi
-
-else
-  if [ -n "$INPUT_ENVIRONMENT" ]; then
-    echo "::notice::Since you have specified an environment you need to make sure to pass in '--env $INPUT_ENVIRONMENT' to your command."
-  fi
-
-  execute_commands "wrangler $INPUT_COMMAND"
+WRANGLER_CMD="wrangler"
+if [ -n "$INPUT_PAGESDIRECTORY" ]; then
+  WRANGLER_CMD="${WRANGLER_CMD} pages publish ${INPUT_PAGESDIRECTORY}"
 fi
+if [ -n "$INPUT_COMMAND" ]; then
+  if [ -n "$INPUT_PAGESDIRECTORY" ]; then
+    echo "::notice::Since you have specified both pagesDirectory and command, command content will be added after \"wrangler pages publish <dir>\""
+  fi
+  WRANGLER_CMD="${WRANGLER_CMD} ${INPUT_COMMAND}"
+elif [ -z "$INPUT_COMMAND" ] && [ -n "$INPUT_PAGESDIRECTORY" ]; then
+  echo "::notice:: Command and pagesDirectory variables were not provided, defaulting to 'publish'"
+  if [ -z "$INPUT_ENVIRONMENT" ]; then
+    WRANGLER_CMD="${WRANGLER_CMD } publish"
+  fi
+fi
+
+if [ -n "$INPUT_PROJECTNAME" ]; then
+  WRANGLER_CMD="${WRANGLER_CMD} --project-name=${INPUT_PROJECTNAME}"
+fi
+if [ -n "$INPUT_BRANCHDETECT" ]; then
+  WRANGLER_CMD="${WRANGLER_CMD} --branch==${INPUT_BRANCHDETECT}"
+fi
+if [ -n "$INPUT_ENVIRONMENT" ]; then
+  WRANGLER_CMD="${WRANGLER_CMD} --env ${INPUT_ENVIRONMENT}"
+else
+  echo "::notice::Since you have specified an environment you need to make sure to pass in '--env $INPUT_ENVIRONMENT' to your command."
+fi
+
+execute_commands "$WRANGLER_CMD"
 
 # If postcommands is detected as input
 if [ -n "$INPUT_POSTCOMMANDS" ]
