@@ -9,7 +9,11 @@ jobs:
         id: hello
         uses: janithcooray/wrangler-action@v1
         with:
-          who-to-greet: 'Mona the Octocat'
+          apiToken: ${{ secrets.PAGES_DEPLOY_API }}
+          accountId: ${{ secrets.PAGES_DEPLOY_ACCOUNT }}
+          workingDirectory: 'test'
+          pagesDirectory: 'public'
+          pagesProject: 'cloud-functions'
       # Use the output from the `hello` step
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
