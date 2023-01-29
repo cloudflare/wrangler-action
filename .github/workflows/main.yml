@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v3      
       - name: Hello world action step
         id: hello
-        uses: janithcooray/wrangler-action@v1.0.2
+        uses: janithcooray/wrangler-action@v1.0.3
         with:
           apiToken: ${{ secrets.PAGES_DEPLOY_API }}
           accountId: ${{ secrets.PAGES_DEPLOY_ACCOUNT }}

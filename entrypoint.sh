@@ -138,28 +138,28 @@ done
 # If there's no input command then default to publish otherwise run it
 WRANGLER_CMD="wrangler"
 if [ -n "$INPUT_PAGESDIRECTORY" ]; then
-  WRANGLER_CMD="${WRANGLER_CMD} pages publish ${INPUT_PAGESDIRECTORY}"
+  WRANGLER_CMD="$WRANGLER_CMD pages publish $INPUT_PAGESDIRECTORY"
 fi
 if [ -n "$INPUT_COMMAND" ]; then
   if [ -n "$INPUT_PAGESDIRECTORY" ]; then
     echo "::notice::Since you have specified both pagesDirectory and command, command content will be added after \"wrangler pages publish <dir>\""
   fi
-  WRANGLER_CMD="${WRANGLER_CMD} ${INPUT_COMMAND}"
+  WRANGLER_CMD="$WRANGLER_CMD $INPUT_COMMAND"
 elif [ -z "$INPUT_COMMAND" ] && [ -n "$INPUT_PAGESDIRECTORY" ]; then
   echo "::notice:: Command and pagesDirectory variables were not provided, defaulting to 'publish'"
   if [ -z "$INPUT_ENVIRONMENT" ]; then
-    WRANGLER_CMD="${WRANGLER_CMD } publish"
+    WRANGLER_CMD="$WRANGLER_CMD  publish"
   fi
 fi
 
 if [ -n "$INPUT_PROJECTNAME" ]; then
-  WRANGLER_CMD="${WRANGLER_CMD} --project-name=${INPUT_PROJECTNAME}"
+  WRANGLER_CMD="$WRANGLER_CMD --project-name=$INPUT_PROJECTNAME"
 fi
 if [ -n "$INPUT_BRANCHDETECT" ]; then
-  WRANGLER_CMD="${WRANGLER_CMD} --branch==${INPUT_BRANCHDETECT}"
+  WRANGLER_CMD="$WRANGLER_CMD --branch==$INPUT_BRANCHDETECT"
 fi
 if [ -n "$INPUT_ENVIRONMENT" ]; then
-  WRANGLER_CMD="${WRANGLER_CMD} --env ${INPUT_ENVIRONMENT}"
+  WRANGLER_CMD="$WRANGLER_CMD --env $INPUT_ENVIRONMENT"
 else
   echo "::notice::Since you have specified an environment you need to make sure to pass in '--env $INPUT_ENVIRONMENT' to your command."
 fi
