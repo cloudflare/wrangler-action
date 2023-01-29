@@ -107,7 +107,10 @@ else
 fi
 
 # Detect GIT branch - cloudflare/wrangler2 issues - #2569 
-#BRANCH_OUTPUT=${GITHUB_REF##*/}
+BRANCH_OUTPUT=${GITHUB_REF##*/}
+echo "::notice:: branch ${BRANCH_OUTPUT}"
+
+ls -la
 
 # If a working directory is detected as input
 if [ -n "$INPUT_WORKINGDIRECTORY" ]
