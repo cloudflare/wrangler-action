@@ -145,7 +145,7 @@ if [ -n "$INPUT_COMMAND" ]; then
     echo "::notice::Since you have specified both pagesDirectory and command, command content will be added after \"wrangler pages publish <dir>\""
   fi
   WRANGLER_CMD="$WRANGLER_CMD $INPUT_COMMAND"
-elif [ -z "$INPUT_COMMAND" ] && [ -n "$INPUT_PAGESDIRECTORY" ]; then
+elif [ -z "$INPUT_COMMAND" ] && [ -z "$INPUT_PAGESDIRECTORY" ]; then
   echo "::notice:: Command and pagesDirectory variables were not provided, defaulting to 'publish'"
   if [ -z "$INPUT_ENVIRONMENT" ]; then
     WRANGLER_CMD="$WRANGLER_CMD  publish"
