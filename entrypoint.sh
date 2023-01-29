@@ -152,8 +152,8 @@ elif [ -z "$INPUT_COMMAND" ] && [ -z "$INPUT_PAGESDIRECTORY" ]; then
   fi
 fi
 
-if [ -n "$INPUT_PROJECTNAME" ]; then
-  WRANGLER_CMD="$WRANGLER_CMD --project-name=$INPUT_PROJECTNAME"
+if [ -n "$INPUT_PAGESPROJECT" ]; then
+  WRANGLER_CMD="$WRANGLER_CMD --project-name=$INPUT_PAGESPROJECT"
 fi
 if [ -n "$INPUT_BRANCHDETECT" ]; then
   WRANGLER_CMD="$WRANGLER_CMD --branch==$INPUT_BRANCHDETECT"
