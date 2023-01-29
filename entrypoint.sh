@@ -8,9 +8,6 @@ export WRANGLER_HOME="/github/workspace"
 mkdir -p "$HOME/.wrangler"
 chmod -R 770 "$HOME/.wrangler"
 
-# Detect GIT branch - cloudflare/wrangler2 issues - #2569 
-BRANCH_OUTPUT=$(git branch)
-
 export API_CREDENTIALS=""
 
 # Used to execute any specified pre and post commands
@@ -108,6 +105,9 @@ then
 else
   echo "Using $API_CREDENTIALS authentication"
 fi
+
+# Detect GIT branch - cloudflare/wrangler2 issues - #2569 
+BRANCH_OUTPUT=${GITHUB_REF##*/}
 
 # If a working directory is detected as input
 if [ -n "$INPUT_WORKINGDIRECTORY" ]
