@@ -1,3 +1,11 @@
+# 2.8.1 (Pages Branch bug fix)
+* New `pagesDirectory` input
+    * automatically adds `wrangler pages publish` (inptu command included)
+* New `pagesProject` input
+    * adds `--project-name=<>`to default command (input command included)
+* New `pagesBranch` input
+    * workaround for Cloudflare Pages not detecting branches (input command included)
+
 # 2.0.0 (Breaking update)
 
 ## Additions

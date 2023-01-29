@@ -156,11 +156,10 @@ if [ -n "$INPUT_PAGESPROJECT" ]; then
   WRANGLER_CMD="$WRANGLER_CMD --project-name=$INPUT_PAGESPROJECT"
 fi
 if [ -n "$INPUT_BRANCHDETECT" ]; then
-  WRANGLER_CMD="$WRANGLER_CMD --branch==$INPUT_BRANCHDETECT"
+  WRANGLER_CMD="$WRANGLER_CMD --branch=$INPUT_BRANCHDETECT"
 fi
 if [ -n "$INPUT_ENVIRONMENT" ]; then
   WRANGLER_CMD="$WRANGLER_CMD --env $INPUT_ENVIRONMENT"
-else
   echo "::notice::Since you have specified an environment you need to make sure to pass in '--env $INPUT_ENVIRONMENT' to your command."
 fi
 
