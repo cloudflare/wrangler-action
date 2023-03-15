@@ -119,15 +119,31 @@ then
 fi
 
 # If we have secrets, set them
-for SECRET in $INPUT_SECRETS; do
-  VALUE=$(printenv "$SECRET") || secret_not_found "$SECRET"
+if [ -n "$INPUT_SECRETS" ]
+then
+  temp_json_file=$(mktemp)
+
+  echo "{" > "$temp_json_file"
+  first=true
+  for SECRET in $INPUT_SECRETS; do
+    VALUE=$(printenv "$SECRET") || secret_not_found "$SECRET"
+    if [ "$first" = true ]; then
+      first=false
+    else
+      echo "," >> "$temp_json_file"
+    fi
+    printf "\"%s\": \"%s\"" "$SECRET" "$VALUE" >> "$temp_json_file"
+  done
+  echo "}" >> "$temp_json_file"
 
   if [ -z "$INPUT_ENVIRONMENT" ]; then
-    echo "$VALUE" | wrangler secret put "$SECRET"
+    wrangler secret:bulk "$temp_json_file"
   else
-    echo "$VALUE" | wrangler secret put "$SECRET" --env "$INPUT_ENVIRONMENT"
+    wrangler secret:bulk --env "$INPUT_ENVIRONMENT" "$temp_json_file"
   fi
-done
+
+  rm -f "$temp_json_file"
+fi
 
 # If there's no input command then default to publish otherwise run it
 if [ -z "$INPUT_COMMAND" ]; then
