@@ -5,16 +5,16 @@ jobs:
     runs-on: ubuntu-latest
     name: Lint
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Lint shell script
-      uses: azohra/shell-linter@v0.3.0
+      uses: azohra/shell-linter@v0.6.0
       with:
         path: "entrypoint.sh"
   build-only:
     runs-on: ubuntu-latest
     name: Only build the app
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build app
         uses: ./
         with:
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish app
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Publish app
       uses: ./
       with:
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish app with legacy credentials
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Publish app
       uses: ./
       with:
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish app with hardcoded Wrangler version
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Publish app
       uses: ./
       with:
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish app with secrets
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Publish app
         uses: ./
         with:
