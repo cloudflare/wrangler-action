@@ -32,9 +32,9 @@ secret_not_found() {
   exit 1
 }
 
-WRANGLER_VERSION=2
+WRANGLER_VERSION=3
 
-# If no Wrangler version is specified install v2.
+# If no Wrangler version is specified install v3.
 if [ -z "$INPUT_WRANGLERVERSION" ]; then
   npm i -g wrangler
 
@@ -43,16 +43,21 @@ elif [[ "$INPUT_WRANGLERVERSION" == 1* ]]; then
   npm i -g "@cloudflare/wrangler@$INPUT_WRANGLERVERSION"
   WRANGLER_VERSION=1
 
-# Else install Wrangler 2
+# If Wrangler version starts with 2 then install wrangler v2
+elif [[ "$INPUT_WRANGLERVERSION" == 2* ]]; then
+  npm i -g "@cloudflare/wrangler@$INPUT_WRANGLERVERSION"
+  WRANGLER_VERSION=2
+
+# Else install Wrangler 3
 else
   npm i -g "wrangler@$INPUT_WRANGLERVERSION"
-  WRANGLER_VERSION=2
+  WRANGLER_VERSION=3
 fi
 
 # If an API token is detected as input
 if [ -n "$INPUT_APITOKEN" ]; then
 
-  # Wrangler v1 uses CF_API_TOKEN but v2 uses CLOUDFLARE_API_TOKEN
+  # Wrangler v1 uses CF_API_TOKEN but v2 later use CLOUDFLARE_API_TOKEN
   if [ $WRANGLER_VERSION == 1 ]; then
     export CF_API_TOKEN="$INPUT_APITOKEN"
   else
@@ -65,12 +70,12 @@ fi
 # If an API key and email are detected as input
 if [ -n "$INPUT_APIKEY" ] && [ -n "$INPUT_EMAIL" ]; then
 
-  # Wrangler v1 uses CF_ but v2 uses CLOUDFLARE_
+  # Wrangler v1 uses CF_ but v2 later uses CLOUDFLARE_
   if [ $WRANGLER_VERSION == 1 ]; then
     export CF_EMAIL="$INPUT_EMAIL"
     export CF_API_KEY="$INPUT_APIKEY"
   else
-    echo "::error::Wrangler v2 does not support using the API Key. You should instead use an API token."
+    echo "::error::Wrangler v2 later does not support using the API Key. You should instead use an API token."
     exit 1
   fi
   
