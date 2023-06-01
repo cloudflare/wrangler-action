@@ -139,9 +139,9 @@ if [ -z "$INPUT_COMMAND" ]; then
   echo "::notice:: No command was provided, defaulting to 'publish'"
 
  if [ -z "$INPUT_ENVIRONMENT" ]; then
-    wrangler publish
+    wrangler deploy
   else
-    wrangler publish --env "$INPUT_ENVIRONMENT"
+    wrangler deploy --env "$INPUT_ENVIRONMENT"
   fi
 
 else
