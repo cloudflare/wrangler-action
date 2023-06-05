@@ -45,7 +45,7 @@ elif [[ "$INPUT_WRANGLERVERSION" == 1* ]]; then
 
 # If Wrangler version starts with 2 then install wrangler v2
 elif [[ "$INPUT_WRANGLERVERSION" == 2* ]]; then
-  npm i -g "@cloudflare/wrangler@$INPUT_WRANGLERVERSION"
+  npm i -g "wrangler@$INPUT_WRANGLERVERSION"
   WRANGLER_VERSION=2
 
 # Else install Wrangler 3
@@ -57,7 +57,7 @@ fi
 # If an API token is detected as input
 if [ -n "$INPUT_APITOKEN" ]; then
 
-  # Wrangler v1 uses CF_API_TOKEN but v2 later use CLOUDFLARE_API_TOKEN
+  # Wrangler v1 uses CF_API_TOKEN but v2 or later uses CLOUDFLARE_API_TOKEN
   if [ $WRANGLER_VERSION == 1 ]; then
     export CF_API_TOKEN="$INPUT_APITOKEN"
   else
@@ -70,12 +70,12 @@ fi
 # If an API key and email are detected as input
 if [ -n "$INPUT_APIKEY" ] && [ -n "$INPUT_EMAIL" ]; then
 
-  # Wrangler v1 uses CF_ but v2 later uses CLOUDFLARE_
+  # Wrangler v1 uses CF_ but v2 or later uses CLOUDFLARE_
   if [ $WRANGLER_VERSION == 1 ]; then
     export CF_EMAIL="$INPUT_EMAIL"
     export CF_API_KEY="$INPUT_APIKEY"
   else
-    echo "::error::Wrangler v2 later does not support using the API Key. You should instead use an API token."
+    echo "::error::Wrangler v2 or later does not support using the API Key. You should instead use an API token."
     exit 1
   fi
   
@@ -138,10 +138,18 @@ done
 if [ -z "$INPUT_COMMAND" ]; then
   echo "::notice:: No command was provided, defaulting to 'publish'"
 
- if [ -z "$INPUT_ENVIRONMENT" ]; then
-    wrangler deploy
+  if [ -z "$INPUT_ENVIRONMENT" ]; then
+    if [ $WRANGLER_VERSION == 3 ]; then
+      wrangler deploy
+    else
+      wrangler publish
+    fi
   else
-    wrangler deploy --env "$INPUT_ENVIRONMENT"
+    if [ $WRANGLER_VERSION == 3 ]; then
+      wrangler deploy --env "$INPUT_ENVIRONMENT"
+    else
+      wrangler publish --env "$INPUT_ENVIRONMENT"
+    fi
   fi
 
 else
