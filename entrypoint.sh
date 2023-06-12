@@ -139,13 +139,13 @@ if [ -z "$INPUT_COMMAND" ]; then
   echo "::notice:: No command was provided, defaulting to 'publish'"
 
   if [ -z "$INPUT_ENVIRONMENT" ]; then
-    if [ $WRANGLER_VERSION == 3 ]; then
+    if [ $WRANGLER_VERSION >= 3 ]; then
       wrangler deploy
     else
       wrangler publish
     fi
   else
-    if [ $WRANGLER_VERSION == 3 ]; then
+    if [ $WRANGLER_VERSION >= 3 ]; then
       wrangler deploy --env "$INPUT_ENVIRONMENT"
     else
       wrangler publish --env "$INPUT_ENVIRONMENT"
