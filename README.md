@@ -83,7 +83,7 @@ jobs:
         workingDirectory: 'subfoldername'
 ```
 
-[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can be optionally passed as a new line deliminated string of names in `secrets`.  Each secret name must match an environment variable name specified in the `env` attribute.  Creates or replaces the value for the Worker secret using the `wrangler secret put` command.
+[Worker secrets](https://developers.cloudflare.com/workers/wrangler/commands/#secret) can be optionally passed as a new line deliminated string of names in `secrets`.  Each secret name must match an environment variable name specified in the `env` attribute.  Creates or replaces the value for the Worker secret using the `wrangler secret put` command.
 
 ```yaml
 jobs:
@@ -98,6 +98,18 @@ jobs:
       env:
         SECRET1: ${{ secrets.SECRET1 }}
         SECRET2: ${{ secrets.SECRET2 }}
+```
+
+Alternatively, a JSON file containing secrets in key-value pairs can also be uploaded directly using the `wrangler secret:bulk` command. 
+
+```yaml
+jobs:
+  deploy:
+    steps:
+      uses: cloudflare/wrangler-action@2.1.1
+      with:
+        apiToken: ${{ secrets.CF_API_TOKEN }}
+        secretsFile: 'pathtojsonfile'
 ```
 
 If you need to run additional shell commands before or after your command, you can specify them as input to `preCommands` (before `publish`) or `postCommands` (after `publish`). These can include additional `wrangler` commands (that is, `whoami`, `kv:key put`) or any other commands available inside the `wrangler-action` context.

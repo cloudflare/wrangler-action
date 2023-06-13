@@ -31,6 +31,9 @@ inputs:
   secrets:
     description: "A new line deliminated string of environment variable names that should be configured as Worker secrets"
     required: false
+  secretsFile:
+    description: 'The path to a JSON file containing secrets in key-value pairs that should be configured as Worker secrets'
+    required: false
   preCommands:
     description: "Commands to execute before publishing the Workers project"
     required: false

@@ -129,6 +129,23 @@ for SECRET in $INPUT_SECRETS; do
   fi
 done
 
+# If we have bulk secrets file, set them too
+if [ -n "$INPUT_SECRETSFILE" ]
+then
+  # Bulk secrets upload only supported in Wrangler v2 (2.1.1)
+  if [ $WRANGLER_VERSION == 1 ]; then
+    echo "::error::Wrangler v1 does not support bulk secrets upload. You should instead use secret put."
+    exit 1
+  fi
+
+  echo "Uploading secrets from $INPUT_SECRETSFILE"
+  if [ -z "$INPUT_ENVIRONMENT" ]; then
+    wrangler secret:bulk "$INPUT_SECRETSFILE"
+  else
+    wrangler secret:bulk "$INPUT_SECRETSFILE" --env "$INPUT_ENVIRONMENT"
+  fi
+fi
+
 # If there's no input command then default to publish otherwise run it
 if [ -z "$INPUT_COMMAND" ]; then
   echo "::notice:: No command was provided, defaulting to 'publish'"
