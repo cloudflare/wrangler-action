@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "nodenext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "lib": ["esnext"],
+    "types": ["node", "@cloudflare/workers-types"]
+  },
+  "exclude": ["node_modules", "**/*.test.ts"]
+}
