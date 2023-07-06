@@ -21,11 +21,8 @@
     "typescript"
   ],
   "main": "dist/index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc ./src/index.ts --outDir ./dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
