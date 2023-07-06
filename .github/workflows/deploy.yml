@@ -11,15 +11,10 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: "test"
-          publish: false
           secrets: |
             SECRET1
             SECRET2
-          preCommands: echo "*** pre commands ***"
-          postCommands: |
-            echo "*** post commands ***"
-            wrangler deploy --dry-run
-            echo "******"
+          preCommands: wrangler deploy --dry-run && exit 0
         env:
           SECRET1: ${{ secrets.SECRET1 }}
           SECRET2: ${{ secrets.SECRET2 }}
