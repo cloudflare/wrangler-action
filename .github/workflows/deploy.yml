@@ -1,11 +1,20 @@
 on: pull_request
 
 jobs:
-  build-only:
+  build_and_deploy_tests:
     runs-on: ubuntu-latest
-    name: Only build the app
+    name: Build and Deploy Wrangler Action Tests
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+      - name: Run TSC & Build Action
+        run: |
+          npm install
+          npm run build
+
       - name: Build app
         uses: ./
         with:
@@ -18,56 +27,36 @@ jobs:
         env:
           SECRET1: ${{ secrets.SECRET1 }}
           SECRET2: ${{ secrets.SECRET2 }}
-  deploy:
-    runs-on: ubuntu-latest
-    name: Deploy app
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy app
+
+      - name: Deploy app w/ apiToken
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: "test"
-  deploy_legacy_credentials:
-    runs-on: ubuntu-latest
-    name: Deploy app with legacy credentials
-    steps:
-      - uses: actions/checkout@v3
+
       - name: Deploy app
         uses: ./
         with:
           apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
           email: ${{ secrets.CLOUDFLARE_EMAIL }}
           workingDirectory: "test"
-  deploy_hardcoded_wrangler_version:
-    runs-on: ubuntu-latest
-    name: Deploy app with hardcoded Wrangler version
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy app
+
+      - name: Deploy app w/ hardcoded Wrangler v1
         uses: ./
         with:
           apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
           email: ${{ secrets.CLOUDFLARE_EMAIL }}
           wranglerVersion: "1.5.0"
           workingDirectory: "test"
-  deploy_hardcoded_wrangler_v2:
-    runs-on: ubuntu-latest
-    name: Deploy app with hardcoded Wrangler v2
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy app
+
+      - name: Deploy app w/ hardcoded Wrangler v2
         uses: ./
         with:
           apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
           wranglerVersion: "2.20.0"
           workingDirectory: "test"
-  deploy_secrets:
-    runs-on: ubuntu-latest
-    name: Deploy app with secrets
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy app
+
+      - name: Deploy app w/ secrets
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
