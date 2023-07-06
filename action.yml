@@ -2,10 +2,10 @@ name: "Deploy to Cloudflare Workers with Wrangler"
 branding:
   icon: "upload-cloud"
   color: "orange"
-description: "Deploy your Cloudflare Workers and Pages projects from GitHub using Wrangler"
+description: "Deploy your Cloudflare Projects from GitHub using Wrangler"
 runs:
-  using: "docker"
-  image: "Dockerfile"
+  using: "node16"
+  main: "dist/index.js"
 inputs:
   apiKey:
     description: "(Legacy) Your Cloudflare API Key"
@@ -29,7 +29,10 @@ inputs:
     description: "The version of Wrangler you'd like to use to publish your Workers project"
     required: false
   secrets:
-    description: "A new line deliminated string of environment variable names that should be configured as Worker secrets"
+    description: "Multiline - string of environment variable names that should be configured as Worker secrets"
+    required: false
+  bulkSecrets:
+    description: "A JSON input for bulk secrets upload"
     required: false
   preCommands:
     description: "Commands to execute before publishing the Workers project"
@@ -38,5 +41,5 @@ inputs:
     description: "Commands to execute after publishing the Workers project"
     required: false
   command:
-    description: "The Wrangler command you wish to run. For example: \"publish\" - this will publish your Worker"
+    description: "Multiline - A generic command passthrough for any Wrangler commands."
     required: false
