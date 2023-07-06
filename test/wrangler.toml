@@ -1,11 +1,11 @@
 name = "static-test"
-type = "webpack"
 workers_dev = true
-account_id = "dc56444c4c955a1653106ccf997c1067"
-
-[env.production]
-name = "static-test-prod"
+entry-point = "workers-site"
 
 [site]
 bucket = "./public"
 entry-point = "workers-site"
+
+# [vars]
+# SECRET1 = "value1"
+# SECRET2 = "value2"
