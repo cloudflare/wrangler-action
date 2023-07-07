@@ -2,7 +2,6 @@ import {
   getInput,
   getMultilineInput,
   info,
-  notice,
   setFailed,
   warning,
 } from "@actions/core";
@@ -24,21 +23,21 @@ const config = {
 };
 
 export async function main() {
-  await installWrangler(getInput("wranglerVersion"));
+  installWrangler(getInput("wranglerVersion"));
   authenticationSetup(
     getInput("apiToken"),
     getInput("apiKey"),
     getInput("email"),
     getInput("accountId")
   );
-  execCommands(getMultilineInput("preCommands"));
-  uploadSecrets(getMultilineInput("secrets"), getInput("environment"));
-  genericCommand(
+  await execCommands(getMultilineInput("preCommands"));
+  await uploadSecrets(getMultilineInput("secrets"), getInput("environment"));
+  await genericCommand(
     getInput("command"),
     getInput("environment"),
     getMultilineInput("vars")
   );
-  execCommands(getMultilineInput("postCommands"));
+  await execCommands(getMultilineInput("postCommands"));
 }
 
 function checkWorkingDirectory(workingDirectory = "") {
@@ -49,7 +48,7 @@ function checkWorkingDirectory(workingDirectory = "") {
   }
 }
 
-async function installWrangler(INPUT_WRANGLERVERSION: string) {
+function installWrangler(INPUT_WRANGLERVERSION: string) {
   let packageName = "wrangler";
   let versionToUse = "";
 
@@ -70,13 +69,13 @@ async function installWrangler(INPUT_WRANGLERVERSION: string) {
   execSync(command, { cwd: config.workingDirectory, env: process.env });
 }
 
-async function authenticationSetup(
+function authenticationSetup(
   INPUT_APITOKEN: string,
   INPUT_APIKEY: string,
   INPUT_EMAIL: string,
   INPUT_ACCOUNTID: string
 ) {
-  /** 
+  /**
    * Wrangler v1 uses CF_API_TOKEN but v2 uses CLOUDFLARE_API_TOKEN
    * */
 
@@ -141,8 +140,8 @@ async function authenticationSetup(
 async function execCommands(commands: string[]) {
   for (const command of commands) {
     const npxCommand = command.startsWith("wrangler")
-      ? command
-      : "npx " + command;
+      ? `npx ${command}`
+      : command;
 
     info(`🚀 Executing command: ${npxCommand}`);
 
@@ -160,27 +159,42 @@ async function uploadSecrets(
         mainReject(setFailed(`🚨 ${secret} not found in variables.`));
       }
 
-      const wranglerCommand = config.WRANGLER_VERSION === 1 ? "@cloudflare/wrangler" : "wrangler"
-      const npxCommand = process.env.RUNNER_OS === "Windows" ? "npx.cmd" : "npx";
+      const wranglerCommand =
+        config.WRANGLER_VERSION === 1 ? "@cloudflare/wrangler" : "wrangler";
+      const npxCommand =
+        process.env.RUNNER_OS === "Windows" ? "npx.cmd" : "npx";
 
       // Dedupe the commands to run, secrets with same name will be overwritten
       const secretCmds = new Set<string>();
       // construct the command to run
-      const environmentSuffix = INPUT_ENVIRONMENT.length === 0 ? "" : ` --env ${INPUT_ENVIRONMENT}`;
-      secretCmds.add(`${npxCommand} ${wranglerCommand} secret put ${secret}${environmentSuffix}`);
+      const environmentSuffix =
+        INPUT_ENVIRONMENT.length === 0 ? "" : ` --env ${INPUT_ENVIRONMENT}`;
+      secretCmds.add(
+        `${npxCommand} ${wranglerCommand} secret put ${secret}${environmentSuffix}`
+      );
 
-      // Take all the commands and execute them in parallel 
-      await Promise.all(Array.from(secretCmds).map(async (secretCmd) => {
-        await new Promise<void>((childResolve, childReject) => {
-          const child = spawnSync(secretCmd, {
-            cwd: config.workingDirectory,
-            env: process.env,
-            stdio: "pipe",
+      // Take all the commands and execute them in parallel
+      await Promise.all(
+        Array.from(secretCmds).map(async (secretCmd) => {
+          await new Promise<void>((childResolve, childReject) => {
+            const child = spawnSync(secretCmd, {
+              cwd: config.workingDirectory,
+              env: process.env,
+              stdio: "pipe",
+            });
+
+            child.status === 0
+              ? childResolve()
+              : childReject(
+                setFailed(
+                  new Error(
+                    `Secrets command exited with code ${child.status}`
+                  )
+                )
+              );
           });
-
-          child.status === 0 ? childResolve() : childReject(setFailed(new Error(`Secrets command exited with code ${child.status}`)));
-        });
-      })).then(() => mainResolve(info(`✅ Uploaded secret: ${secret}`)))
+        })
+      ).then(() => mainResolve(info(`✅ Uploaded secret: ${secret}`)));
     }
   });
 }
@@ -201,9 +215,7 @@ async function genericCommand(
       deployCommand = "publish";
     }
 
-    warning(
-      `ℹ️ No commands were provided, falling back to '${deployCommand}'`
-    );
+    warning(`ℹ️ No commands were provided, falling back to '${deployCommand}'`);
 
     const envVars = new Map<string, string>();
     let envVarArg = "";
@@ -224,10 +236,10 @@ async function genericCommand(
     }
 
     if (INPUT_ENVIRONMENT.length === 0) {
-      execSync(
-        `npx ${wranglerCommand} ${deployCommand} ${envVarArg}`.trim(),
-        { cwd: config.workingDirectory, env: process.env }
-      );
+      execSync(`npx ${wranglerCommand} ${deployCommand} ${envVarArg}`.trim(), {
+        cwd: config.workingDirectory,
+        env: process.env,
+      });
     } else {
       execSync(
         `npx ${wranglerCommand} ${deployCommand} --env ${INPUT_ENVIRONMENT} ${envVarArg}`.trim(),
