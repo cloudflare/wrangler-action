@@ -10,7 +10,7 @@ import { execSync, spawnSync } from "node:child_process";
 import * as path from "node:path";
 
 const config = {
-  WRANGLER_VERSION: getInput("wranglerVersion") ?? 3,
+  WRANGLER_VERSION: Number(getInput("wranglerVersion") ?? 3),
   bulkSecrets: getInput("bulkSecrets"), // should be JSON
   secrets: getMultilineInput("secrets"),
   workingDirectory: checkWorkingDirectory(getInput("workingDirectory")),
