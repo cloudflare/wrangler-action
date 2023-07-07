@@ -24,7 +24,7 @@ const config = {
 };
 
 export async function main() {
-  installWrangler(getInput("wranglerVersion"));
+  await installWrangler(getInput("wranglerVersion"));
   authenticationSetup(
     getInput("apiToken"),
     getInput("apiKey"),
@@ -49,7 +49,7 @@ function checkWorkingDirectory(workingDirectory = "") {
   }
 }
 
-function installWrangler(INPUT_WRANGLERVERSION: string) {
+async function installWrangler(INPUT_WRANGLERVERSION: string) {
   let packageName = "wrangler";
   let versionToUse = "";
 
