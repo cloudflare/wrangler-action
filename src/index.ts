@@ -137,7 +137,7 @@ async function authenticationSetup(
   }
 }
 
-async function execCommands(commands: string[]): Promise<void> {
+async function execCommands(commands: string[]) {
   for (const command of commands) {
     // npx needs to be prepended to `wrangler`
     const npxCommand = command.startsWith("wrangler")
@@ -154,7 +154,7 @@ async function execCommands(commands: string[]): Promise<void> {
 async function uploadSecrets(
   INPUT_SECRETS: string[],
   INPUT_ENVIRONMENT: string
-): Promise<void> {
+) {
   return new Promise(async (mainResolve, mainReject) => {
     for (const secret of INPUT_SECRETS) {
       if (!process.env[secret] && process.env[secret]?.length === 0) {
@@ -166,12 +166,9 @@ async function uploadSecrets(
 
       // Dedupe the commands to run, secrets with same name will be overwritten
       const secretCmds = new Set<string>();
-      if (INPUT_ENVIRONMENT.length === 0) {
-
-        secretCmds.add(`${npxCommand} ${wranglerCommand} secret put ${secret}`)
-      } else {
-        secretCmds.add(`${npxCommand} ${wranglerCommand} secret put ${secret} --env ${INPUT_ENVIRONMENT}`)
-      }
+      // construct the command to run
+      const environmentSuffix = INPUT_ENVIRONMENT.length === 0 ? "" : ` --env ${INPUT_ENVIRONMENT}`;
+      secretCmds.add(`${npxCommand} ${wranglerCommand} secret put ${secret}${environmentSuffix}`);
 
       // Take all the commands and execute them in parallel 
       await Promise.all(Array.from(secretCmds).map(async (secretCmd) => {
@@ -184,7 +181,7 @@ async function uploadSecrets(
 
           child.status === 0 ? childResolve() : childReject(setFailed(new Error(`Secrets command exited with code ${child.status}`)));
         });
-      })).then(() => mainResolve())
+      })).then(() => mainResolve(info(`✅ Uploaded secret: ${secret}`)))
     }
   });
 }
@@ -193,7 +190,7 @@ async function genericCommand(
   INPUT_COMMAND: string,
   INPUT_ENVIRONMENT: string,
   INPUT_VARS: string[]
-): Promise<void> {
+) {
   let wranglerCommand = "wrangler";
   if (config.WRANGLER_VERSION === 1) {
     wranglerCommand = "@cloudflare/wrangler";
@@ -210,7 +207,7 @@ async function genericCommand(
     );
 
     const envVars = new Map<string, string>();
-    let envVarArgument = "";
+    let envVarArg = "";
     if (INPUT_VARS.length > 0) {
       for (const envVar of INPUT_VARS) {
         if (process.env[envVar] && process.env[envVar]?.length !== 0) {
@@ -219,7 +216,7 @@ async function genericCommand(
           throw setFailed(`🚨 ${envVar} not found in variables.`);
         }
       }
-      envVarArgument =
+      envVarArg =
         "--var " +
         Array.from(envVars)
           .map(([key, value]) => `${key}:${value}`)
@@ -229,12 +226,12 @@ async function genericCommand(
 
     if (INPUT_ENVIRONMENT.length === 0) {
       execSync(
-        `npx ${wranglerCommand} ${deployCommand} ${envVarArgument}`.trim(),
+        `npx ${wranglerCommand} ${deployCommand} ${envVarArg}`.trim(),
         { cwd: config.workingDirectory, env: process.env }
       );
     } else {
       execSync(
-        `npx ${wranglerCommand} ${deployCommand} --env ${INPUT_ENVIRONMENT} ${envVarArgument}`.trim(),
+        `npx ${wranglerCommand} ${deployCommand} --env ${INPUT_ENVIRONMENT} ${envVarArg}`.trim(),
         { cwd: config.workingDirectory, env: process.env }
       );
     }
