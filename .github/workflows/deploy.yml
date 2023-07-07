@@ -28,21 +28,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: "test"
 
-      - name: Deploy app
-        uses: ./
-        with:
-          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
-          email: ${{ secrets.CLOUDFLARE_EMAIL }}
-          workingDirectory: "test"
-
-      - name: Deploy app w/ hardcoded Wrangler v1
-        uses: ./
-        with:
-          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
-          email: ${{ secrets.CLOUDFLARE_EMAIL }}
-          wranglerVersion: "1.5.0"
-          workingDirectory: "test"
-
       - name: Deploy app w/ hardcoded Wrangler v2
         uses: ./
         with:
