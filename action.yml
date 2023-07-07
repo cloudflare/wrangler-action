@@ -7,12 +7,6 @@ runs:
   using: "node16"
   main: "dist/index.js"
 inputs:
-  apiKey:
-    description: "(Legacy) Your Cloudflare API Key"
-    required: false
-  email:
-    description: "(Legacy) Your Cloudflare Email"
-    required: false
   apiToken:
     description: "Your Cloudflare API Token"
     required: false
@@ -40,6 +34,6 @@ inputs:
   postCommands:
     description: "Commands to execute after publishing the Workers project"
     required: false
-  command:
+  commands:
     description: "Multiline - A generic command passthrough for any Wrangler commands."
     required: false
