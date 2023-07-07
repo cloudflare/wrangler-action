@@ -210,10 +210,7 @@ async function genericCommand(
   }
 
   if (INPUT_COMMAND.length === 0) {
-    let deployCommand = "deploy";
-    if (config.WRANGLER_VERSION !== 3) {
-      deployCommand = "publish";
-    }
+    let deployCommand = config.WRANGLER_VERSION !== 3 ? "publish" : "deploy";
 
     warning(`ℹ️ No commands were provided, falling back to '${deployCommand}'`);
 
