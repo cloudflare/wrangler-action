@@ -79,7 +79,6 @@ async function uploadSecrets() {
     ? JSON.parse(config.get("bulkSecrets"))
     : config.get("secrets"); // TODO going to use Wrangler secret bulk upload
   const environment = config.get("ENVIRONMENT");
-  const wranglerVersion = config.get("WRANGLER_VERSION");
   const workingDirectory = config.get("workingDirectory");
 
   const promises = secrets.map(async (secret) => {

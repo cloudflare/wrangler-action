@@ -20,7 +20,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: "test"
-          commands: wrangler deploy --dry-run && exit 0
+          commands: wrangler deploy --dry-run
 
       - name: Deploy app w/ apiToken
         uses: ./
