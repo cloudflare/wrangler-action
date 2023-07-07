@@ -7,10 +7,10 @@ import {
   warning,
 } from "@actions/core";
 import { execSync, spawnSync } from "node:child_process";
-import path from "node:path";
+import * as path from "node:path";
 
 const config = {
-  WRANGLER_VERSION: 3,
+  WRANGLER_VERSION: getInput("wranglerVersion") ?? 3,
   bulkSecrets: getInput("bulkSecrets"), // should be JSON
   secrets: getMultilineInput("secrets"),
   workingDirectory: checkWorkingDirectory(getInput("workingDirectory")),
@@ -76,9 +76,11 @@ async function authenticationSetup(
   INPUT_EMAIL: string,
   INPUT_ACCOUNTID: string
 ) {
-  // If an API token is detected as input
+  /** 
+   * Wrangler v1 uses CF_API_TOKEN but v2 uses CLOUDFLARE_API_TOKEN
+   * */
+
   if (INPUT_APITOKEN.length !== 0) {
-    // Wrangler v1 uses CF_API_TOKEN but v2 uses CLOUDFLARE_API_TOKEN
     if (config.WRANGLER_VERSION === 1) {
       config.CF_API_TOKEN = INPUT_APITOKEN;
       process.env.CF_API_TOKEN = INPUT_APITOKEN;
@@ -90,7 +92,6 @@ async function authenticationSetup(
     config.API_CREDENTIALS = "API Token";
   }
 
-  // If an API key and email are detected as input
   if (INPUT_APIKEY.length !== 0 && INPUT_EMAIL.length !== 0) {
     if (config.WRANGLER_VERSION === 1) {
       config.CF_EMAIL = INPUT_EMAIL;
@@ -118,33 +119,31 @@ async function authenticationSetup(
 
   if (INPUT_APIKEY.length !== 0 && INPUT_EMAIL.length === 0) {
     warning(
-      "Provided an API key without an email for authentication. Please pass in 'apiKey' and 'email' to the action."
+      `An API key was provided without a corresponding email for authentication. Please ensure both 'apiKey' and 'email' are passed to the action.`
     );
   }
 
   if (INPUT_APIKEY.length === 0 && INPUT_EMAIL.length !== 0) {
     setFailed(
-      "Provided an email without an API key for authentication. Please pass in 'apiKey' and 'email' to the action."
+      `An email was provided without a corresponding API key for authentication. Please ensure both 'apiKey' and 'email' are passed to the action.`
     );
   }
 
   if (config.API_CREDENTIALS.length === 0) {
     setFailed(
-      "Unable to find authentication details. Please pass in an 'apiToken' as an input to the action, or a legacy 'apiKey' and 'email'."
+      `Authentication details were not found. Please input an 'apiToken' to the action, or use the legacy 'apiKey' and 'email'.`
     );
   } else {
-    info(`Authenticating with - ${config.API_CREDENTIALS}`);
+    info(`Authentication process initiated with - ${config.API_CREDENTIALS}`);
   }
 }
 
 async function execCommands(commands: string[]) {
   for (const command of commands) {
-    // npx needs to be prepended to `wrangler`
     const npxCommand = command.startsWith("wrangler")
       ? command
       : "npx " + command;
 
-    // Print out command before running
     info(`🚀 Executing command: ${npxCommand}`);
 
     execSync(npxCommand, { cwd: config.workingDirectory, env: process.env });
