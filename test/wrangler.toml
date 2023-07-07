@@ -1,6 +1,7 @@
 name = "static-test"
-workers_dev = true
 main = "workers-site/index.ts"
+compatibility_date = "2023-07-07"
+workers_dev = true
 
 [site]
 bucket = "./public"
