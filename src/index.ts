@@ -1,4 +1,4 @@
-import core, {
+import {
   getInput,
   getMultilineInput,
   info,
@@ -45,7 +45,7 @@ function checkWorkingDirectory(workingDirectory = "") {
   try {
     return path.normalize(workingDirectory);
   } catch (error) {
-    throw core.error(` invalid path: ${workingDirectory} Error: ${error}`);
+    throw setFailed(` invalid path: ${workingDirectory} Error: ${error}`);
   }
 }
 
