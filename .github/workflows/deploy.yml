@@ -15,18 +15,12 @@ jobs:
           npm install
           npm run build
 
-      - name: Build app
+      - name: Only Build App
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: "test"
-          secrets: |
-            SECRET1
-            SECRET2
           preCommands: wrangler deploy --dry-run && exit 0
-        env:
-          SECRET1: ${{ secrets.SECRET1 }}
-          SECRET2: ${{ secrets.SECRET2 }}
 
       - name: Deploy app w/ apiToken
         uses: ./
