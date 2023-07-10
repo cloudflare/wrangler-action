@@ -11,7 +11,10 @@ import { execSync, spawnSync } from "node:child_process";
 import * as path from "node:path";
 
 const config = new Map<string, any>([
-  ["WRANGLER_VERSION", getInput("wranglerVersion") !== '' ? getInput("wranglerVersion") : "latest"],
+  [
+    "WRANGLER_VERSION",
+    getInput("wranglerVersion") !== "" ? getInput("wranglerVersion") : "latest",
+  ],
   ["bulkSecrets", getInput("bulkSecrets")], // should be JSON
   ["secrets", getMultilineInput("secrets")],
   ["workingDirectory", checkWorkingDirectory(getInput("workingDirectory"))],
@@ -65,6 +68,11 @@ function authenticationSetup() {
 }
 
 async function execCommands(commands: string[]) {
+  startGroup("🚀 Executing Pre/Post Commands");
+  if (!commands.length) {
+    warning(`📌 No Pre/Post commands were provided, skipping execution.`);
+    return;
+  }
   for (const command of commands) {
     const npxCommand = command.startsWith("wrangler")
       ? `npx ${command}`
@@ -77,6 +85,7 @@ async function execCommands(commands: string[]) {
       env: process.env,
     });
   }
+  endGroup();
 }
 
 async function uploadSecrets() {
@@ -129,20 +138,23 @@ async function genericCommand() {
   const workingDirectory = config.get("workingDirectory");
 
   if (commands.length === 0) {
-    let deployCommand = wranglerVersion !== 3 ? "publish" : "deploy";
+    const deployCommand =
+      wranglerVersion === "latest" || wranglerVersion.startsWith(3)
+        ? "deploy"
+        : "publish";
 
     warning(`🚨 No commands were provided, falling back to '${deployCommand}'`);
 
-    const envVarArray = vars
-      .map((envVar: string) => {
-        if (process.env[envVar] && process.env[envVar]?.length !== 0) {
-          return `${envVar}:${process.env[envVar]!}`;
-        } else {
-          throw setFailed(`🚨 ${envVar} not found in variables.`);
-        }
-      });
+    const envVarArray = vars.map((envVar: string) => {
+      if (process.env[envVar] && process.env[envVar]?.length !== 0) {
+        return `${envVar}:${process.env[envVar]!}`;
+      } else {
+        throw setFailed(`🚨 ${envVar} not found in variables.`);
+      }
+    });
 
-    const envVarArg: string = envVarArray.length > 0 ? `--var ${envVarArray.join(" ").trim()}` : "";
+    const envVarArg: string =
+      envVarArray.length > 0 ? `--var ${envVarArray.join(" ").trim()}` : "";
 
     if (environment.length === 0) {
       execSync(`npx wrangler ${deployCommand} ${envVarArg}`.trim(), {
