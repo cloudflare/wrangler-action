@@ -5,41 +5,51 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Wrangler Action Tests
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
-          node-version: "20"
-      - name: Run TSC & Build Action
-        run: |
-          npm install
-          npm run build
+          version: "latest"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "latest"
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Build Action
+        run: pnpm run build
 
       - name: Only Build App
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: "test"
-          commands: wrangler deploy --dry-run
+          workingDirectory: "../test"
+          commands: deploy --dry-run
 
       - name: Deploy app w/ apiToken
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: "test"
+          workingDirectory: "../test"
 
       - name: Deploy app w/ hardcoded Wrangler v2
         uses: ./
         with:
           apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
           wranglerVersion: "2.20.0"
-          workingDirectory: "test"
+          workingDirectory: "../test"
 
       - name: Deploy app w/ secrets
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: "test"
+          workingDirectory: "../test"
           secrets: |
             SECRET1
             SECRET2

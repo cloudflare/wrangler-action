@@ -10,23 +10,20 @@ import {
 import { execSync, spawnSync } from "node:child_process";
 import * as path from "node:path";
 
-const config = new Map<string, any>([
-  [
-    "WRANGLER_VERSION",
-    getInput("wranglerVersion") !== "" ? getInput("wranglerVersion") : "latest",
-  ],
-  ["bulkSecrets", getInput("bulkSecrets")], // should be JSON
-  ["secrets", getMultilineInput("secrets")],
-  ["workingDirectory", checkWorkingDirectory(getInput("workingDirectory"))],
-  ["API_CREDENTIALS", ""],
-  ["CLOUDFLARE_API_TOKEN", getInput("apiToken")],
-  ["CLOUDFLARE_ACCOUNT_ID", getInput("accountId")],
-  ["ENVIRONMENT", getInput("environment")],
-  ["VARS", getInput("vars")],
-  ["COMMANDS", getInput("commands")],
-]);
+const config = {
+  WRANGLER_VERSION: getInput("wranglerVersion") !== "" ? getInput("wranglerVersion") : "latest",
+  bulkSecrets: getInput("bulkSecrets"), // should be JSON
+  secrets: getMultilineInput("secrets"),
+  workingDirectory: checkWorkingDirectory(getInput("workingDirectory")),
+  CLOUDFLARE_API_TOKEN: getInput("apiToken"),
+  CLOUDFLARE_ACCOUNT_ID: getInput("accountId"),
+  ENVIRONMENT: getInput("environment"),
+  VARS: getMultilineInput("vars"),
+  COMMANDS: getMultilineInput("commands")
+};
 
 export async function main() {
+  console.log("CONFIG", config)
   installWrangler();
   authenticationSetup();
   await execCommands(getMultilineInput("preCommands"));
@@ -45,17 +42,17 @@ function checkWorkingDirectory(workingDirectory = "") {
 
 function installWrangler() {
   startGroup("📥 Installing Wrangler");
-  const command = `npm install wrangler@${config.get("WRANGLER_VERSION")}`;
+  const command = `pnpm install wrangler@${config["WRANGLER_VERSION"]}`;
   info(`Running Command: ${command}`);
-  execSync(command, { cwd: config.get("workingDirectory"), env: process.env });
+  execSync(command, { cwd: config["workingDirectory"], env: process.env });
   endGroup();
 }
 
 function authenticationSetup() {
   startGroup("🔐 Authenticating with Cloudflare");
   try {
-    const CLOUDFLARE_ACCOUNT_ID = config.get("CLOUDFLARE_ACCOUNT_ID");
-    const CLOUDFLARE_API_TOKEN = config.get("CLOUDFLARE_API_TOKEN");
+    const CLOUDFLARE_ACCOUNT_ID = config["CLOUDFLARE_ACCOUNT_ID"];
+    const CLOUDFLARE_API_TOKEN = config["CLOUDFLARE_API_TOKEN"];
     process.env.CLOUDFLARE_API_TOKEN = CLOUDFLARE_API_TOKEN;
     process.env.CLOUDFLARE_ACCOUNT_ID = CLOUDFLARE_ACCOUNT_ID;
     info(`Authentication process initiated with - API Token`);
@@ -70,18 +67,18 @@ function authenticationSetup() {
 async function execCommands(commands: string[]) {
   startGroup("🚀 Executing Pre/Post Commands");
   if (!commands.length) {
-    warning(`📌 No Pre/Post commands were provided, skipping execution.`);
+    warning(`📌 Pre/Post Commands were not provided, skipping execution.`);
     return;
   }
   for (const command of commands) {
-    const npxCommand = command.startsWith("wrangler")
-      ? `npx ${command}`
+    const pnpmExecCmd = command.startsWith("wrangler")
+      ? `pnpm exec ${command}`
       : command;
 
-    info(`🚀 Executing command: ${npxCommand}`);
+    info(`🚀 Executing command: ${pnpmExecCmd}`);
 
-    execSync(npxCommand, {
-      cwd: config.get("workingDirectory"),
+    execSync(pnpmExecCmd, {
+      cwd: config["workingDirectory"],
       env: process.env,
     });
   }
@@ -89,26 +86,26 @@ async function execCommands(commands: string[]) {
 }
 
 async function uploadSecrets() {
-  const secrets: string[] = config.get("secrets")
-    ? JSON.parse(config.get("bulkSecrets"))
-    : config.get("secrets"); // TODO going to use Wrangler secret bulk upload
+  startGroup("🔑 Uploading Secrets");
+  warning(`SECRETS    ${JSON.stringify(config, null, 2)}`)
+  const secrets: string[] | string = config["secrets"] // TODO going to use Wrangler secret bulk upload & use secrets to take in JSON too for bulk upload
   if (!secrets.length) {
     warning(`📌 No secrets were provided, skipping upload.`);
     return;
   }
-  const environment = config.get("ENVIRONMENT");
-  const workingDirectory = config.get("workingDirectory");
+  const environment = config["ENVIRONMENT"];
+  const workingDirectory = config["workingDirectory"];
 
   const promises = secrets.map(async (secret) => {
     if (!process.env[secret] || process.env[secret]?.length === 0) {
       throw new Error(`🚨 ${secret} not found in variables.`);
     }
 
-    const npxCommand = process.env.RUNNER_OS === "Windows" ? "npx.cmd" : "npx";
+    const pnpmExecCmd = process.env.RUNNER_OS === "Windows" ? "pnpm.cmd exec" : "pnpm exec";
 
     const environmentSuffix =
       environment.length === 0 ? "" : ` --env ${environment}`;
-    const secretCmd = `${npxCommand} wrangler secret put ${secret}${environmentSuffix}`;
+    const secretCmd = `${pnpmExecCmd} wrangler secret put ${secret}${environmentSuffix}`;
 
     const child = spawnSync(secretCmd, {
       cwd: workingDirectory,
@@ -128,18 +125,25 @@ async function uploadSecrets() {
   } catch (err) {
     setFailed(err as Error);
   }
+  endGroup();
 }
 
 async function genericCommand() {
-  const wranglerVersion = config.get("WRANGLER_VERSION");
-  const commands = config.get("COMMANDS");
-  const environment = config.get("ENVIRONMENT");
-  const vars = config.get("VARS");
-  const workingDirectory = config.get("workingDirectory");
+  startGroup("🚀 Executing Generic Command");
+  warning(`GENERIC COMMAND    ${JSON.stringify(config, null, 2)}`)
+  const commands = config["COMMANDS"];
+  if (!commands.length) {
+    warning(`📌 No generic commands were provided, skipping execution.`);
+    return;
+  }
+  const wranglerVersion = config["WRANGLER_VERSION"];
+  const environment = config["ENVIRONMENT"];
+  const vars = config["VARS"];
+  const workingDirectory = config["workingDirectory"];
 
   if (commands.length === 0) {
     const deployCommand =
-      wranglerVersion === "latest" || wranglerVersion.startsWith(3)
+      wranglerVersion === "latest" || wranglerVersion.startsWith("3")
         ? "deploy"
         : "publish";
 
@@ -157,13 +161,13 @@ async function genericCommand() {
       envVarArray.length > 0 ? `--var ${envVarArray.join(" ").trim()}` : "";
 
     if (environment.length === 0) {
-      execSync(`npx wrangler ${deployCommand} ${envVarArg}`.trim(), {
+      execSync(`pnpm exec wrangler ${deployCommand} ${envVarArg}`.trim(), {
         cwd: workingDirectory,
         env: process.env,
       });
     } else {
       execSync(
-        `npx wrangler ${deployCommand} --env ${environment} ${envVarArg}`.trim(),
+        `pnpm exec wrangler ${deployCommand} --env ${environment} ${envVarArg}`.trim(),
         { cwd: workingDirectory, env: process.env }
       );
     }
@@ -174,8 +178,9 @@ async function genericCommand() {
       );
     }
 
-    return execCommands([`npx wrangler ${commands}`]);
+    return execCommands([`pnpm exec wrangler ${commands}`]);
   }
+  endGroup();
 }
 
 main().catch((error) => {
