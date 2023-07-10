@@ -4,12 +4,14 @@ import {
   info,
   setFailed,
   warning,
+  endGroup,
+  startGroup,
 } from "@actions/core";
 import { execSync, spawnSync } from "node:child_process";
 import * as path from "node:path";
 
 const config = new Map<string, any>([
-  ["WRANGLER_VERSION", Number(getInput("wranglerVersion") ?? 3)],
+  ["WRANGLER_VERSION", Number(getInput("wranglerVersion") ?? "latest")],
   ["bulkSecrets", getInput("bulkSecrets")], // should be JSON
   ["secrets", getMultilineInput("secrets")],
   ["workingDirectory", checkWorkingDirectory(getInput("workingDirectory"))],
@@ -39,13 +41,15 @@ function checkWorkingDirectory(workingDirectory = "") {
 }
 
 function installWrangler() {
+  startGroup("📥 Installing Wrangler");
   const command = `npm install wrangler@${config.get("WRANGLER_VERSION")}`;
-  info(command);
-
+  info(`Running Command: ${command}`);
   execSync(command, { cwd: config.get("workingDirectory"), env: process.env });
+  endGroup();
 }
 
 function authenticationSetup() {
+  startGroup("🔐 Authenticating with Cloudflare");
   try {
     const CLOUDFLARE_ACCOUNT_ID = config.get("CLOUDFLARE_ACCOUNT_ID");
     const CLOUDFLARE_API_TOKEN = config.get("CLOUDFLARE_API_TOKEN");
@@ -57,6 +61,7 @@ function authenticationSetup() {
       `Authentication details were not found. Please input an 'apiToken' to the action.`
     );
   }
+  endGroup();
 }
 
 async function execCommands(commands: string[]) {
@@ -122,7 +127,7 @@ async function genericCommand() {
   if (commands.length === 0) {
     let deployCommand = wranglerVersion !== 3 ? "publish" : "deploy";
 
-    warning(`ℹ️ No commands were provided, falling back to '${deployCommand}'`);
+    warning(`🚨 No commands were provided, falling back to '${deployCommand}'`);
 
     const envVars = new Map<string, string>();
     let envVarArg = "";
@@ -156,7 +161,7 @@ async function genericCommand() {
   } else {
     if (environment.length === 0) {
       warning(
-        `ℹ️ An environment as been specified adding '--env ${environment}' is required in the command.`
+        `🚨 An environment as been specified adding '--env ${environment}' is required in the command.`
       );
     }
 
