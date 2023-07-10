@@ -23,7 +23,6 @@ const config = {
 };
 
 export async function main() {
-  console.log("CONFIG", config)
   installWrangler();
   authenticationSetup();
   await execCommands(getMultilineInput("preCommands"));
@@ -87,7 +86,6 @@ async function execCommands(commands: string[]) {
 
 async function uploadSecrets() {
   startGroup("🔑 Uploading Secrets");
-  warning(`SECRETS    ${JSON.stringify(config, null, 2)}`)
   const secrets: string[] | string = config["secrets"] // TODO going to use Wrangler secret bulk upload & use secrets to take in JSON too for bulk upload
   if (!secrets.length) {
     warning(`📌 No secrets were provided, skipping upload.`);
@@ -130,7 +128,6 @@ async function uploadSecrets() {
 
 async function genericCommand() {
   startGroup("🚀 Executing Generic Command");
-  warning(`GENERIC COMMAND    ${JSON.stringify(config, null, 2)}`)
   const commands = config["COMMANDS"];
   if (!commands.length) {
     warning(`📌 No generic commands were provided, skipping execution.`);
