@@ -11,7 +11,7 @@ import { execSync, spawnSync } from "node:child_process";
 import * as path from "node:path";
 
 const config = new Map<string, any>([
-  ["WRANGLER_VERSION", Number(getInput("wranglerVersion") ?? "latest")],
+  ["WRANGLER_VERSION", getInput("wranglerVersion") !== '' ? getInput("wranglerVersion") : "latest"],
   ["bulkSecrets", getInput("bulkSecrets")], // should be JSON
   ["secrets", getMultilineInput("secrets")],
   ["workingDirectory", checkWorkingDirectory(getInput("workingDirectory"))],
@@ -36,7 +36,7 @@ function checkWorkingDirectory(workingDirectory = "") {
   try {
     return path.normalize(workingDirectory);
   } catch (error) {
-    throw setFailed(` invalid path: ${workingDirectory} Error: ${error}`);
+    throw setFailed(`🚨 invalid path: ${workingDirectory} Error: ${error}`);
   }
 }
 
@@ -83,6 +83,10 @@ async function uploadSecrets() {
   const secrets: string[] = config.get("secrets")
     ? JSON.parse(config.get("bulkSecrets"))
     : config.get("secrets"); // TODO going to use Wrangler secret bulk upload
+  if (!secrets.length) {
+    warning(`📌 No secrets were provided, skipping upload.`);
+    return;
+  }
   const environment = config.get("ENVIRONMENT");
   const workingDirectory = config.get("workingDirectory");
 
@@ -129,23 +133,16 @@ async function genericCommand() {
 
     warning(`🚨 No commands were provided, falling back to '${deployCommand}'`);
 
-    const envVars = new Map<string, string>();
-    let envVarArg = "";
-    if (vars.length > 0) {
-      for (const envVar of vars) {
+    const envVarArray = vars
+      .map((envVar: string) => {
         if (process.env[envVar] && process.env[envVar]?.length !== 0) {
-          envVars.set(envVar, process.env[envVar]!);
+          return `${envVar}:${process.env[envVar]!}`;
         } else {
           throw setFailed(`🚨 ${envVar} not found in variables.`);
         }
-      }
-      envVarArg =
-        "--var " +
-        Array.from(envVars)
-          .map(([key, value]) => `${key}:${value}`)
-          .join(" ")
-          .trim();
-    }
+      });
+
+    const envVarArg: string = envVarArray.length > 0 ? `--var ${envVarArray.join(" ").trim()}` : "";
 
     if (environment.length === 0) {
       execSync(`npx wrangler ${deployCommand} ${envVarArg}`.trim(), {
