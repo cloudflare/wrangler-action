@@ -28,32 +28,34 @@ jobs:
       - name: Only Build App
         uses: ./
         with:
+          workingDirectory: "./test"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: "../test"
-          commands: deploy --dry-run
+          postCommands: pnpm exec wrangler deploy --dry-run && exit 0
 
       - name: Deploy app w/ apiToken
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: "../test"
+          workingDirectory: "./test"
 
       - name: Deploy app w/ hardcoded Wrangler v2
         uses: ./
         with:
-          apiKey: ${{ secrets.CLOUDFLARE_API_KEY }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           wranglerVersion: "2.20.0"
-          workingDirectory: "../test"
+          workingDirectory: "./test"
 
       - name: Deploy app w/ secrets
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: "../test"
+          workingDirectory: "./test"
           secrets: |
             SECRET1
             SECRET2
-          preCommands: echo "*** pre command ***"
+          preCommands: |
+            echo "*** pre commands ***"
+            echo "******"
           postCommands: |
             echo "*** post commands ***"
             echo "******"

@@ -7,7 +7,8 @@ import {
   endGroup,
   startGroup,
 } from "@actions/core";
-import { execSync, spawnSync } from "node:child_process";
+import { execSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import * as path from "node:path";
 
 const config = {
@@ -33,9 +34,14 @@ export async function main() {
 
 function checkWorkingDirectory(workingDirectory = "") {
   try {
-    return path.normalize(workingDirectory);
+    const normalizedPath = path.normalize(workingDirectory);
+    if (existsSync(normalizedPath)) {
+      return normalizedPath;
+    } else {
+      setFailed(`🚨 Directory ${workingDirectory} does not exist.`);
+    }
   } catch (error) {
-    throw setFailed(`🚨 invalid path: ${workingDirectory} Error: ${error}`);
+    setFailed(`🚨 While checking/creating directory ${workingDirectory} received ${error}`);
   }
 }
 
@@ -96,7 +102,7 @@ async function uploadSecrets() {
 
   const promises = secrets.map(async (secret) => {
     if (!process.env[secret] || process.env[secret]?.length === 0) {
-      throw new Error(`🚨 ${secret} not found in variables.`);
+      new Error(`🚨 ${secret} not found in variables.`);
     }
 
     const pnpmExecCmd = process.env.RUNNER_OS === "Windows" ? "pnpm.cmd exec" : "pnpm exec";
@@ -105,14 +111,19 @@ async function uploadSecrets() {
       environment.length === 0 ? "" : ` --env ${environment}`;
     const secretCmd = `${pnpmExecCmd} wrangler secret put ${secret}${environmentSuffix}`;
 
-    const child = spawnSync(secretCmd, {
-      cwd: workingDirectory,
-      env: process.env,
-      stdio: "pipe",
-    });
+    try {
+      const buffer = execSync(secretCmd, {
+        cwd: workingDirectory,
+        env: process.env,
+        stdio: "pipe",
+      });
 
-    if (child.status !== 0) {
-      throw new Error(`Secrets command exited with code ${child.status}`);
+      const output = buffer.toString();
+      console.log(output);
+    } catch (error) {
+      if (error instanceof Error) {
+        setFailed(`${error.message}`);
+      }
     }
 
     info(`✅ Uploaded secret: ${secret}`);
@@ -150,7 +161,7 @@ async function genericCommand() {
       if (process.env[envVar] && process.env[envVar]?.length !== 0) {
         return `${envVar}:${process.env[envVar]!}`;
       } else {
-        throw setFailed(`🚨 ${envVar} not found in variables.`);
+        setFailed(`🚨 ${envVar} not found in variables.`);
       }
     });
 
