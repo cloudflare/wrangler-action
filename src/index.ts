@@ -116,6 +116,7 @@ async function uploadSecrets() {
     spawnSync(secretCmd, {
       cwd: config["workingDirectory"],
       env: process.env,
+      stdio: "ignore"
     });
     info(`✅ Uploaded secrets`);
   } catch (error) {
