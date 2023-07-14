@@ -1,12 +1,14 @@
 import {
+  endGroup,
+  getBooleanInput,
   getInput,
   getMultilineInput,
   info,
   setFailed,
-  warning,
-  endGroup,
   startGroup,
+  warning
 } from "@actions/core";
+import type { StdioOptions } from "node:child_process";
 import { execSync, spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import * as path from "node:path";
@@ -21,6 +23,7 @@ const config = {
   ENVIRONMENT: getInput("environment"),
   VARS: getMultilineInput("vars"),
   COMMANDS: getMultilineInput("commands"),
+  QUIET: getBooleanInput("quiet")
 };
 
 export async function main() {
@@ -75,16 +78,19 @@ async function execCommands(commands: string[]) {
     warning(`📌 Pre/Post Commands were not provided, skipping execution.`);
     return;
   }
+
+  const quiet = config["QUIET"];
+  const stdioOption: StdioOptions = ["pipe", quiet ? "ignore" : "pipe", "pipe"];
+
   for (const command of commands) {
-    const npxCMD = command.startsWith("wrangler")
-      ? `npx ${command}`
-      : command;
+    const npxCMD = command.startsWith("wrangler") ? `npx ${command}` : command;
 
     info(`🚀 Executing command: ${npxCMD}`);
 
     execSync(npxCMD, {
       cwd: config["workingDirectory"],
       env: process.env,
+      stdio: stdioOption
     });
   }
   endGroup();
@@ -97,8 +103,7 @@ async function uploadSecrets() {
     warning(`📌 No secrets were provided, skipping upload.`);
     return;
   }
-  const npxCMD =
-    process.env.RUNNER_OS === "Windows" ? "npx.cmd exec" : "npx";
+  const npxCMD = process.env.RUNNER_OS === "Windows" ? "npx.cmd exec" : "npx";
   const environment = config["ENVIRONMENT"];
 
   const getSecret = (secret: string) => process.env[secret] ?? "";
@@ -106,6 +111,9 @@ async function uploadSecrets() {
     acc[secret] = getSecret(secret);
     return acc;
   }, {});
+
+  const quiet = config["QUIET"];
+  const stdioOption: StdioOptions = ["pipe", quiet ? "ignore" : "pipe", "pipe"];
 
   const environmentSuffix = !environment.length ? "" : ` --env ${environment}`;
   const secretCmd = `${npxCMD} wrangler secret:bulk ${JSON.stringify(
@@ -116,7 +124,7 @@ async function uploadSecrets() {
     spawnSync(secretCmd, {
       cwd: config["workingDirectory"],
       env: process.env,
-      stdio: "ignore"
+      stdio: stdioOption
     });
     info(`✅ Uploaded secrets`);
   } catch (error) {
@@ -133,6 +141,10 @@ async function genericCommand() {
     warning(`📌 No generic commands were provided, skipping execution.`);
     return;
   }
+
+  const quiet = config["QUIET"];
+  const stdioOption: StdioOptions = ["pipe", quiet ? "ignore" : "pipe", "pipe"];
+
   const wranglerVersion = config["WRANGLER_VERSION"];
   const environment = config["ENVIRONMENT"];
   const vars = config["VARS"];
@@ -161,11 +173,12 @@ async function genericCommand() {
       execSync(`npx wrangler ${deployCommand} ${envVarArg}`.trim(), {
         cwd: workingDirectory,
         env: process.env,
+        stdio: stdioOption
       });
     } else {
       execSync(
         `npx wrangler ${deployCommand} --env ${environment} ${envVarArg}`.trim(),
-        { cwd: workingDirectory, env: process.env }
+        { cwd: workingDirectory, env: process.env, stdio: stdioOption }
       );
     }
   } else {

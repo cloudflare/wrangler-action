@@ -34,3 +34,6 @@ inputs:
   commands:
     description: "Multiline - A generic command passthrough for any Wrangler commands."
     required: false
+  quiet:
+    description: "Suppress stdout from Wrangler commands"
+    required: false
