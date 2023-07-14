@@ -92,7 +92,7 @@ async function execCommands(commands: string[]) {
 
 async function uploadSecrets() {
   startGroup("🔑 Uploading Secrets");
-  const secrets: string[] | string = config["secrets"]; // TODO going to use Wrangler secret bulk upload & use secrets to take in JSON too for bulk upload
+  const secrets: string[] | string = config["secrets"];
   if (!secrets.length) {
     warning(`📌 No secrets were provided, skipping upload.`);
     return;
@@ -103,18 +103,18 @@ async function uploadSecrets() {
   const workingDirectory = config["workingDirectory"];
 
   const getSecret = (secret: string) => process.env[secret] ?? "";
-  const secretObj = secrets.map(getSecret);
-
-  const secretJSON = JSON.stringify(secretObj);
+  const secretObj = secrets.reduce((acc: any, secret: string) => {
+    acc[secret] = getSecret(secret);
+    return acc;
+  }, {});
 
   const environmentSuffix = !environment.length ? "" : ` --env ${environment}`;
-  const secretCmd = `${pnpmExecCmd} wrangler secret:bulk put ${secretJSON}${environmentSuffix}`;
+  const secretCmd = `${pnpmExecCmd} wrangler secret:bulk put ${JSON.stringify(secretObj)}${environmentSuffix}`;
 
   try {
     execSync(secretCmd, {
       cwd: workingDirectory,
       env: process.env,
-      stdio: "pipe",
     });
     info(`✅ Uploaded secrets`);
   } catch (error) {
