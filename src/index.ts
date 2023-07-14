@@ -112,9 +112,6 @@ async function uploadSecrets() {
     return acc;
   }, {});
 
-  const quiet = config["QUIET"];
-  const stdioOption: StdioOptions = ["pipe", quiet ? "ignore" : "pipe", "pipe"];
-
   const environmentSuffix = !environment.length ? "" : ` --env ${environment}`;
   const secretCmd = `${npxCMD} wrangler secret:bulk ${JSON.stringify(
     secretObj
@@ -124,7 +121,7 @@ async function uploadSecrets() {
     spawnSync(secretCmd, {
       cwd: config["workingDirectory"],
       env: process.env,
-      stdio: stdioOption
+      stdio: ["pipe", "ignore", "pipe"]
     });
     info(`✅ Uploaded secrets`);
   } catch (error) {
