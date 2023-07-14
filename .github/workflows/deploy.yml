@@ -30,18 +30,21 @@ jobs:
         with:
           workingDirectory: "./test"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           postCommands: pnpm exec wrangler deploy --dry-run && exit 0
 
       - name: Deploy app w/ apiToken
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: "./test"
 
       - name: Deploy app w/ hardcoded Wrangler v2
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "2.20.0"
           workingDirectory: "./test"
 
@@ -49,6 +52,7 @@ jobs:
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: "./test"
           secrets: |
             SECRET1

@@ -12,15 +12,15 @@ import { existsSync } from "node:fs";
 import * as path from "node:path";
 
 const config = {
-  WRANGLER_VERSION: getInput("wranglerVersion") !== "" ? getInput("wranglerVersion") : "latest",
-  bulkSecrets: getInput("bulkSecrets"), // should be JSON
+  WRANGLER_VERSION:
+    getInput("wranglerVersion") !== "" ? getInput("wranglerVersion") : "latest",
   secrets: getMultilineInput("secrets"),
   workingDirectory: checkWorkingDirectory(getInput("workingDirectory")),
   CLOUDFLARE_API_TOKEN: getInput("apiToken"),
   CLOUDFLARE_ACCOUNT_ID: getInput("accountId"),
   ENVIRONMENT: getInput("environment"),
   VARS: getMultilineInput("vars"),
-  COMMANDS: getMultilineInput("commands")
+  COMMANDS: getMultilineInput("commands"),
 };
 
 export async function main() {
@@ -41,7 +41,9 @@ function checkWorkingDirectory(workingDirectory = "") {
       setFailed(`🚨 Directory ${workingDirectory} does not exist.`);
     }
   } catch (error) {
-    setFailed(`🚨 While checking/creating directory ${workingDirectory} received ${error}`);
+    setFailed(
+      `🚨 While checking/creating directory ${workingDirectory} received ${error}`
+    );
   }
 }
 
@@ -56,10 +58,8 @@ function installWrangler() {
 function authenticationSetup() {
   startGroup("🔐 Authenticating with Cloudflare");
   try {
-    const CLOUDFLARE_ACCOUNT_ID = config["CLOUDFLARE_ACCOUNT_ID"];
-    const CLOUDFLARE_API_TOKEN = config["CLOUDFLARE_API_TOKEN"];
-    process.env.CLOUDFLARE_API_TOKEN = CLOUDFLARE_API_TOKEN;
-    process.env.CLOUDFLARE_ACCOUNT_ID = CLOUDFLARE_ACCOUNT_ID;
+    process.env.CLOUDFLARE_API_TOKEN = config["CLOUDFLARE_ACCOUNT_ID"];
+    process.env.CLOUDFLARE_ACCOUNT_ID = config["CLOUDFLARE_API_TOKEN"];
     info(`Authentication process initiated with - API Token`);
   } catch (error) {
     setFailed(
@@ -92,48 +92,37 @@ async function execCommands(commands: string[]) {
 
 async function uploadSecrets() {
   startGroup("🔑 Uploading Secrets");
-  const secrets: string[] | string = config["secrets"] // TODO going to use Wrangler secret bulk upload & use secrets to take in JSON too for bulk upload
+  const secrets: string[] | string = config["secrets"]; // TODO going to use Wrangler secret bulk upload & use secrets to take in JSON too for bulk upload
   if (!secrets.length) {
     warning(`📌 No secrets were provided, skipping upload.`);
     return;
   }
+  const pnpmExecCmd =
+    process.env.RUNNER_OS === "Windows" ? "pnpm.cmd exec" : "pnpm exec";
   const environment = config["ENVIRONMENT"];
   const workingDirectory = config["workingDirectory"];
 
-  const promises = secrets.map(async (secret) => {
-    if (!process.env[secret] || process.env[secret]?.length === 0) {
-      new Error(`🚨 ${secret} not found in variables.`);
-    }
+  const getSecret = (secret: string) => process.env[secret] ?? "";
+  const secretObj = secrets.map(getSecret);
 
-    const pnpmExecCmd = process.env.RUNNER_OS === "Windows" ? "pnpm.cmd exec" : "pnpm exec";
+  const secretJSON = JSON.stringify(secretObj);
 
-    const environmentSuffix =
-      environment.length === 0 ? "" : ` --env ${environment}`;
-    const secretCmd = `${pnpmExecCmd} wrangler secret put ${secret}${environmentSuffix}`;
-
-    try {
-      const buffer = execSync(secretCmd, {
-        cwd: workingDirectory,
-        env: process.env,
-        stdio: "pipe",
-      });
-
-      const output = buffer.toString();
-      console.log(output);
-    } catch (error) {
-      if (error instanceof Error) {
-        setFailed(`${error.message}`);
-      }
-    }
-
-    info(`✅ Uploaded secret: ${secret}`);
-  });
+  const environmentSuffix = !environment.length ? "" : ` --env ${environment}`;
+  const secretCmd = `${pnpmExecCmd} wrangler secret:bulk put ${secretJSON}${environmentSuffix}`;
 
   try {
-    await Promise.all(promises);
-  } catch (err) {
-    setFailed(err as Error);
+    execSync(secretCmd, {
+      cwd: workingDirectory,
+      env: process.env,
+      stdio: "pipe",
+    });
+    info(`✅ Uploaded secrets`);
+  } catch (error) {
+    if (error instanceof Error) {
+      setFailed(`${error.message}`);
+    }
   }
+
   endGroup();
 }
 

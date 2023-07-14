@@ -23,10 +23,7 @@ inputs:
     description: "The version of Wrangler you'd like to use to publish your Workers project"
     required: false
   secrets:
-    description: "Multiline - string of environment variable names that should be configured as Worker secrets"
-    required: false
-  bulkSecrets:
-    description: "A JSON input for bulk secrets upload"
+    description: "Multiline or JSON - string of environment variable names that should be configured as Worker secrets"
     required: false
   preCommands:
     description: "Commands to execute before publishing the Workers project"
