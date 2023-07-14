@@ -29,8 +29,8 @@
     "@actions/core": "^1.10.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230710.0",
-    "@types/node": "^20.4.1",
+    "@cloudflare/workers-types": "^4.20230710.1",
+    "@types/node": "^20.4.2",
     "prettier": "^3.0.0",
     "typescript": "^5.1.6",
     "vitest": "^0.33.0"
