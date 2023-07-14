@@ -49,9 +49,9 @@ function checkWorkingDirectory(workingDirectory = "") {
 
 function installWrangler() {
   startGroup("📥 Installing Wrangler");
-  const command = `pnpm install wrangler@${config["WRANGLER_VERSION"]}`;
+  const command = `npx install wrangler@${config["WRANGLER_VERSION"]}`;
   info(`Running Command: ${command}`);
-  execSync(command, { cwd: config["workingDirectory"], env: process.env });
+  spawnSync(command, { cwd: config["workingDirectory"], env: process.env });
   endGroup();
 }
 
@@ -76,13 +76,13 @@ async function execCommands(commands: string[]) {
     return;
   }
   for (const command of commands) {
-    const pnpmExecCmd = command.startsWith("wrangler")
-      ? `pnpm exec ${command}`
+    const npxCMD = command.startsWith("wrangler")
+      ? `npx ${command}`
       : command;
 
-    info(`🚀 Executing command: ${pnpmExecCmd}`);
+    info(`🚀 Executing command: ${npxCMD}`);
 
-    execSync(pnpmExecCmd, {
+    execSync(npxCMD, {
       cwd: config["workingDirectory"],
       env: process.env,
     });
@@ -97,8 +97,8 @@ async function uploadSecrets() {
     warning(`📌 No secrets were provided, skipping upload.`);
     return;
   }
-  const pnpmExecCmd =
-    process.env.RUNNER_OS === "Windows" ? "pnpm.cmd exec" : "pnpm exec";
+  const npxCMD =
+    process.env.RUNNER_OS === "Windows" ? "npx.cmd exec" : "npx";
   const environment = config["ENVIRONMENT"];
 
   const getSecret = (secret: string) => process.env[secret] ?? "";
@@ -108,7 +108,7 @@ async function uploadSecrets() {
   }, {});
 
   const environmentSuffix = !environment.length ? "" : ` --env ${environment}`;
-  const secretCmd = `${pnpmExecCmd} wrangler secret:bulk ${JSON.stringify(
+  const secretCmd = `${npxCMD} wrangler secret:bulk ${JSON.stringify(
     secretObj
   )}${environmentSuffix}`;
 
@@ -158,13 +158,13 @@ async function genericCommand() {
       envVarArray.length > 0 ? `--var ${envVarArray.join(" ").trim()}` : "";
 
     if (environment.length === 0) {
-      execSync(`pnpm exec wrangler ${deployCommand} ${envVarArg}`.trim(), {
+      execSync(`npx wrangler ${deployCommand} ${envVarArg}`.trim(), {
         cwd: workingDirectory,
         env: process.env,
       });
     } else {
       execSync(
-        `pnpm exec wrangler ${deployCommand} --env ${environment} ${envVarArg}`.trim(),
+        `npx wrangler ${deployCommand} --env ${environment} ${envVarArg}`.trim(),
         { cwd: workingDirectory, env: process.env }
       );
     }
@@ -175,7 +175,7 @@ async function genericCommand() {
       );
     }
 
-    return execCommands([`pnpm exec wrangler ${commands}`]);
+    return execCommands([`npx wrangler ${commands}`]);
   }
   endGroup();
 }

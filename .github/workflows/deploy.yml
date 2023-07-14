@@ -8,16 +8,11 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: "latest"
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "latest"
-          cache: "pnpm"
+          cache: "npm"
 
       - name: Install Dependencies
         run: pnpm install
@@ -31,7 +26,7 @@ jobs:
           workingDirectory: "./test"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          postCommands: pnpm exec wrangler deploy --dry-run && exit 0
+          postCommands: npx wrangler deploy --dry-run && exit 0
 
       - name: Deploy app w/ apiToken
         uses: ./
