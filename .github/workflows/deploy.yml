@@ -15,10 +15,10 @@ jobs:
           cache: "npm"
 
       - name: Install Dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Build Action
-        run: pnpm run build
+        run: npm run build
 
       - name: Only Build App
         uses: ./
