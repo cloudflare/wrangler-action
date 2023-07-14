@@ -7,7 +7,7 @@ import {
   endGroup,
   startGroup,
 } from "@actions/core";
-import { execSync } from "node:child_process";
+import { execSync, spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import * as path from "node:path";
 
@@ -100,7 +100,6 @@ async function uploadSecrets() {
   const pnpmExecCmd =
     process.env.RUNNER_OS === "Windows" ? "pnpm.cmd exec" : "pnpm exec";
   const environment = config["ENVIRONMENT"];
-  const workingDirectory = config["workingDirectory"];
 
   const getSecret = (secret: string) => process.env[secret] ?? "";
   const secretObj = secrets.reduce((acc: any, secret: string) => {
@@ -109,18 +108,18 @@ async function uploadSecrets() {
   }, {});
 
   const environmentSuffix = !environment.length ? "" : ` --env ${environment}`;
-  const secretCmd = `${pnpmExecCmd} wrangler secret:bulk put ${JSON.stringify(secretObj)}${environmentSuffix}`;
+  const secretCmd = `${pnpmExecCmd} wrangler secret:bulk ${JSON.stringify(
+    secretObj
+  )}${environmentSuffix}`;
 
   try {
-    execSync(secretCmd, {
-      cwd: workingDirectory,
+    spawnSync(secretCmd, {
+      cwd: config["workingDirectory"],
       env: process.env,
     });
     info(`✅ Uploaded secrets`);
   } catch (error) {
-    if (error instanceof Error) {
-      setFailed(`${error.message}`);
-    }
+    setFailed(`🚨 Failed to upload secrets`);
   }
 
   endGroup();
@@ -180,6 +179,6 @@ async function genericCommand() {
   endGroup();
 }
 
-main().catch((error) => {
-  setFailed(error);
+main().catch((err) => {
+  setFailed("🚨 Action failed");
 });
