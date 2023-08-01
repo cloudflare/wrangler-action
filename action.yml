@@ -2,17 +2,11 @@ name: "Deploy to Cloudflare Workers with Wrangler"
 branding:
   icon: "upload-cloud"
   color: "orange"
-description: "Deploy your Cloudflare Workers and Pages projects from GitHub using Wrangler"
+description: "Deploy your Cloudflare projects from GitHub using Wrangler"
 runs:
-  using: "docker"
-  image: "Dockerfile"
+  using: "node16"
+  main: "dist/index.js"
 inputs:
-  apiKey:
-    description: "(Legacy) Your Cloudflare API Key"
-    required: false
-  email:
-    description: "(Legacy) Your Cloudflare Email"
-    required: false
   apiToken:
     description: "Your Cloudflare API Token"
     required: false
@@ -29,7 +23,7 @@ inputs:
     description: "The version of Wrangler you'd like to use to publish your Workers project"
     required: false
   secrets:
-    description: "A new line deliminated string of environment variable names that should be configured as Worker secrets"
+    description: "A string of environment variable names, separated by newlines. These will be bound to your Worker as Secrets and must match the names of environment variables declared in `env` of this workflow."
     required: false
   preCommands:
     description: "Commands to execute before publishing the Workers project"
@@ -38,5 +32,8 @@ inputs:
     description: "Commands to execute after publishing the Workers project"
     required: false
   command:
-    description: "The Wrangler command you wish to run. For example: \"publish\" - this will publish your Worker"
+    description: 'The Wrangler command (along with any arguments) you wish to run. Multiple Wrangler commands can be run by separating each command with a newline. Defaults to `"deploy"`.'
+    required: false
+  vars:
+    description: "A string of environment variable names, separated by newlines. These will be bound to your Worker using the values of matching environment variables declared in `env` of this workflow."
     required: false
