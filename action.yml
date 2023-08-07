@@ -15,21 +15,21 @@ inputs:
     required: false
 
   environment:
-    description: "The environment you'd like to publish your Workers project to - must be defined in wrangler.toml"
+    description: "The environment you'd like to deploy your Workers project to - must be defined in wrangler.toml"
   workingDirectory:
     description: "The relative path which Wrangler commands should be run from"
     required: false
   wranglerVersion:
-    description: "The version of Wrangler you'd like to use to publish your Workers project"
+    description: "The version of Wrangler you'd like to use to deploy your Workers project"
     required: false
   secrets:
     description: "A string of environment variable names, separated by newlines. These will be bound to your Worker as Secrets and must match the names of environment variables declared in `env` of this workflow."
     required: false
   preCommands:
-    description: "Commands to execute before publishing the Workers project"
+    description: "Commands to execute before deploying the Workers project"
     required: false
   postCommands:
-    description: "Commands to execute after publishing the Workers project"
+    description: "Commands to execute after deploying the Workers project"
     required: false
   command:
     description: 'The Wrangler command (along with any arguments) you wish to run. Multiple Wrangler commands can be run by separating each command with a newline. Defaults to `"deploy"`.'
