@@ -2,7 +2,9 @@
 
 Easy-to-use GitHub Action to use [Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/). Makes deploying Workers, Pages or modifying R2 easy to do.
 
-Wrangler v1 is longer supported.
+- Wrangler v1 is no longer supported.
+- Global API key & Email Auth no longer supported
+
 [Refer to Changelog for more information](CHANGELOG.md).
 
 ## Usage
@@ -43,19 +45,6 @@ jobs:
       uses: cloudflare/wrangler-action@3.0.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
-```
-
-`wrangler-action` also supports using your [global API key and email](https://developers.cloudflare.com/workers/quickstart/#global-api-key) as an authentication method, although API tokens are preferred. Pass in `apiKey` and `email` to the GitHub Action to use this method:
-
-```yaml
-jobs:
-  deploy:
-    name: Deploy
-    steps:
-      uses: cloudflare/wrangler-action@3.0.0
-      with:
-        apiKey: ${{ secrets.CF_API_KEY }}
-        email: ${{ secrets.CF_EMAIL }}
 ```
 
 ## Configuration
