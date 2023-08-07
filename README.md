@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Publish
-        uses: cloudflare/wrangler-action@2.0.0
+        uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -39,7 +39,7 @@ jobs:
   deploy:
     name: Deploy
     steps:
-      uses: cloudflare/wrangler-action@2.0.0
+      uses: cloudflare/wrangler-action@3.0.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -51,7 +51,7 @@ jobs:
   deploy:
     name: Deploy
     steps:
-      uses: cloudflare/wrangler-action@2.0.0
+      uses: cloudflare/wrangler-action@3.0.0
       with:
         apiKey: ${{ secrets.CF_API_KEY }}
         email: ${{ secrets.CF_EMAIL }}
@@ -65,10 +65,10 @@ If you need to install a specific version of Wrangler to use for deployment, you
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@2.0.0
+      uses: cloudflare/wrangler-action@3.0.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
-        wranglerVersion: '1.6.0'
+        wranglerVersion: "1.6.0"
 ```
 
 Optionally, you can also pass a `workingDirectory` key to the action. This will allow you to specify a subdirectory of the repo to run the Wrangler command from.
@@ -77,24 +77,24 @@ Optionally, you can also pass a `workingDirectory` key to the action. This will 
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@2.0.0
+      uses: cloudflare/wrangler-action@3.0.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
-        workingDirectory: 'subfoldername'
+        workingDirectory: "subfoldername"
 ```
 
-[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can be optionally passed as a new line deliminated string of names in `secrets`.  Each secret name must match an environment variable name specified in the `env` attribute.  Creates or replaces the value for the Worker secret using the `wrangler secret put` command.
+[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can optionally be passed in via `secrets` as a string of names separated by newlines. Each secret name must match the name of an environment variable specified in the `env` field. This creates or replaces the value for the Worker secret using the `wrangler secret put` command.
 
 ```yaml
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@2.0.0
+      uses: cloudflare/wrangler-action@3.0.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         secrets: |
-            SECRET1
-            SECRET2
+          SECRET1
+          SECRET2
       env:
         SECRET1: ${{ secrets.SECRET1 }}
         SECRET2: ${{ secrets.SECRET2 }}
@@ -106,7 +106,7 @@ If you need to run additional shell commands before or after your command, you c
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@2.0.0
+      uses: cloudflare/wrangler-action@3.0.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         preCommands: echo "*** pre command ***"
@@ -122,7 +122,7 @@ You can use the `command` option to do specific actions such as running `wrangle
 jobs:
   deploy:
     steps:
-      uses: cloudflare/wrangler-action@2.0.0
+      uses: cloudflare/wrangler-action@3.0.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
         command: whoami
@@ -147,7 +147,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Publish
-        uses: cloudflare/wrangler-action@2.0.0
+        uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -168,7 +168,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Publish
-        uses: cloudflare/wrangler-action@2.0.0
+        uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -182,7 +182,7 @@ If you would like to deploy your Workers application on a recurring basis – fo
 ```yaml
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: "0 * * * *"
 
 jobs:
   deploy:
@@ -191,7 +191,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Publish app
-        uses: cloudflare/wrangler-action@2.0.0
+        uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
@@ -207,9 +207,9 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Choose an environment to deploy to: <dev|staging|prod>'
+        description: "Choose an environment to deploy to: <dev|staging|prod>"
         required: true
-        default: 'dev'
+        default: "dev"
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -217,7 +217,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Publish app
-        uses: cloudflare/wrangler-action@2.0.0
+        uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           command: publish --env ${{ github.event.inputs.environment }}
@@ -245,7 +245,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Publish app
-        uses: cloudflare/wrangler-action@2.0.0
+        uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
