@@ -11,7 +11,7 @@ Easy-to-use GitHub Action to use [Wrangler](https://developers.cloudflare.com/wo
 
 ## Usage
 
-Add `wrangler-action` to the workflow for your Workers/Pages application. The below example will publish a Worker on a `git push` to the `main` branch:
+Add `wrangler-action` to the workflow for your Workers/Pages application. The below example will deploy a Worker on a `git push` to the `main` branch:
 
 ```yaml
 name: Deploy
@@ -27,7 +27,7 @@ jobs:
     name: Deploy
     steps:
       - uses: actions/checkout@v2
-      - name: Publish
+      - name: Deploy
         uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -92,7 +92,7 @@ jobs:
         SECRET2: ${{ secrets.SECRET2 }}
 ```
 
-If you need to run additional shell commands before or after your command, you can specify them as input to `preCommands` (before `publish`) or `postCommands` (after `publish`). These can include additional `wrangler` commands (that is, `whoami`, `kv:key put`) or any other commands available inside the `wrangler-action` context.
+If you need to run additional shell commands before or after your command, you can specify them as input to `preCommands` (before `deploy`) or `postCommands` (after `deploy`). These can include additional `wrangler` commands (that is, `whoami`, `kv:key put`) or any other commands available inside the `wrangler-action` context.
 
 ```yaml
 jobs:
@@ -138,7 +138,7 @@ jobs:
     name: Deploy
     steps:
       - uses: actions/checkout@v3
-      - name: Publish
+      - name: Deploy
         uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -148,7 +148,7 @@ Note that there are a number of possible events, like `push`, that can be used t
 
 ### Deploy your Pages site (production & preview)
 
-If you want to deploy your Pages project with GitHub Actions rather than the built-in continous integration (CI), then this is a great way to do it. Wrangler 2 will populate the commit message and branch for you. You only need to pass the project name. If a push to a non-production branch is done, it will publish as a preview deployment:
+If you want to deploy your Pages project with GitHub Actions rather than the built-in continous integration (CI), then this is a great way to do it. Wrangler 2 will populate the commit message and branch for you. You only need to pass the project name. If a push to a non-production branch is done, it will deploy as a preview deployment:
 
 ```yaml
 on: [push]
@@ -159,12 +159,12 @@ jobs:
     name: Deploy
     steps:
       - uses: actions/checkout@v3
-      - name: Publish
+      - name: Deploy
         uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages publish --project-name=example
+          command: pages deploy --project-name=example
 ```
 
 ### Deploying on a schedule
@@ -182,7 +182,7 @@ jobs:
     name: Deploy
     steps:
       - uses: actions/checkout@v3
-      - name: Publish app
+      - name: Deploy app
         uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -208,11 +208,11 @@ jobs:
     name: Deploy
     steps:
       - uses: actions/checkout@v3
-      - name: Publish app
+      - name: Deploy app
         uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          command: publish --env ${{ github.event.inputs.environment }}
+          command: deploy --env ${{ github.event.inputs.environment }}
 ```
 
 For more advanced usage or to programmatically trigger the workflow from scripts, refer to [the GitHub documentation](https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event) for making API calls.
@@ -236,7 +236,7 @@ jobs:
     name: Deploy
     steps:
       - uses: actions/checkout@v3
-      - name: Publish app
+      - name: Deploy app
         uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
