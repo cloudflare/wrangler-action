@@ -2,6 +2,7 @@
 
 Easy-to-use GitHub Action to use [Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/). Makes deploying Workers, Pages or modifying R2 easy to do.
 
+Wrangler v1 is longer supported.
 [Refer to Changelog for more information](CHANGELOG.md).
 
 ## Usage
@@ -59,7 +60,7 @@ jobs:
 
 ## Configuration
 
-If you need to install a specific version of Wrangler to use for deployment, you can also pass the input `wranglerVersion` to install a specific version of Wrangler from NPM. This should be a [SemVer](https://semver.org/)-style version number, such as `1.6.0`:
+If you need to install a specific version of Wrangler to use for deployment, you can also pass the input `wranglerVersion` to install a specific version of Wrangler from NPM. This should be a [SemVer](https://semver.org/)-style version number, such as `2.20.0`:
 
 ```yaml
 jobs:
@@ -68,7 +69,7 @@ jobs:
       uses: cloudflare/wrangler-action@3.0.0
       with:
         apiToken: ${{ secrets.CF_API_TOKEN }}
-        wranglerVersion: "1.6.0"
+        wranglerVersion: "2.20.0"
 ```
 
 Optionally, you can also pass a `workingDirectory` key to the action. This will allow you to specify a subdirectory of the repo to run the Wrangler command from.
