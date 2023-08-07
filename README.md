@@ -2,7 +2,7 @@
 
 Easy-to-use GitHub Action to use [Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/). Makes deploying Workers, Pages or modifying R2 easy to do.
 
-- Wrangler v1 is longer supported.
+- Wrangler v1 is no longer supported.
 - Global API key & Email Auth no longer supported
 
 [Refer to Changelog for more information](CHANGELOG.md).
