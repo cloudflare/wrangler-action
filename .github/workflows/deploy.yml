@@ -20,17 +20,14 @@ jobs:
           node-version: "latest"
           cache: "npm"
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install modules and build
+        run: npm ci && npm run build
 
       - name: Unit Tests
         run: npm run test
 
       - name: Check Formatting
         run: npm run check
-
-      - name: Build Action
-        run: npm run build
 
       - name: Only build app
         uses: ./
