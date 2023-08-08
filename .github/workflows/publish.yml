@@ -1,5 +1,8 @@
 name: Publish
 
+permissions:
+  contents: write
+
 on:
   release:
     types: [published, edited]
