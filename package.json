@@ -23,7 +23,6 @@
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
-		"start": "npx ncc run ./src/index.ts",
 		"build": "npx ncc build ./src/index.ts",
 		"test": "vitest",
 		"format": "prettier --write . --ignore-path ./dist/**",
