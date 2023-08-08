@@ -23,7 +23,7 @@
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsc",
+		"build": "npx ncc build ./src/index.ts",
 		"test": "vitest",
 		"format": "prettier --write . --ignore-path ./dist/**",
 		"check": "prettier --check . --ignore-path ./dist/**"
@@ -32,11 +32,12 @@
 		"@actions/core": "^1.10.0"
 	},
 	"devDependencies": {
+		"@changesets/cli": "^2.26.2",
 		"@cloudflare/workers-types": "^4.20230710.1",
 		"@types/node": "^20.4.2",
+		"@vercel/ncc": "^0.36.1",
 		"prettier": "^3.0.0",
 		"typescript": "^5.1.6",
-		"vitest": "^0.33.0",
-		"@changesets/cli": "^2.26.2"
+		"vitest": "^0.33.0"
 	}
 }

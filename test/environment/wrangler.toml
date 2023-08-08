@@ -3,9 +3,6 @@ main = "./index.ts"
 compatibility_date = "2023-07-07"
 workers_dev = true
 
-[site]
-bucket = "./public"
-
 [env.dev]
 name = "wrangler-action-dev-environment-test"
 [env.dev.vars]
