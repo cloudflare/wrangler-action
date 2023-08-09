@@ -1,6 +1,6 @@
 {
 	"name": "wrangler-action",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "GitHub Action to use [Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/).",
 	"author": "wrangler@cloudflare.com",
 	"license": "MIT OR Apache-2.0",

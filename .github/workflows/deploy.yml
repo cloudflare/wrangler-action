@@ -1,8 +1,5 @@
 name: Wrangler Action Self Testing
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
