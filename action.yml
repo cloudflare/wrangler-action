@@ -5,7 +5,7 @@ branding:
 description: "Deploy your Cloudflare projects from GitHub using Wrangler"
 runs:
   using: "node16"
-  main: "dist/index.js"
+  main: "dist/index.mjs"
 inputs:
   apiToken:
     description: "Your Cloudflare API Token"
