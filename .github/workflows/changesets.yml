@@ -12,6 +12,10 @@ jobs:
     if: ${{ github.repository_owner == 'cloudflare' }}
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: read
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
