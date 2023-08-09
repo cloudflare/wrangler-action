@@ -21,9 +21,9 @@
 		"typescript"
 	],
 	"type": "module",
-	"main": "dist/index.js",
+	"main": "dist/index.mjs",
 	"scripts": {
-		"build": "npx ncc build ./src/index.ts",
+		"build": "npx ncc build ./src/index.ts && mv ./dist/index.js ./dist/index.mjs",
 		"test": "vitest",
 		"format": "prettier --write . --ignore-path ./dist/**",
 		"check": "prettier --check . --ignore-path ./dist/**"
