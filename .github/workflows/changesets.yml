@@ -13,6 +13,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: write
       pull-requests: write
       issues: read
