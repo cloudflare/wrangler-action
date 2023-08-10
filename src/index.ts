@@ -5,6 +5,7 @@ import {
 	setFailed,
 	endGroup,
 	startGroup,
+	error,
 } from "@actions/core";
 import { execSync, exec } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -114,7 +115,10 @@ async function execCommands(commands: string[], cmdType: string) {
 		});
 	});
 
-	await Promise.all(arrPromises);
+	await Promise.all(arrPromises).catch((result) => {
+		error(`🚨 ${cmdType} Command failed`);
+		setFailed(result);
+	});
 	endGroup();
 }
 
@@ -264,10 +268,16 @@ async function wranglerCommands() {
 				env: process.env,
 			},
 		);
+
 		info(result.stdout);
 		return result;
 	});
-	await Promise.all(arrPromises);
+
+	await Promise.all(arrPromises).catch((result) => {
+		error(`🚨 Command failed`);
+		setFailed(result.stderr);
+	});
+
 	endGroup();
 }
 
