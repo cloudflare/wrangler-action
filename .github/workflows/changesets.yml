@@ -35,5 +35,6 @@ jobs:
         uses: changesets/action@v1
         with:
           createGithubReleases: true
+          publish: "echo 'Creating release'"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
