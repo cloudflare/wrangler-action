@@ -6,8 +6,7 @@ Easy-to-use GitHub Action to use [Wrangler](https://developers.cloudflare.com/wo
 
 - Wrangler v1 is no longer supported.
 - Global API key & Email Auth no longer supported
-- Wrangler Action supports Action version syntax, i.e. `uses: cloudflare/wrangler-action@v3` or `uses: cloudflare/wrangler-action@v3.x` and will continue
-  to support `uses: cloudflare/wrangler-action@3.x.x` syntax.
+- Action version syntax is newly supported. This means e.g. `uses: cloudflare/wrangler-action@v3` and `uses: cloudflare/wrangler-action@v3.x` are both now valid syntax. Previously supported syntax e.g. `uses: cloudflare/wrangler-action@3.x.x` continues to be supported.
 
 [Refer to Changelog for more information](CHANGELOG.md).
 
