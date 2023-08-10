@@ -56,10 +56,28 @@ function semverCompare(version1: string, version2: string) {
 async function main() {
 	installWrangler();
 	authenticationSetup();
-	await execCommands(getMultilineInput("preCommands"), "Pre");
+	await execCommands(getMultilineInput("preCommands"), "pre");
 	await uploadSecrets();
 	await wranglerCommands();
-	await execCommands(getMultilineInput("postCommands"), "Post");
+	await execCommands(getMultilineInput("postCommands"), "post");
+}
+
+async function runProcess(
+	command: Parameters<typeof execAsync>[0],
+	options: Parameters<typeof execAsync>[1],
+) {
+	try {
+		const result = await execAsync(command, options);
+
+		result.stdout && info(result.stdout.toString());
+		result.stderr && error(result.stderr.toString());
+
+		return result;
+	} catch (err: any) {
+		err.stdout && info(err.stdout.toString());
+		err.stderr && error(err.stderr.toString());
+		throw err;
+	}
 }
 
 function checkWorkingDirectory(workingDirectory = ".") {
@@ -100,7 +118,7 @@ async function execCommands(commands: string[], cmdType: string) {
 	if (!commands.length) {
 		return;
 	}
-	startGroup(`🚀 ${cmdType} Commands Group`);
+	startGroup(`🚀 Running ${cmdType}Commands`);
 
 	const arrPromises = commands.map(async (command) => {
 		const cmd = command.startsWith("wrangler")
@@ -109,15 +127,16 @@ async function execCommands(commands: string[], cmdType: string) {
 
 		info(`🚀 Executing command: ${cmd}`);
 
-		return await execAsync(cmd, {
+		return await runProcess(cmd, {
 			cwd: config["workingDirectory"],
 			env: process.env,
 		});
 	});
 
 	await Promise.all(arrPromises).catch((result) => {
-		error(`🚨 ${cmdType} Command failed`);
-		setFailed(result);
+		result.stdout && info(result.stdout.toString());
+		result.stderr && error(result.stderr.toString());
+		setFailed(`🚨 ${cmdType}Commands failed`);
 	});
 	endGroup();
 }
@@ -149,7 +168,7 @@ async function legacyUploadSecrets(
 				const command = `echo ${getSecret(
 					secret,
 				)} | ${getNpxCmd()} wrangler secret put ${secret}`;
-				return environment ? command.concat(`--env ${environment}`) : command;
+				return environment ? command.concat(` --env ${environment}`) : command;
 			})
 			.map(
 				async (command) =>
@@ -219,63 +238,43 @@ function getVarArgs() {
 	return envVarArray.length > 0 ? `--var ${envVarArray.join(" ").trim()}` : "";
 }
 
-function defaultCommandBehavior() {
-	const environment = config["ENVIRONMENT"];
-	const wranglerVersion = config["WRANGLER_VERSION"];
-	const workingDirectory = config["workingDirectory"];
-
-	const deployCommand = semverCompare("2.20.0", wranglerVersion)
-		? "deploy"
-		: "publish";
-
-	info(`📌 No Wrangler commands were provided, executing default deployment.`);
-
-	if (environment.length === 0) {
-		execSync(
-			`${getNpxCmd()} wrangler ${deployCommand} ${getVarArgs()}`.trim(),
-			{
-				cwd: workingDirectory,
-				env: process.env,
-			},
-		);
-	} else {
-		execSync(
-			`${getNpxCmd()} wrangler ${deployCommand} --env ${environment} ${getVarArgs()}`.trim(),
-			{ cwd: workingDirectory, env: process.env },
-		);
-	}
-	endGroup();
-}
-
 async function wranglerCommands() {
+	startGroup("🚀 Running Wrangler Commands");
 	const commands = config["COMMANDS"];
 	const environment = config["ENVIRONMENT"];
 
 	if (!commands.length) {
-		defaultCommandBehavior();
-		return;
+		const wranglerVersion = config["WRANGLER_VERSION"];
+		const deployCommand = semverCompare("2.20.0", wranglerVersion)
+			? "deploy"
+			: "publish";
+		commands.push(deployCommand);
 	}
-	startGroup("🚀 Executing Wrangler Commands");
 
 	const arrPromises = commands.map(async (command) => {
-		if (environment.length > 0 && !command.includes(`--env ${environment}`)) {
-			command.concat(`--env ${environment}`);
+		if (environment.length > 0 && !command.includes(`--env`)) {
+			command = command.concat(` --env ${environment}`);
 		}
-		const result = await execAsync(
-			`${getNpxCmd()} wrangler ${command} ${getVarArgs()}`,
-			{
-				cwd: config["workingDirectory"],
-				env: process.env,
-			},
-		);
 
-		info(result.stdout);
-		return result;
+		const cmd = `${getNpxCmd()} wrangler ${command} ${
+			(command.startsWith("deploy") || command.startsWith("publish")) &&
+			!command.includes(`--var`)
+				? getVarArgs()
+				: ""
+		}`.trim();
+
+		info(`🚀 Executing command: ${cmd}`);
+
+		return await runProcess(cmd, {
+			cwd: config["workingDirectory"],
+			env: process.env,
+		});
 	});
 
 	await Promise.all(arrPromises).catch((result) => {
-		error(`🚨 Command failed`);
-		setFailed(result.stderr);
+		result.stdout && info(result.stdout.toString());
+		result.stderr && error(result.stderr.toString());
+		setFailed(`🚨 Command failed`);
 	});
 
 	endGroup();
