@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.0.2
+
+### Patch Changes
+
+- [#147](https://github.com/cloudflare/wrangler-action/pull/147) [`58f274b`](https://github.com/cloudflare/wrangler-action/commit/58f274b9f70867447519c6fa983c813e2b167b85) Thanks [@JacobMGEvans](https://github.com/JacobMGEvans)! - Added more error logging when a command fails to execute
+  Previously, we prevented any error logs from propagating too far to prevent leaking of any potentially sensitive information. However, this made it difficult for developers to debug their code.
+
+  In this release, we have updated our error handling to allow for more error messaging from pre/post and custom commands. We still discourage the use of these commands for secrets or other sensitive information, but we believe this change will make it easier for developers to debug their code.
+
+  Relates to #137
+
+- [#147](https://github.com/cloudflare/wrangler-action/pull/147) [`58f274b`](https://github.com/cloudflare/wrangler-action/commit/58f274b9f70867447519c6fa983c813e2b167b85) Thanks [@JacobMGEvans](https://github.com/JacobMGEvans)! - Adding Changesets
+
 - [Version 3.0.0](#version-300)
 - [Version 2.0.0](#version-200)
 
