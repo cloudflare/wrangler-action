@@ -2,8 +2,12 @@
 
 Easy-to-use GitHub Action to use [Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/). Makes deploying Workers, Pages or modifying R2 easy to do.
 
+## Big Changes in v3
+
 - Wrangler v1 is no longer supported.
 - Global API key & Email Auth no longer supported
+- Wrangler Action supports Action version syntax, i.e. `uses: cloudflare/wrangler-action@v3` or `uses: cloudflare/wrangler-action@v3.x` and will continue
+  to support `uses: cloudflare/wrangler-action@3.x.x` syntax.
 
 [Refer to Changelog for more information](CHANGELOG.md).
 
