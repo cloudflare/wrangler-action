@@ -35,6 +35,6 @@ jobs:
         uses: changesets/action@v1
         with:
           createGithubReleases: true
-          publish: "echo 'Creating release'"
+          publish: npx changesets tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
