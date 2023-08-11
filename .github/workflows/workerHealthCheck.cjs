@@ -8,9 +8,11 @@ function workerHealthCheck() {
 
 	const response = buffer.toString();
 
-	response.includes("OK")
-		? console.log(`Status: Worker is up! Secrets: ${response}`)
-		: console.log(`Worker is down!`);
+	if (response.includes("OK")) {
+		console.log(`Status: Worker is up! Response: ${response}`);
+	} else {
+		throw new Error(`Worker is down! Response: ${response}`);
+	}
 
 	return response;
 }
