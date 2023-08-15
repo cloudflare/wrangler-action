@@ -13,7 +13,7 @@ import * as path from "node:path";
 import * as util from "node:util";
 const execAsync = util.promisify(exec);
 
-const DEFAULT_WRANGLER_VERSION = "3.4.0";
+const DEFAULT_WRANGLER_VERSION = "3.5.1";
 
 /**
  * A configuration object that contains all the inputs & immutable state for the action.
