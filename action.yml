@@ -13,7 +13,10 @@ inputs:
   accountId:
     description: "Your Cloudflare Account ID"
     required: false
-
+  quiet:
+    description: "Supresses output from Wrangler commands, defaults to `false`"
+    required: false
+    default: "false"
   environment:
     description: "The environment you'd like to deploy your Workers project to - must be defined in wrangler.toml"
   workingDirectory:

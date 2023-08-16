@@ -1,11 +1,12 @@
 import {
 	getInput,
 	getMultilineInput,
-	info,
 	setFailed,
-	endGroup,
-	startGroup,
-	error,
+	info as originalInfo,
+	error as originalError,
+	endGroup as originalEndGroup,
+	startGroup as originalStartGroup,
+	getBooleanInput,
 } from "@actions/core";
 import { execSync, exec } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -27,10 +28,35 @@ const config = {
 	ENVIRONMENT: getInput("environment"),
 	VARS: getMultilineInput("vars"),
 	COMMANDS: getMultilineInput("command"),
+	QUIET_MODE: getBooleanInput("quiet"),
 } as const;
 
 function getNpxCmd() {
 	return process.env.RUNNER_OS === "Windows" ? "npx.cmd" : "npx";
+}
+
+function info(message: string, bypass?: boolean): void {
+	if (!config.QUIET_MODE || bypass) {
+		originalInfo(message);
+	}
+}
+
+function error(message: string, bypass?: boolean): void {
+	if (!config.QUIET_MODE || bypass) {
+		originalError(message);
+	}
+}
+
+function startGroup(name: string): void {
+	if (!config.QUIET_MODE) {
+		originalStartGroup(name);
+	}
+}
+
+function endGroup(): void {
+	if (!config.QUIET_MODE) {
+		originalEndGroup();
+	}
 }
 
 /**
@@ -60,6 +86,7 @@ async function main() {
 	await uploadSecrets();
 	await wranglerCommands();
 	await execCommands(getMultilineInput("postCommands"), "post");
+	info("🏁 Wrangler Action completed", true);
 }
 
 async function runProcess(
@@ -70,12 +97,12 @@ async function runProcess(
 		const result = await execAsync(command, options);
 
 		result.stdout && info(result.stdout.toString());
-		result.stderr && error(result.stderr.toString());
+		result.stderr && error(result.stderr.toString(), true);
 
 		return result;
 	} catch (err: any) {
 		err.stdout && info(err.stdout.toString());
-		err.stderr && error(err.stderr.toString());
+		err.stderr && error(err.stderr.toString(), true);
 		throw err;
 	}
 }
@@ -105,7 +132,7 @@ function installWrangler() {
 	const command = `npm install wrangler@${config["WRANGLER_VERSION"]}`;
 	info(`Running command: ${command}`);
 	execSync(command, { cwd: config["workingDirectory"], env: process.env });
-	info(`✅ Wrangler installed`);
+	info(`✅ Wrangler installed`, true);
 	endGroup();
 }
 
@@ -135,7 +162,7 @@ async function execCommands(commands: string[], cmdType: string) {
 
 	await Promise.all(arrPromises).catch((result) => {
 		result.stdout && info(result.stdout.toString());
-		result.stderr && error(result.stderr.toString());
+		result.stderr && error(result.stderr.toString(), true);
 		setFailed(`🚨 ${cmdType}Commands failed`);
 	});
 	endGroup();

@@ -34,6 +34,15 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
 
+      - name: Only build app w/ quiet enabled
+        uses: ./
+        with:
+          quiet: true
+          workingDirectory: "./test/base"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --dry-run
+
       # START Setup and teardown of Worker Environment Tests
       - name: Environment support
         uses: ./
