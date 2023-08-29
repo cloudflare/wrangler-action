@@ -113,17 +113,11 @@ async function runProcess(
 }
 
 function checkWorkingDirectory(workingDirectory = ".") {
-	try {
-		const normalizedPath = path.normalize(workingDirectory);
-		if (existsSync(normalizedPath)) {
-			return normalizedPath;
-		} else {
-			throw new Error(`Directory ${workingDirectory} does not exist.`);
-		}
-	} catch (error) {
-		throw new Error(
-			`While checking/creating directory ${workingDirectory} received ${error}`,
-		);
+	const normalizedPath = path.normalize(workingDirectory);
+	if (existsSync(normalizedPath)) {
+		return normalizedPath;
+	} else {
+		throw new Error(`Directory ${workingDirectory} does not exist.`);
 	}
 }
 

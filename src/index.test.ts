@@ -47,18 +47,10 @@ describe("checkWorkingDirectory", () => {
 	});
 
 	test("should fail if the directory does not exist", () => {
-		try {
-			checkWorkingDirectory("/does/not/exist");
-		} catch (error) {
-			expect(error.message).toMatchInlineSnapshot();
-		}
-	});
-
-	test("should fail if an error occurs while checking/creating the directory", () => {
-		try {
-			checkWorkingDirectory("/does/not/exist");
-		} catch (error) {
-			expect(error.message).toMatchInlineSnapshot();
-		}
+		expect(() =>
+			checkWorkingDirectory("/does/not/exist"),
+		).toThrowErrorMatchingInlineSnapshot(
+			'"Directory /does/not/exist does not exist."',
+		);
 	});
 });
