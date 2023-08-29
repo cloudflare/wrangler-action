@@ -213,9 +213,10 @@ async function uploadSecrets() {
 	if (!secrets.length) {
 		return;
 	}
-	try {
-		startGroup("🔑 Uploading Secrets");
 
+	startGroup("🔑 Uploading secrets...");
+
+	try {
 		if (semverCompare(config["WRANGLER_VERSION"], "3.4.0"))
 			return legacyUploadSecrets(secrets, environment, workingDirectory);
 
@@ -238,9 +239,11 @@ async function uploadSecrets() {
 			env: process.env,
 			stdio: "ignore",
 		});
+
 		info(`✅ Uploaded secrets`);
 	} catch (err) {
-		throw new Error(`Error uploading secrets: ${err}`);
+		error(`❌ Upload failed`);
+		throw new Error(`Failed to upload secrets.`);
 	} finally {
 		endGroup();
 	}
