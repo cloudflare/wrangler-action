@@ -9,12 +9,12 @@
 		"isolatedModules": true,
 		"target": "ESNext",
 		"module": "ESNext",
-		"moduleResolution": "NodeNext",
+		"moduleResolution": "Bundler",
 		"rootDir": "./src",
 		"outDir": "./dist",
 		"lib": ["ESNext"],
 		"types": ["node", "@cloudflare/workers-types"]
 	},
 	"exclude": ["node_modules", "**/*.test.ts"],
-	"include": ["src/index.ts"]
+	"include": ["src"]
 }

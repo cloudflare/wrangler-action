@@ -9,8 +9,7 @@ import {
 	getBooleanInput,
 } from "@actions/core";
 import { execSync, exec } from "node:child_process";
-import { existsSync } from "node:fs";
-import * as path from "node:path";
+import { checkWorkingDirectory, getNpxCmd, semverCompare } from "./utils";
 import * as util from "node:util";
 const execAsync = util.promisify(exec);
 
@@ -30,10 +29,6 @@ const config = {
 	COMMANDS: getMultilineInput("command"),
 	QUIET_MODE: getBooleanInput("quiet"),
 } as const;
-
-function getNpxCmd() {
-	return process.env.RUNNER_OS === "Windows" ? "npx.cmd" : "npx";
-}
 
 function info(message: string, bypass?: boolean): void {
 	if (!config.QUIET_MODE || bypass) {
@@ -57,26 +52,6 @@ function endGroup(): void {
 	if (!config.QUIET_MODE) {
 		originalEndGroup();
 	}
-}
-
-/**
- * A helper function to compare two semver versions. If the second arg is greater than the first arg, it returns true.
- */
-function semverCompare(version1: string, version2: string) {
-	if (version2 === "latest") return true;
-
-	const version1Parts = version1.split(".");
-	const version2Parts = version2.split(".");
-
-	for (const version1Part of version1Parts) {
-		const version2Part = version2Parts.shift();
-
-		if (version1Part !== version2Part && version2Part) {
-			return version1Part < version2Part ? true : false;
-		}
-	}
-
-	return false;
 }
 
 async function main() {
@@ -109,15 +84,6 @@ async function runProcess(
 		err.stdout && info(err.stdout.toString());
 		err.stderr && error(err.stderr.toString(), true);
 		throw new Error(`\`${command}\` returned non-zero exit code.`);
-	}
-}
-
-function checkWorkingDirectory(workingDirectory = ".") {
-	const normalizedPath = path.normalize(workingDirectory);
-	if (existsSync(normalizedPath)) {
-		return normalizedPath;
-	} else {
-		throw new Error(`Directory ${workingDirectory} does not exist.`);
 	}
 }
 
@@ -310,7 +276,4 @@ export {
 	uploadSecrets,
 	authenticationSetup,
 	installWrangler,
-	checkWorkingDirectory,
-	getNpxCmd,
-	semverCompare,
 };
