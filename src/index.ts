@@ -88,8 +88,8 @@ async function main() {
 		await wranglerCommands();
 		await execCommands(getMultilineInput("postCommands"), "post");
 		info("🏁 Wrangler Action completed", true);
-	} catch (err) {
-		error(`${err}`);
+	} catch (err: unknown) {
+		err instanceof Error && error(err.message);
 		setFailed("🚨 Action failed");
 	}
 }
