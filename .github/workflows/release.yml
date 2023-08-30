@@ -41,6 +41,8 @@ jobs:
 
       - name: Tag & Release Action
         if: steps.changesets.outputs.published == 'true'
+        with:
+          tag_name: v${{ fromJSON(steps.changesets.outputs.publishedPackages)[0].version }}
         uses: JasonEtco/build-and-tag-action@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
