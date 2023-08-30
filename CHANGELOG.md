@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.1
+
+### Patch Changes
+
+- [#161](https://github.com/cloudflare/wrangler-action/pull/161) [`e5251df`](https://github.com/cloudflare/wrangler-action/commit/e5251df52154e9ebc98edb02ee0598c7210dcf0f) Thanks [@1000hz](https://github.com/1000hz)! - Refactored error handling to stop execution when action fails. Previously, the action would continue executing to completion if one of the steps encountered an error. Fixes #160.
+
 ## 3.1.0
 
 ### Minor Changes
