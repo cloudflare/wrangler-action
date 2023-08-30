@@ -1,17 +1,6 @@
 import { expect, test, describe } from "vitest";
-import { checkWorkingDirectory, getNpxCmd, semverCompare } from "./index";
+import { checkWorkingDirectory, getNpxCmd, semverCompare } from "./utils";
 import path from "node:path";
-
-const config = {
-	WRANGLER_VERSION: "mockVersion",
-	secrets: ["mockSercret", "mockSecretAgain"],
-	workingDirectory: "./mockWorkingDirectory",
-	CLOUDFLARE_API_TOKEN: "mockAPIToken",
-	CLOUDFLARE_ACCOUNT_ID: "mockAccountID",
-	ENVIRONMENT: undefined,
-	VARS: ["mockVar", "mockVarAgain"],
-	COMMANDS: ["mockCommand", "mockCommandAgain"],
-};
 
 test("getNpxCmd ", async () => {
 	process.env.RUNNER_OS = "Windows";
@@ -47,18 +36,10 @@ describe("checkWorkingDirectory", () => {
 	});
 
 	test("should fail if the directory does not exist", () => {
-		try {
-			checkWorkingDirectory("/does/not/exist");
-		} catch (error) {
-			expect(error.message).toMatchInlineSnapshot();
-		}
-	});
-
-	test("should fail if an error occurs while checking/creating the directory", () => {
-		try {
-			checkWorkingDirectory("/does/not/exist");
-		} catch (error) {
-			expect(error.message).toMatchInlineSnapshot();
-		}
+		expect(() =>
+			checkWorkingDirectory("/does/not/exist"),
+		).toThrowErrorMatchingInlineSnapshot(
+			'"Directory /does/not/exist does not exist."',
+		);
 	});
 });

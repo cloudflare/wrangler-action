@@ -51,6 +51,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           environment: dev
+          preCommands: npx wrangler deploy --env dev # https://github.com/cloudflare/wrangler-action/issues/162
           secrets: |
             SECRET1
             SECRET2
