@@ -8,10 +8,8 @@ import {
 	startGroup as originalStartGroup,
 	getBooleanInput,
 } from "@actions/core";
-import { execSync, exec } from "node:child_process";
+import { exec, execShell } from "./exec";
 import { checkWorkingDirectory, getNpxCmd, semverCompare } from "./utils";
-import * as util from "node:util";
-const execAsync = util.promisify(exec);
 
 const DEFAULT_WRANGLER_VERSION = "3.5.1";
 
@@ -56,8 +54,8 @@ function endGroup(): void {
 
 async function main() {
 	try {
-		installWrangler();
 		authenticationSetup();
+		await installWrangler();
 		await execCommands(getMultilineInput("preCommands"), "pre");
 		await uploadSecrets();
 		await wranglerCommands();
@@ -69,36 +67,24 @@ async function main() {
 	}
 }
 
-async function runProcess(
-	command: Parameters<typeof execAsync>[0],
-	options: Parameters<typeof execAsync>[1],
-) {
-	try {
-		const result = await execAsync(command, options);
-
-		result.stdout && info(result.stdout.toString());
-		result.stderr && error(result.stderr.toString(), true);
-
-		return result;
-	} catch (err: any) {
-		err.stdout && info(err.stdout.toString());
-		err.stderr && error(err.stderr.toString(), true);
-		throw new Error(`\`${command}\` returned non-zero exit code.`);
-	}
-}
-
-function installWrangler() {
+async function installWrangler() {
 	if (config["WRANGLER_VERSION"].startsWith("1")) {
 		throw new Error(
 			`Wrangler v1 is no longer supported by this action. Please use major version 2 or greater`,
 		);
 	}
+
 	startGroup("📥 Installing Wrangler");
-	const command = `npm install wrangler@${config["WRANGLER_VERSION"]}`;
-	info(`Running command: ${command}`);
-	execSync(command, { cwd: config["workingDirectory"], env: process.env });
-	info(`✅ Wrangler installed`, true);
-	endGroup();
+	try {
+		await exec("npm", ["install", `wrangler@${config["WRANGLER_VERSION"]}`], {
+			cwd: config["workingDirectory"],
+			silent: config["QUIET_MODE"],
+		});
+
+		info(`✅ Wrangler installed`, true);
+	} finally {
+		endGroup();
+	}
 }
 
 function authenticationSetup() {
@@ -113,28 +99,21 @@ async function execCommands(commands: string[], cmdType: string) {
 
 	startGroup(`🚀 Running ${cmdType}Commands`);
 	try {
-		const arrPromises = commands.map(async (command) => {
+		for (const command of commands) {
 			const cmd = command.startsWith("wrangler")
 				? `${getNpxCmd()} ${command}`
 				: command;
 
-			info(`🚀 Executing command: ${cmd}`);
-
-			return await runProcess(cmd, {
+			await execShell(cmd, {
 				cwd: config["workingDirectory"],
-				env: process.env,
+				silent: config["QUIET_MODE"],
 			});
-		});
-
-		await Promise.all(arrPromises);
+		}
 	} finally {
 		endGroup();
 	}
 }
 
-/**
- * A helper function to get the secret from the environment variables.
- */
 function getSecret(secret: string) {
 	if (!secret) {
 		throw new Error("Secret name cannot be blank.");
@@ -142,33 +121,43 @@ function getSecret(secret: string) {
 
 	const value = process.env[secret];
 	if (!value) {
-		throw new Error(`Value for secret ${secret} not found.`);
+		throw new Error(`Value for secret ${secret} not found in environment.`);
 	}
 
 	return value;
 }
 
-async function legacyUploadSecrets(
+function getEnvVar(envVar: string) {
+	if (!envVar) {
+		throw new Error("Var name cannot be blank.");
+	}
+
+	const value = process.env[envVar];
+	if (!value) {
+		throw new Error(`Value for var ${envVar} not found in environment.`);
+	}
+
+	return value;
+}
+
+function legacyUploadSecrets(
 	secrets: string[],
 	environment?: string,
 	workingDirectory?: string,
 ) {
-	const arrPromises = secrets
-		.map((secret) => {
-			const command = `echo ${getSecret(
-				secret,
-			)} | ${getNpxCmd()} wrangler secret put ${secret}`;
-			return environment ? command.concat(` --env ${environment}`) : command;
-		})
-		.map(
-			async (command) =>
-				await execAsync(command, {
-					cwd: workingDirectory,
-					env: process.env,
-				}),
-		);
-
-	await Promise.all(arrPromises);
+	return Promise.all(
+		secrets.map((secret) => {
+			const args = ["wranger", "secret", "put", secret];
+			if (environment) {
+				args.push("--env", environment);
+			}
+			return exec(getNpxCmd(), ["wrangler", "secret", "put", secret], {
+				cwd: workingDirectory,
+				silent: config["QUIET_MODE"],
+				input: Buffer.from(getSecret(secret)),
+			});
+		}),
+	);
 }
 
 async function uploadSecrets() {
@@ -183,49 +172,32 @@ async function uploadSecrets() {
 	startGroup("🔑 Uploading secrets...");
 
 	try {
-		if (semverCompare(config["WRANGLER_VERSION"], "3.4.0"))
+		if (semverCompare(config["WRANGLER_VERSION"], "3.4.0")) {
 			return legacyUploadSecrets(secrets, environment, workingDirectory);
+		}
 
-		const secretObj = secrets.reduce((acc: any, secret: string) => {
-			acc[secret] = getSecret(secret);
-			return acc;
-		}, {});
+		const args = ["wrangler", "secret:bulk"];
 
-		const environmentSuffix = !environment.length
-			? ""
-			: ` --env ${environment}`;
+		if (environment) {
+			args.push("--env", environment);
+		}
 
-		const secretCmd = `echo "${JSON.stringify(secretObj).replaceAll(
-			'"',
-			'\\"',
-		)}" | ${getNpxCmd()} wrangler secret:bulk ${environmentSuffix}`;
-
-		execSync(secretCmd, {
+		await exec(getNpxCmd(), args, {
 			cwd: workingDirectory,
-			env: process.env,
-			stdio: "ignore",
+			silent: config["QUIET_MODE"],
+			input: Buffer.from(
+				JSON.stringify(
+					Object.fromEntries(
+						secrets.map((secret) => [secret, getSecret(secret)]),
+					),
+				),
+			),
 		});
-
-		info(`✅ Uploaded secrets`);
 	} catch (err) {
-		error(`❌ Upload failed`);
 		throw new Error(`Failed to upload secrets.`);
 	} finally {
 		endGroup();
 	}
-}
-
-function getVarArgs() {
-	const vars = config["VARS"];
-	const envVarArray = vars.map((envVar: string) => {
-		if (process.env[envVar] && process.env[envVar]?.length !== 0) {
-			return `${envVar}:${process.env[envVar]!}`;
-		} else {
-			throw new Error(`Value for var ${envVar} not found in environment.`);
-		}
-	});
-
-	return envVarArray.length > 0 ? `--var ${envVarArray.join(" ").trim()}` : "";
 }
 
 async function wranglerCommands() {
@@ -242,27 +214,29 @@ async function wranglerCommands() {
 			commands.push(deployCommand);
 		}
 
-		const arrPromises = commands.map(async (command) => {
-			if (environment.length > 0 && !command.includes(`--env`)) {
-				command = command.concat(` --env ${environment}`);
+		for (let command of commands) {
+			const args = ["wrangler", ...command.split(/\s+/)];
+
+			if (environment && !args.includes(`--env`)) {
+				args.push("--env", environment);
 			}
 
-			const cmd = `${getNpxCmd()} wrangler ${command} ${
-				(command.startsWith("deploy") || command.startsWith("publish")) &&
-				!command.includes(`--var`)
-					? getVarArgs()
-					: ""
-			}`.trim();
+			if (
+				config["VARS"].length &&
+				(args.includes("deploy") || args.includes("publish")) &&
+				!args.includes("--var")
+			) {
+				args.push("--var");
+				for (const v of config["VARS"]) {
+					args.push(`${v}:${getEnvVar(v)}`);
+				}
+			}
 
-			info(`🚀 Executing command: ${cmd}`);
-
-			return await runProcess(cmd, {
+			await exec(getNpxCmd(), args, {
 				cwd: config["workingDirectory"],
-				env: process.env,
+				silent: config["QUIET_MODE"],
 			});
-		});
-
-		await Promise.all(arrPromises);
+		}
 	} finally {
 		endGroup();
 	}
