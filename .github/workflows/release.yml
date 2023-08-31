@@ -39,10 +39,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Tag & Release Action
+      - name: Build action
         if: steps.changesets.outputs.published == 'true'
+        run: npm run build
+
+      - name: Push dist-tags
+        if: steps.changesets.outputs.published == 'true'
+        uses: JasonEtco/build-and-tag-action@v2
         with:
           tag_name: v${{ fromJSON(steps.changesets.outputs.publishedPackages)[0].version }}
-        uses: JasonEtco/build-and-tag-action@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
