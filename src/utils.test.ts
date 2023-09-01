@@ -4,6 +4,7 @@ import {
 	checkWorkingDirectory,
 	detectPackageManager,
 	getNpxCmd,
+	isValidPackageManager,
 	semverCompare,
 } from "./utils";
 
@@ -69,4 +70,13 @@ describe("detectPackageManager", () => {
 	test("should return null if no package manager is detected", () => {
 		expect(detectPackageManager("test/fixtures/empty")).toBe(null);
 	});
+});
+
+test("isValidPackageManager", () => {
+	expect(isValidPackageManager("npm")).toBe(true);
+	expect(isValidPackageManager("pnpm")).toBe(true);
+	expect(isValidPackageManager("yarn")).toBe(true);
+
+	expect(isValidPackageManager("")).toBe(false);
+	expect(isValidPackageManager("ppnpm")).toBe(false);
 });

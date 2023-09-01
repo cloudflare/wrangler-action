@@ -50,3 +50,7 @@ export function detectPackageManager(
 	}
 	return null;
 }
+
+export function isValidPackageManager(name: string): name is PackageManager {
+	return name === "npm" || name === "yarn" || name === "pnpm";
+}
