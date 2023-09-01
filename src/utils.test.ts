@@ -3,23 +3,9 @@ import { describe, expect, test } from "vitest";
 import {
 	checkWorkingDirectory,
 	detectPackageManager,
-	getNpxCmd,
 	isValidPackageManager,
 	semverCompare,
 } from "./utils";
-
-test("getNpxCmd ", async () => {
-	process.env.RUNNER_OS = "Windows";
-	expect(getNpxCmd()).toBe("npx.cmd");
-
-	process.env.RUNNER_OS = "Mac";
-	expect(getNpxCmd()).toBe("npx");
-
-	process.env.RUNNER_OS = "Linux";
-	expect(getNpxCmd()).toBe("npx");
-
-	delete process.env.RUNNER_OS;
-});
 
 describe("semverCompare", () => {
 	test("should return false if the second argument is equal to the first argument", () => {

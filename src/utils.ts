@@ -1,10 +1,6 @@
 import { existsSync } from "node:fs";
 import * as path from "node:path";
 
-export function getNpxCmd() {
-	return process.env.RUNNER_OS === "Windows" ? "npx.cmd" : "npx";
-}
-
 /**
  * A helper function to compare two semver versions. If the second arg is greater than the first arg, it returns true.
  */
