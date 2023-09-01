@@ -14,6 +14,7 @@ import {
 	PackageManager,
 	checkWorkingDirectory,
 	detectPackageManager,
+	isValidPackageManager,
 	semverCompare,
 } from "./utils";
 const execAsync = util.promisify(exec);
@@ -53,9 +54,14 @@ const config = {
 	VARS: getMultilineInput("vars"),
 	COMMANDS: getMultilineInput("command"),
 	QUIET_MODE: getBooleanInput("quiet"),
+	PACKAGE_MANAGER: getInput("packageManager"),
 } as const;
 
 function realPackageManager(): PackageManager {
+	if (isValidPackageManager(config.PACKAGE_MANAGER)) {
+		return config.PACKAGE_MANAGER;
+	}
+
 	const packageManager = detectPackageManager(config.workingDirectory);
 	if (packageManager !== null) {
 		return packageManager;
