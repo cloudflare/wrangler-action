@@ -1,6 +1,11 @@
-import { expect, test, describe } from "vitest";
-import { checkWorkingDirectory, getNpxCmd, semverCompare } from "./utils";
 import path from "node:path";
+import { describe, expect, test } from "vitest";
+import {
+	checkWorkingDirectory,
+	detectPackageManager,
+	getNpxCmd,
+	semverCompare,
+} from "./utils";
 
 test("getNpxCmd ", async () => {
 	process.env.RUNNER_OS = "Windows";
@@ -41,5 +46,27 @@ describe("checkWorkingDirectory", () => {
 		).toThrowErrorMatchingInlineSnapshot(
 			'"Directory /does/not/exist does not exist."',
 		);
+	});
+});
+
+describe("detectPackageManager", () => {
+	test("should return name of package manager for current workspace", () => {
+		expect(detectPackageManager()).toBe("npm");
+	});
+
+	test("should return npm if package-lock.json exists", () => {
+		expect(detectPackageManager("test/fixtures/npm")).toBe("npm");
+	});
+
+	test("should return yarn if yarn.lock exists", () => {
+		expect(detectPackageManager("test/fixtures/yarn")).toBe("yarn");
+	});
+
+	test("should return pnpm if pnpm-lock.yaml exists", () => {
+		expect(detectPackageManager("test/fixtures/pnpm")).toBe("pnpm");
+	});
+
+	test("should return null if no package manager is detected", () => {
+		expect(detectPackageManager("test/fixtures/empty")).toBe(null);
 	});
 });
