@@ -42,19 +42,19 @@ describe("detectPackageManager", () => {
 	});
 
 	test("should return npm if package-lock.json exists", () => {
-		expect(detectPackageManager("test/fixtures/npm")).toBe("npm");
+		expect(detectPackageManager("test/npm")).toBe("npm");
 	});
 
 	test("should return yarn if yarn.lock exists", () => {
-		expect(detectPackageManager("test/fixtures/yarn")).toBe("yarn");
+		expect(detectPackageManager("test/yarn")).toBe("yarn");
 	});
 
 	test("should return pnpm if pnpm-lock.yaml exists", () => {
-		expect(detectPackageManager("test/fixtures/pnpm")).toBe("pnpm");
+		expect(detectPackageManager("test/pnpm")).toBe("pnpm");
 	});
 
 	test("should return null if no package manager is detected", () => {
-		expect(detectPackageManager("test/fixtures/empty")).toBe(null);
+		expect(detectPackageManager("test/empty")).toBe(null);
 	});
 });
 

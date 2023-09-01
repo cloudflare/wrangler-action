@@ -116,7 +116,7 @@ jobs:
       - name: Support packageManager variable
         uses: ./
         with:
-          workingDirectory: "./test/fixtures/empty"
+          workingDirectory: "./test/empty"
           packageManager: "npm"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -125,7 +125,7 @@ jobs:
       - name: Support npm package manager
         uses: ./
         with:
-          workingDirectory: "./test/fixtures/npm"
+          workingDirectory: "./test/npm"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
@@ -133,7 +133,7 @@ jobs:
       - name: Support yarn package manager
         uses: ./
         with:
-          workingDirectory: "./test/fixtures/yarn"
+          workingDirectory: "./test/yarn"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
@@ -141,7 +141,7 @@ jobs:
       - name: Support pnpm package manager
         uses: ./
         with:
-          workingDirectory: "./test/fixtures/pnpm"
+          workingDirectory: "./test/pnpm"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
