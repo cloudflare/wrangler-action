@@ -4,7 +4,7 @@ branding:
   color: "orange"
 description: "Deploy your Cloudflare projects from GitHub using Wrangler"
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.mjs"
 inputs:
   apiToken:
