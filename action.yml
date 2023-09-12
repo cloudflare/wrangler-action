@@ -43,4 +43,4 @@ inputs:
     required: false
   packageManager:
     description: "The name of the package manager to install and run wrangler. If not provided, it will be detected via the lock file. Valid values: [npm, pnpm, yarn]"
-      required: false
+    required: false
