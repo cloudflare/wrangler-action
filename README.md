@@ -213,6 +213,7 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
+          environment: ${{ github.event.inputs.environment }}
           command: deploy --env ${{ github.event.inputs.environment }}
 ```
 
@@ -242,4 +243,24 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
+```
+### "[NOTICE] Since you have specified an environment you need to make sure to pass in '--env dev' to your command."
+
+If you are setting [environment specific parameters](https://developers.cloudflare.com/workers/wrangler/environments/) via the `wrangler.toml` file. You need to ensure the environment parameter is passed to the `action` as well as in the `command` you are asking Wrangler to execute. This is becuase other Wrangler, such as secret uploads, need to know the environment context as well.
+
+```yaml
+on: [push]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy app
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          environment: dev
+          command: deploy --env dev
 ```
