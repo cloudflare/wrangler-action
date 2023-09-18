@@ -130,6 +130,9 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
 
+      - name: Install yarn
+        run: npm i -g yarn
+
       - name: Support yarn package manager
         uses: ./
         with:
@@ -137,6 +140,9 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
+
+      - name: Install pnpm
+        run: npm i -g pnpm
 
       - name: Support pnpm package manager
         uses: ./
