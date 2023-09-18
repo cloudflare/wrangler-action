@@ -111,4 +111,43 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: delete --name wrangler-action-test --force
-    # END Setup and teardown of Workers w/ Secrets Tests
+      # END Setup and teardown of Workers w/ Secrets Tests
+
+      - name: Support packageManager variable
+        uses: ./
+        with:
+          workingDirectory: "./test/empty"
+          packageManager: "npm"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --dry-run
+
+      - name: Support npm package manager
+        uses: ./
+        with:
+          workingDirectory: "./test/npm"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --dry-run
+
+      - name: Install yarn
+        run: npm i -g yarn
+
+      - name: Support yarn package manager
+        uses: ./
+        with:
+          workingDirectory: "./test/yarn"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --dry-run
+
+      - name: Install pnpm
+        run: npm i -g pnpm
+
+      - name: Support pnpm package manager
+        uses: ./
+        with:
+          workingDirectory: "./test/pnpm"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --dry-run

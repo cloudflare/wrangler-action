@@ -1,19 +1,11 @@
-import { expect, test, describe } from "vitest";
-import { checkWorkingDirectory, getNpxCmd, semverCompare } from "./utils";
 import path from "node:path";
-
-test("getNpxCmd ", async () => {
-	process.env.RUNNER_OS = "Windows";
-	expect(getNpxCmd()).toBe("npx.cmd");
-
-	process.env.RUNNER_OS = "Mac";
-	expect(getNpxCmd()).toBe("npx");
-
-	process.env.RUNNER_OS = "Linux";
-	expect(getNpxCmd()).toBe("npx");
-
-	delete process.env.RUNNER_OS;
-});
+import { describe, expect, test } from "vitest";
+import {
+	checkWorkingDirectory,
+	detectPackageManager,
+	isValidPackageManager,
+	semverCompare,
+} from "./utils";
 
 describe("semverCompare", () => {
 	test("should return false if the second argument is equal to the first argument", () => {
@@ -42,4 +34,35 @@ describe("checkWorkingDirectory", () => {
 			'"Directory /does/not/exist does not exist."',
 		);
 	});
+});
+
+describe("detectPackageManager", () => {
+	test("should return name of package manager for current workspace", () => {
+		expect(detectPackageManager()).toBe("npm");
+	});
+
+	test("should return npm if package-lock.json exists", () => {
+		expect(detectPackageManager("test/npm")).toBe("npm");
+	});
+
+	test("should return yarn if yarn.lock exists", () => {
+		expect(detectPackageManager("test/yarn")).toBe("yarn");
+	});
+
+	test("should return pnpm if pnpm-lock.yaml exists", () => {
+		expect(detectPackageManager("test/pnpm")).toBe("pnpm");
+	});
+
+	test("should return null if no package manager is detected", () => {
+		expect(detectPackageManager("test/empty")).toBe(null);
+	});
+});
+
+test("isValidPackageManager", () => {
+	expect(isValidPackageManager("npm")).toBe(true);
+	expect(isValidPackageManager("pnpm")).toBe(true);
+	expect(isValidPackageManager("yarn")).toBe(true);
+
+	expect(isValidPackageManager("")).toBe(false);
+	expect(isValidPackageManager("ppnpm")).toBe(false);
 });

@@ -1,19 +1,45 @@
 import {
+	getBooleanInput,
 	getInput,
 	getMultilineInput,
-	setFailed,
-	info as originalInfo,
-	error as originalError,
 	endGroup as originalEndGroup,
+	error as originalError,
+	info as originalInfo,
 	startGroup as originalStartGroup,
-	getBooleanInput,
+	setFailed,
 } from "@actions/core";
-import { execSync, exec } from "node:child_process";
-import { checkWorkingDirectory, getNpxCmd, semverCompare } from "./utils";
+import { exec, execSync } from "node:child_process";
 import * as util from "node:util";
+import {
+	PackageManager,
+	checkWorkingDirectory,
+	detectPackageManager,
+	isValidPackageManager,
+	semverCompare,
+} from "./utils";
 const execAsync = util.promisify(exec);
 
 const DEFAULT_WRANGLER_VERSION = "3.5.1";
+
+interface PackageManagerCommands {
+	install: string;
+	exec: string;
+}
+
+const PACKAGE_MANAGER_COMMANDS = {
+	npm: {
+		install: "npm i",
+		exec: "npx",
+	},
+	yarn: {
+		install: "yarn add",
+		exec: "yarn",
+	},
+	pnpm: {
+		install: "pnpm add",
+		exec: "pnpm exec",
+	},
+} as const satisfies Readonly<Record<PackageManager, PackageManagerCommands>>;
 
 /**
  * A configuration object that contains all the inputs & immutable state for the action.
@@ -28,7 +54,23 @@ const config = {
 	VARS: getMultilineInput("vars"),
 	COMMANDS: getMultilineInput("command"),
 	QUIET_MODE: getBooleanInput("quiet"),
+	PACKAGE_MANAGER: getInput("packageManager"),
 } as const;
+
+function realPackageManager(): PackageManager {
+	if (isValidPackageManager(config.PACKAGE_MANAGER)) {
+		return config.PACKAGE_MANAGER;
+	}
+
+	const packageManager = detectPackageManager(config.workingDirectory);
+	if (packageManager !== null) {
+		return packageManager;
+	}
+
+	throw new Error("Package manager is not detected");
+}
+
+const pkgManagerCmd = PACKAGE_MANAGER_COMMANDS[realPackageManager()];
 
 function info(message: string, bypass?: boolean): void {
 	if (!config.QUIET_MODE || bypass) {
@@ -94,7 +136,7 @@ function installWrangler() {
 		);
 	}
 	startGroup("📥 Installing Wrangler");
-	const command = `npm install wrangler@${config["WRANGLER_VERSION"]}`;
+	const command = `${pkgManagerCmd.install} wrangler@${config["WRANGLER_VERSION"]}`;
 	info(`Running command: ${command}`);
 	execSync(command, { cwd: config["workingDirectory"], env: process.env });
 	info(`✅ Wrangler installed`, true);
@@ -115,7 +157,7 @@ async function execCommands(commands: string[], cmdType: string) {
 	try {
 		const arrPromises = commands.map(async (command) => {
 			const cmd = command.startsWith("wrangler")
-				? `${getNpxCmd()} ${command}`
+				? `${pkgManagerCmd.exec} ${command}`
 				: command;
 
 			info(`🚀 Executing command: ${cmd}`);
@@ -155,9 +197,9 @@ async function legacyUploadSecrets(
 ) {
 	const arrPromises = secrets
 		.map((secret) => {
-			const command = `echo ${getSecret(
-				secret,
-			)} | ${getNpxCmd()} wrangler secret put ${secret}`;
+			const command = `echo ${getSecret(secret)} | ${
+				pkgManagerCmd.exec
+			} wrangler secret put ${secret}`;
 			return environment ? command.concat(` --env ${environment}`) : command;
 		})
 		.map(
@@ -198,7 +240,7 @@ async function uploadSecrets() {
 		const secretCmd = `echo "${JSON.stringify(secretObj).replaceAll(
 			'"',
 			'\\"',
-		)}" | ${getNpxCmd()} wrangler secret:bulk ${environmentSuffix}`;
+		)}" | ${pkgManagerCmd.exec} wrangler secret:bulk ${environmentSuffix}`;
 
 		execSync(secretCmd, {
 			cwd: workingDirectory,
@@ -247,7 +289,7 @@ async function wranglerCommands() {
 				command = command.concat(` --env ${environment}`);
 			}
 
-			const cmd = `${getNpxCmd()} wrangler ${command} ${
+			const cmd = `${pkgManagerCmd.exec} wrangler ${command} ${
 				(command.startsWith("deploy") || command.startsWith("publish")) &&
 				!command.includes(`--var`)
 					? getVarArgs()
@@ -271,9 +313,9 @@ async function wranglerCommands() {
 main();
 
 export {
-	wranglerCommands,
-	execCommands,
-	uploadSecrets,
 	authenticationSetup,
+	execCommands,
 	installWrangler,
+	uploadSecrets,
+	wranglerCommands,
 };

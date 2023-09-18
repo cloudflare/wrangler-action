@@ -1,10 +1,6 @@
 import { existsSync } from "node:fs";
 import * as path from "node:path";
 
-export function getNpxCmd() {
-	return process.env.RUNNER_OS === "Windows" ? "npx.cmd" : "npx";
-}
-
 /**
  * A helper function to compare two semver versions. If the second arg is greater than the first arg, it returns true.
  */
@@ -32,4 +28,25 @@ export function checkWorkingDirectory(workingDirectory = ".") {
 	} else {
 		throw new Error(`Directory ${workingDirectory} does not exist.`);
 	}
+}
+
+export type PackageManager = "npm" | "yarn" | "pnpm";
+
+export function detectPackageManager(
+	workingDirectory = ".",
+): PackageManager | null {
+	if (existsSync(path.join(workingDirectory, "package-lock.json"))) {
+		return "npm";
+	}
+	if (existsSync(path.join(workingDirectory, "yarn.lock"))) {
+		return "yarn";
+	}
+	if (existsSync(path.join(workingDirectory, "pnpm-lock.yaml"))) {
+		return "pnpm";
+	}
+	return null;
+}
+
+export function isValidPackageManager(name: string): name is PackageManager {
+	return name === "npm" || name === "yarn" || name === "pnpm";
 }
