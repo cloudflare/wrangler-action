@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.2.0
+
+### Minor Changes
+
+- [#166](https://github.com/cloudflare/wrangler-action/pull/166) [`7d7b988`](https://github.com/cloudflare/wrangler-action/commit/7d7b98826e14e9ad422870a7263b7074b40bf16f) Thanks [@nix6839](https://github.com/nix6839)! - Support for package managers other than npm, such as pnpm and yarn.
+
+  fixes #156
+
 ## 3.1.1
 
 ### Patch Changes
