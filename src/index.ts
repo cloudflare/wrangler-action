@@ -29,11 +29,11 @@ interface PackageManagerCommands {
 const PACKAGE_MANAGER_COMMANDS = {
 	npm: {
 		install: "npm i",
-		exec: "npm exec",
+		exec: "npx",
 	},
 	yarn: {
 		install: "yarn add",
-		exec: "yarn exec",
+		exec: "yarn",
 	},
 	pnpm: {
 		install: "pnpm add",
