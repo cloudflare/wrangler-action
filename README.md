@@ -246,7 +246,7 @@ jobs:
 ```
 ### "[NOTICE] Since you have specified an environment you need to make sure to pass in '--env dev' to your command."
 
-If you are setting [environment specific parameters](https://developers.cloudflare.com/workers/wrangler/environments/) via the `wrangler.toml` file. You need to ensure the environment parameter is passed to the `action` as well as in the `command` you are asking Wrangler to execute. This is becuase other Wrangler, such as secret uploads, need to know the environment context as well.
+If you are setting [environment specific parameters](https://developers.cloudflare.com/workers/wrangler/environments/) via the `wrangler.toml` file. You need to ensure the environment parameter is passed to the `action` as well as in the `command` you are executing. This is because other Wrangler commands, such as secret uploads, need to know the environment context as well.
 
 ```yaml
 on: [push]
