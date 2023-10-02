@@ -3,7 +3,7 @@ name: Add issues to workers-sdk GH project
 on:
   issues:
     types:
-      - opened
+      - [opened, transferred]
 
 jobs:
   add-to-project:
