@@ -1,13 +1,10 @@
-name: Issue
+name: Pull request
 
-on:
-  issues:
-    types:
-      - [opened, transferred]
+on: pull_request
 
 jobs:
   add-to-project:
-    name: Add issue to workers-sdk GH project
+    name: Add PR to workers-sdk GH project
     runs-on: ubuntu-latest
     steps:
       - uses: actions/add-to-project@v0.5.0
