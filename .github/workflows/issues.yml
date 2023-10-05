@@ -3,7 +3,8 @@ name: Issue
 on:
   issues:
     types:
-      - [opened, transferred]
+      - opened
+      - transferred
 
 jobs:
   add-to-project:
