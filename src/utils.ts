@@ -29,24 +29,3 @@ export function checkWorkingDirectory(workingDirectory = ".") {
 		throw new Error(`Directory ${workingDirectory} does not exist.`);
 	}
 }
-
-export type PackageManager = "npm" | "yarn" | "pnpm";
-
-export function detectPackageManager(
-	workingDirectory = ".",
-): PackageManager | null {
-	if (existsSync(path.join(workingDirectory, "package-lock.json"))) {
-		return "npm";
-	}
-	if (existsSync(path.join(workingDirectory, "yarn.lock"))) {
-		return "yarn";
-	}
-	if (existsSync(path.join(workingDirectory, "pnpm-lock.yaml"))) {
-		return "pnpm";
-	}
-	return null;
-}
-
-export function isValidPackageManager(name: string): name is PackageManager {
-	return name === "npm" || name === "yarn" || name === "pnpm";
-}
