@@ -243,3 +243,18 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
 ```
+
+### "Error: Package manager is not detected"
+
+You will need to add `packageManager: npm` in the `with` block of your workflow file.`npm` also can set to `pnpm` or `yarn`.
+
+```yaml
+jobs:
+  deploy:
+    name: Deploy
+    steps:
+      uses: cloudflare/wrangler-action@v3
+      with:
+        apiToken: ${{ secrets.CF_API_TOKEN }}
+        packageManager: npm # Valid values: [npm, pnpm, yarn]
+```
