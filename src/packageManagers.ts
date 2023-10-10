@@ -19,6 +19,10 @@ const PACKAGE_MANAGERS = {
 		install: "pnpm add",
 		exec: "pnpm exec",
 	},
+	bun: {
+		install: "bun i",
+		exec: "bunx"
+	},
 } as const satisfies Readonly<Record<string, PackageManager>>;
 
 type PackageManagerValue = keyof typeof PACKAGE_MANAGERS;
@@ -34,6 +38,9 @@ function detectPackageManager(
 	}
 	if (existsSync(path.join(workingDirectory, "pnpm-lock.yaml"))) {
 		return "pnpm";
+	}
+	if (existsSync(path.join(workingDirectory, "bun.lockb"))) {
+		return "bun";
 	}
 	return null;
 }

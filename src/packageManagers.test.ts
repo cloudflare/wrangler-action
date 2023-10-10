@@ -26,6 +26,14 @@ describe("getPackageManager", () => {
 				  "install": "pnpm add",
 				}
 			`);
+
+		expect(getPackageManager('bun', { workingDirectory: "test/bun" }))
+			.toMatchInlineSnapshot(`
+				{
+				  "exec": "bunx",
+				  "install": "bun i",
+				}
+			`);
 	});
 
 	test("should use npm if no value provided and package-lock.json exists", () => {
@@ -56,6 +64,16 @@ describe("getPackageManager", () => {
 			  "install": "pnpm add",
 			}
 		`);
+	});
+
+	test("should use bun if no value provided and bun.lockb exists", () => {
+		expect(getPackageManager("", { workingDirectory: "test/bun" }))
+			.toMatchInlineSnapshot(`
+			{
+			  "exec": "bunx",
+			  "install": "bun i",
+			}
+			`);
 	});
 
 	test("should use npm if no value provided and no lockfile is present", () => {
