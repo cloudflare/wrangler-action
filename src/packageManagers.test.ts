@@ -27,7 +27,7 @@ describe("getPackageManager", () => {
 				}
 			`);
 
-		expect(getPackageManager('bun', { workingDirectory: "test/bun" }))
+		expect(getPackageManager("bun", { workingDirectory: "test/bun" }))
 			.toMatchInlineSnapshot(`
 				{
 				  "exec": "bunx",
