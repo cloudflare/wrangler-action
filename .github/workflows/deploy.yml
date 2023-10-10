@@ -122,6 +122,14 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
 
+      - name: Support unspecified packageManager with no lockfile
+        uses: ./
+        with:
+          workingDirectory: "./test/empty"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --dry-run
+
       - name: Support npm package manager
         uses: ./
         with:

@@ -10,36 +10,11 @@ import {
 } from "@actions/core";
 import { exec, execSync } from "node:child_process";
 import * as util from "node:util";
-import {
-	PackageManager,
-	checkWorkingDirectory,
-	detectPackageManager,
-	isValidPackageManager,
-	semverCompare,
-} from "./utils";
+import { checkWorkingDirectory, semverCompare } from "./utils";
+import { getPackageManager } from "./packageManagers";
 const execAsync = util.promisify(exec);
 
 const DEFAULT_WRANGLER_VERSION = "3.5.1";
-
-interface PackageManagerCommands {
-	install: string;
-	exec: string;
-}
-
-const PACKAGE_MANAGER_COMMANDS = {
-	npm: {
-		install: "npm i",
-		exec: "npx",
-	},
-	yarn: {
-		install: "yarn add",
-		exec: "yarn",
-	},
-	pnpm: {
-		install: "pnpm add",
-		exec: "pnpm exec",
-	},
-} as const satisfies Readonly<Record<PackageManager, PackageManagerCommands>>;
 
 /**
  * A configuration object that contains all the inputs & immutable state for the action.
@@ -57,20 +32,9 @@ const config = {
 	PACKAGE_MANAGER: getInput("packageManager"),
 } as const;
 
-function realPackageManager(): PackageManager {
-	if (isValidPackageManager(config.PACKAGE_MANAGER)) {
-		return config.PACKAGE_MANAGER;
-	}
-
-	const packageManager = detectPackageManager(config.workingDirectory);
-	if (packageManager !== null) {
-		return packageManager;
-	}
-
-	throw new Error("Package manager is not detected");
-}
-
-const pkgManagerCmd = PACKAGE_MANAGER_COMMANDS[realPackageManager()];
+const packageManager = getPackageManager(config.PACKAGE_MANAGER, {
+	workingDirectory: config.workingDirectory,
+});
 
 function info(message: string, bypass?: boolean): void {
 	if (!config.QUIET_MODE || bypass) {
@@ -136,7 +100,7 @@ function installWrangler() {
 		);
 	}
 	startGroup("📥 Installing Wrangler");
-	const command = `${pkgManagerCmd.install} wrangler@${config["WRANGLER_VERSION"]}`;
+	const command = `${packageManager.install} wrangler@${config["WRANGLER_VERSION"]}`;
 	info(`Running command: ${command}`);
 	execSync(command, { cwd: config["workingDirectory"], env: process.env });
 	info(`✅ Wrangler installed`, true);
@@ -157,7 +121,7 @@ async function execCommands(commands: string[], cmdType: string) {
 	try {
 		const arrPromises = commands.map(async (command) => {
 			const cmd = command.startsWith("wrangler")
-				? `${pkgManagerCmd.exec} ${command}`
+				? `${packageManager.exec} ${command}`
 				: command;
 
 			info(`🚀 Executing command: ${cmd}`);
@@ -198,7 +162,7 @@ async function legacyUploadSecrets(
 	const arrPromises = secrets
 		.map((secret) => {
 			const command = `echo ${getSecret(secret)} | ${
-				pkgManagerCmd.exec
+				packageManager.exec
 			} wrangler secret put ${secret}`;
 			return environment ? command.concat(` --env ${environment}`) : command;
 		})
@@ -240,7 +204,7 @@ async function uploadSecrets() {
 		const secretCmd = `echo "${JSON.stringify(secretObj).replaceAll(
 			'"',
 			'\\"',
-		)}" | ${pkgManagerCmd.exec} wrangler secret:bulk ${environmentSuffix}`;
+		)}" | ${packageManager.exec} wrangler secret:bulk ${environmentSuffix}`;
 
 		execSync(secretCmd, {
 			cwd: workingDirectory,
@@ -289,7 +253,7 @@ async function wranglerCommands() {
 				command = command.concat(` --env ${environment}`);
 			}
 
-			const cmd = `${pkgManagerCmd.exec} wrangler ${command} ${
+			const cmd = `${packageManager.exec} wrangler ${command} ${
 				(command.startsWith("deploy") || command.startsWith("publish")) &&
 				!command.includes(`--var`)
 					? getVarArgs()
