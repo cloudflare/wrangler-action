@@ -1,9 +1,0 @@
-name = "wrangler-action-environment-test"
-main = "./index.ts"
-compatibility_date = "2023-07-07"
-workers_dev = true
-
-[env.dev]
-name = "wrangler-action-dev-environment-test"
-[env.dev.vars]
-DEV_VAR = "example_production_token"
