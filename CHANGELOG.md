@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.0
+
+### Minor Changes
+
+- [#188](https://github.com/cloudflare/wrangler-action/pull/188) [`d9a0a00`](https://github.com/cloudflare/wrangler-action/commit/d9a0a00f8bc502ceea2a60e5af258416b35a85b9) Thanks [@simpleauthority](https://github.com/simpleauthority)! - Added support for Bun as a package manager
+
 ## 3.2.1
 
 ### Patch Changes
