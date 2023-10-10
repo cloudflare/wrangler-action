@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2.1
+
+### Patch Changes
+
+- [#190](https://github.com/cloudflare/wrangler-action/pull/190) [`528687a`](https://github.com/cloudflare/wrangler-action/commit/528687aaf436f67565918533ffd15c250f39c47b) Thanks [@1000hz](https://github.com/1000hz)! - Fixed action failure when no `packageManager` specified and no lockfile is found. The action now falls back to using npm.
+
 ## 3.2.0
 
 ### Minor Changes
