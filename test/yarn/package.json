@@ -1,4 +1,5 @@
 {
 	"name": "wrangler-action-yarn-test",
-	"license": "MIT"
+	"license": "MIT",
+	"private": true
 }

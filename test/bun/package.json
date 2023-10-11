@@ -1,4 +1,5 @@
 {
 	"name": "wrangler-action-bun-test",
-	"license": "MIT"
+	"license": "MIT",
+	"private": true
 }
