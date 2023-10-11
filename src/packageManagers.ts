@@ -21,7 +21,7 @@ const PACKAGE_MANAGERS = {
 	},
 	bun: {
 		install: "bun i",
-		exec: "bunx"
+		exec: "bunx",
 	},
 } as const satisfies Readonly<Record<string, PackageManager>>;
 
