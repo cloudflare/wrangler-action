@@ -1,3 +1,4 @@
 {
-	"name": "wrangler-action-pnpm-test"
+	"name": "wrangler-action-pnpm-test",
+	"license": "MIT"
 }

@@ -1,3 +1,4 @@
 {
-	"name": "wrangler-action-yarn-test"
+	"name": "wrangler-action-yarn-test",
+	"license": "MIT"
 }

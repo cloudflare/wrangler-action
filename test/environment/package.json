@@ -1,3 +1,4 @@
 {
-	"name": "wrangler-action-environment-test"
+	"name": "wrangler-action-environment-test",
+	"license": "MIT"
 }
