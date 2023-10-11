@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.1
+
+### Patch Changes
+
+- [#193](https://github.com/cloudflare/wrangler-action/pull/193) [`a4509d5`](https://github.com/cloudflare/wrangler-action/commit/a4509d507c62dd7f49fba7df7d2db3997222393a) Thanks [@1000hz](https://github.com/1000hz)! - Fixed the package manager not being inferred based on lockfile when the `packageManager` input isn't set.
+
 ## 3.3.0
 
 ### Minor Changes
