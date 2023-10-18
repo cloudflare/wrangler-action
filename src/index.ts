@@ -12,7 +12,7 @@ import { exec, execShell } from "./exec";
 import { checkWorkingDirectory, semverCompare } from "./utils";
 import { getPackageManager } from "./packageManagers";
 
-const DEFAULT_WRANGLER_VERSION = "3.5.1";
+const DEFAULT_WRANGLER_VERSION = "3.13.2";
 
 /**
  * A configuration object that contains all the inputs & immutable state for the action.
