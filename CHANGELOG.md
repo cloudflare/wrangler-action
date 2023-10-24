@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.3.2
+
+### Patch Changes
+
+- [#171](https://github.com/cloudflare/wrangler-action/pull/171) [`76d614f`](https://github.com/cloudflare/wrangler-action/commit/76d614f400bd92237ed23c3df559f2c31b14a790) Thanks [@1000hz](https://github.com/1000hz)! - Fixed issues that caused the action to fail if any secret or var values contained shell metacharacters.
+
+- [#171](https://github.com/cloudflare/wrangler-action/pull/171) [`473d9cb`](https://github.com/cloudflare/wrangler-action/commit/473d9cbd296528b41c653af10062faba6540a7ab) Thanks [@1000hz](https://github.com/1000hz)! - Bumped `DEFAULT_WRANGLER_VERSION` to 3.13.2
+
 ## 3.3.1
 
 ### Patch Changes
