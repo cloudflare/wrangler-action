@@ -31,14 +31,14 @@ jobs:
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 ```
 
 ## Authentication
 
 You'll need to configure Wrangler using GitHub's Secrets feature - go to "Settings -> Secrets" and add your Cloudflare API token (for help finding this, see the [Workers documentation](https://developers.cloudflare.com/workers/quickstart/#api-token)). Your API token is encrypted by GitHub, and the action won't print it into logs, so it should be safe!
 
-With your API token set as a secret for your repository, pass it to the action in the `with` block of your workflow. Below, I've set the secret name to `CF_API_TOKEN`:
+With your API token set as a secret for your repository, pass it to the action in the `with` block of your workflow. Below, I've set the secret name to `CLOUDFLARE_API_TOKEN`:
 
 ```yaml
 jobs:
@@ -47,7 +47,7 @@ jobs:
     steps:
       uses: cloudflare/wrangler-action@v3
       with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 ```
 
 ## Configuration
@@ -60,7 +60,7 @@ jobs:
     steps:
       uses: cloudflare/wrangler-action@v3
       with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         wranglerVersion: "2.20.0"
 ```
 
@@ -72,7 +72,7 @@ jobs:
     steps:
       uses: cloudflare/wrangler-action@v3
       with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         workingDirectory: "subfoldername"
 ```
 
@@ -84,7 +84,7 @@ jobs:
     steps:
       uses: cloudflare/wrangler-action@v3
       with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         secrets: |
           SECRET1
           SECRET2
@@ -101,7 +101,7 @@ jobs:
     steps:
       uses: cloudflare/wrangler-action@v3
       with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         preCommands: echo "*** pre command ***"
         postCommands: |
           echo "*** post commands ***"
@@ -117,7 +117,7 @@ jobs:
     steps:
       uses: cloudflare/wrangler-action@v3
       with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         command: whoami
 ```
 
@@ -142,7 +142,7 @@ jobs:
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 ```
 
 Note that there are a number of possible events, like `push`, that can be used to trigger a workflow. For more details on the events available, refer to the [GitHub Actions documentation](https://help.github.com/en/articles/workflow-syntax-for-github-actions#on).
@@ -163,7 +163,7 @@ jobs:
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy --project-name=example
 ```
@@ -186,7 +186,7 @@ jobs:
       - name: Deploy app
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 ```
 
 If you need help defining the correct cron syntax, check out [crontab.guru](https://crontab.guru/), which provides a friendly user interface for validating your cron schedule.
@@ -212,7 +212,7 @@ jobs:
       - name: Deploy app
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy --env ${{ github.event.inputs.environment }}
 ```
 
@@ -240,6 +240,6 @@ jobs:
       - name: Deploy app
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
 ```
