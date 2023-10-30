@@ -164,7 +164,7 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy --project-name=example
 ```
 
@@ -241,5 +241,5 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 ```
