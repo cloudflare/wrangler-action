@@ -27,6 +27,15 @@ describe("getPackageManager", () => {
 				}
 			`);
 
+		expect(
+			getPackageManager("pnpm-workspace", { workingDirectory: "test/npm" }),
+		).toMatchInlineSnapshot(`
+				{
+				  "exec": "pnpm exec",
+				  "install": "pnpm add -w",
+				}
+			`);
+
 		expect(getPackageManager("bun", { workingDirectory: "test/bun" }))
 			.toMatchInlineSnapshot(`
 				{

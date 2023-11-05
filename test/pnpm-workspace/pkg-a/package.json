@@ -1,0 +1,5 @@
+{
+	"name": "wrangler-action-pnpm-workspace-test-pkg-a",
+	"license": "MIT",
+	"private": true
+}
