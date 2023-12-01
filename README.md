@@ -218,6 +218,37 @@ jobs:
 
 For more advanced usage or to programmatically trigger the workflow from scripts, refer to [the GitHub documentation](https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event) for making API calls.
 
+## Advanced Usage
+
+### Saving Wrangler Command Output to a File
+
+More advanced workflows may need to parse the resulting output of Wrangler commands. To do this, you can use the `outputFile` option to save the output of the command to a file. This file will be available to subsequent steps in the workflow. The format of this file is JSON so that it can be easily parsed by other steps.
+
+```yaml
+- name: Deploy
+  id: deploy
+  uses: cloudflare/wrangler-action@v3
+  with:
+    apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    command: pages deploy --project-name=example
+    outputFile: "true"
+
+- name: print wrangler command output
+  env:
+    OUTPUT_PATH: ${{ steps.deploy.outputs.wranglerCommandOutputFile }}
+  run: cat $OUTPUT_PATH
+```
+
+Now when you run your workflow, you will see the output of the Wrangler command in the logs that should be in the following structure:
+  
+  ```json
+  {
+    "stdout": "stdout text here",
+    "stderr": "stderr text here"
+  }
+  ```
+
 ## Troubleshooting
 
 ### "I just started using Workers/Wrangler and I don't know what this is!"
