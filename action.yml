@@ -44,3 +44,10 @@ inputs:
   packageManager:
     description: "The package manager you'd like to use to install and run wrangler. If not specified, the preferred package manager will be inferred based on the presence of a lockfile or fallback to using npm if no lockfile is found. Valid values are `npm` | `pnpm` | `yarn` | `bun`."
     required: false
+  outputToFile:
+    description: "The path to a file to write the output of the Wrangler command to. If not specified, the output will be written to the console."
+    required: false
+    default: "false"
+outputs:
+  wranglerCommandOutputFile:
+    description: "The path to a file containing the output of the Wrangler command if `outputToFile` is set to `true`."

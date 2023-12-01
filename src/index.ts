@@ -7,7 +7,10 @@ import {
 	info as originalInfo,
 	startGroup as originalStartGroup,
 	setFailed,
+	setOutput,
 } from "@actions/core";
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { exec, execShell } from "./exec";
 import { checkWorkingDirectory, semverCompare } from "./utils";
 import { getPackageManager } from "./packageManagers";
@@ -28,6 +31,7 @@ const config = {
 	COMMANDS: getMultilineInput("command"),
 	QUIET_MODE: getBooleanInput("quiet"),
 	PACKAGE_MANAGER: getInput("packageManager"),
+	OUTPUT_TO_FILE: getBooleanInput("outputToFile"),
 } as const;
 
 const packageManager = getPackageManager(config.PACKAGE_MANAGER, {
@@ -242,10 +246,49 @@ async function wranglerCommands() {
 				}
 			}
 
-			await exec(`${packageManager.exec} wrangler ${command}`, args, {
+			// Used for saving the wrangler output to a file
+			let stdOut = "";
+			let stdErr = "";
+
+			// Construct the options for the exec command
+			const options = {
 				cwd: config["workingDirectory"],
 				silent: config["QUIET_MODE"],
-			});
+				listeners: {
+					stdout: (data: Buffer) => {
+						stdOut += data.toString();
+					},
+					stderr: (data: Buffer) => {
+						stdErr += data.toString();
+					},
+				},
+			};
+
+			// Execute the wrangler command
+			await exec(`${packageManager.exec} wrangler ${command}`, args, options);
+
+			// If the user has specified to output the wrangler command to a file save the stdout and stderr
+			if (config["OUTPUT_TO_FILE"]) {
+				// Create the output data in a machine readable format
+				const outputData = {
+					stdOut: stdOut,
+					stdErr: stdErr,
+				};
+
+				// Consturct the file output path to use the current working directory
+				const outputFilePath = join(
+					config["workingDirectory"],
+					"wrangler-command-output.json",
+				);
+
+				// Write the output to a JSON file
+				writeFileSync(outputFilePath, JSON.stringify(outputData));
+				info(
+					`✅ wrangler-command-output output saved to ${outputFilePath}`,
+					true,
+				);
+				setOutput("wranglerCommandOutputFile", outputFilePath);
+			}
 		}
 	} finally {
 		endGroup();
