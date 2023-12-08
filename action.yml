@@ -49,5 +49,5 @@ inputs:
     required: false
     default: "false"
 outputs:
-  wranglerCommandOutputFile:
-    description: "The path to a file containing the output of the Wrangler command if `outputToFile` is set to `true`."
+  commandOutput:
+    description: "The output of the Wrangler command"
