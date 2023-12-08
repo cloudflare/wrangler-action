@@ -267,6 +267,17 @@ async function wranglerCommands() {
 			// Set the outputs for the command
 			setOutput("command-output", stdOut);
 			setOutput("command-stderr", stdErr);
+
+			// Check if this command is a workers or pages deployment
+			if (command.startsWith("deploy") || command.startsWith("publish")) {
+				// If this is a workers or pages deployment, try to extract the deployment URL
+				let deploymentUrl = "";
+				const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-\.\/]+/);
+				if (deploymentUrlMatch && deploymentUrlMatch[0]) {
+					deploymentUrl = deploymentUrlMatch[0].trim();
+					setOutput("deployment-url", deploymentUrl);
+				}
+			}
 		}
 	} finally {
 		endGroup();

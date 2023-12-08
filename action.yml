@@ -49,3 +49,5 @@ outputs:
     description: "The output of the Wrangler command (comes from stdout)"
   command-stderr:
     description: "The error output of the Wrangler command (comes from stderr)"
+  deployment-url:
+    description: "If the command was a workers or pages deployment, this will be the URL of the deployment"
