@@ -9,8 +9,6 @@ import {
 	setFailed,
 	setOutput,
 } from "@actions/core";
-import { writeFileSync } from "node:fs";
-import { join } from "node:path";
 import { exec, execShell } from "./exec";
 import { checkWorkingDirectory, semverCompare } from "./utils";
 import { getPackageManager } from "./packageManagers";
@@ -31,7 +29,6 @@ const config = {
 	COMMANDS: getMultilineInput("command"),
 	QUIET_MODE: getBooleanInput("quiet"),
 	PACKAGE_MANAGER: getInput("packageManager"),
-	OUTPUT_TO_FILE: getBooleanInput("outputToFile"),
 } as const;
 
 const packageManager = getPackageManager(config.PACKAGE_MANAGER, {
@@ -246,7 +243,7 @@ async function wranglerCommands() {
 				}
 			}
 
-			// Used for saving the wrangler output to a file
+			// Used for saving the wrangler output
 			let stdOut = "";
 			let stdErr = "";
 
@@ -267,27 +264,13 @@ async function wranglerCommands() {
 			// Execute the wrangler command
 			await exec(`${packageManager.exec} wrangler ${command}`, args, options);
 
-			// If the user has specified to output the wrangler command to a file save the stdout and stderr
-			if (config["OUTPUT_TO_FILE"]) {
-				// Create the output data in a machine readable format
-				const outputData = {
-					stdOut: stdOut,
-					stdErr: stdErr,
-				};
-
-				// Consturct the file output path to use the current working directory
-				const outputFilePath = join(
-					config["workingDirectory"],
-					"wrangler-command-output.json",
-				);
-
-				// Write the output to a JSON file
-				writeFileSync(outputFilePath, JSON.stringify(outputData));
-				info(
-					`✅ wrangler-command-output output saved to ${outputFilePath}`,
-					true,
-				);
-				setOutput("wranglerCommandOutputFile", outputFilePath);
+			// If stdOut contains data but stdErr does not, then save the stdOut value
+			if (stdOut && (!stdErr || stdErr === "" || stdErr === undefined)) {
+				info('saving stdout to "command-output" output')
+				setOutput("command-output", stdOut);
+			} else if (stdErr) {
+				info('saving stderr to "command-output" output')
+				setOutput("command-output", stdErr);
 			}
 		}
 	} finally {

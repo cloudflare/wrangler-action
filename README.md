@@ -220,9 +220,9 @@ For more advanced usage or to programmatically trigger the workflow from scripts
 
 ## Advanced Usage
 
-### Saving Wrangler Command Output to a File
+### Using Wrangler Command Output in Subsequent Steps
 
-More advanced workflows may need to parse the resulting output of Wrangler commands. To do this, you can use the `outputFile` option to save the output of the command to a file. This file will be available to subsequent steps in the workflow. The format of this file is JSON so that it can be easily parsed by other steps.
+More advanced workflows may need to parse the resulting output of Wrangler commands. To do this, you can use the `command-output` output variable in subsequent steps. For example, if you want to print the output of the Wrangler command, you can do the following:
 
 ```yaml
 - name: Deploy
@@ -232,12 +232,11 @@ More advanced workflows may need to parse the resulting output of Wrangler comma
     apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     command: pages deploy --project-name=example
-    outputFile: "true"
 
 - name: print wrangler command output
   env:
-    OUTPUT_PATH: ${{ steps.deploy.outputs.wranglerCommandOutputFile }}
-  run: cat $OUTPUT_PATH
+    CMD_OUTPUT: ${{ steps.deploy.outputs.command-output }}
+  run: echo $CMD_OUTPUT
 ```
 
 Now when you run your workflow, you will see the output of the Wrangler command in the logs that should be in the following structure:
