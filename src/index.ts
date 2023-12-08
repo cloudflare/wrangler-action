@@ -264,14 +264,9 @@ async function wranglerCommands() {
 			// Execute the wrangler command
 			await exec(`${packageManager.exec} wrangler ${command}`, args, options);
 
-			// If stdOut contains data but stdErr does not, then save the stdOut value
-			if (stdOut && (!stdErr || stdErr === "" || stdErr === undefined)) {
-				info('saving stdout to "command-output" output')
-				setOutput("command-output", stdOut);
-			} else if (stdErr) {
-				info('saving stderr to "command-output" output')
-				setOutput("command-output", stdErr);
-			}
+			// Set the outputs for the command
+			setOutput("command-output", stdOut);
+			setOutput("command-stderr", stdErr);
 		}
 	} finally {
 		endGroup();

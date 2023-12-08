@@ -241,6 +241,8 @@ More advanced workflows may need to parse the resulting output of Wrangler comma
 
 Now when you run your workflow, you will see the full output of the Wrangler command in your workflow logs. You can also use this output in subsequent workflow steps to parse the output for specific values.
 
+> Note: the `command-stderr` output variable is also available if you need to parse the standard error output of the Wrangler command.
+
 ## Troubleshooting
 
 ### "I just started using Workers/Wrangler and I don't know what this is!"

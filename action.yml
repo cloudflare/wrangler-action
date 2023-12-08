@@ -46,4 +46,6 @@ inputs:
     required: false
 outputs:
   command-output:
-    description: "The output of the Wrangler command"
+    description: "The output of the Wrangler command (comes from stdout)"
+  command-stderr:
+    description: "The error output of the Wrangler command (comes from stderr)"
