@@ -239,14 +239,7 @@ More advanced workflows may need to parse the resulting output of Wrangler comma
   run: echo $CMD_OUTPUT
 ```
 
-Now when you run your workflow, you will see the output of the Wrangler command in the logs that should be in the following structure:
-  
-  ```json
-  {
-    "stdout": "stdout text here",
-    "stderr": "stderr text here"
-  }
-  ```
+Now when you run your workflow, you will see the full output of the Wrangler command in your workflow logs. You can also use this output in subsequent workflow steps to parse the output for specific values.
 
 ## Troubleshooting
 
