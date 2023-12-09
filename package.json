@@ -29,17 +29,18 @@
 		"check": "prettier --check ."
 	},
 	"dependencies": {
-		"@actions/core": "^1.10.0",
+		"@actions/core": "^1.10.1",
 		"@actions/exec": "^1.1.1"
 	},
 	"devDependencies": {
 		"@changesets/changelog-github": "^0.4.8",
 		"@changesets/cli": "^2.26.2",
-		"@cloudflare/workers-types": "^4.20230814.0",
-		"@types/node": "^20.5.0",
-		"@vercel/ncc": "^0.36.1",
-		"prettier": "^3.0.1",
-		"typescript": "^5.1.6",
-		"vitest": "^0.34.1"
+		"@cloudflare/workers-types": "^4.20231121.0",
+		"@types/node": "^20.10.4",
+		"@vercel/ncc": "^0.38.1",
+		"prettier": "^3.1.0",
+		"semver": "^7.5.4",
+		"typescript": "^5.3.3",
+		"vitest": "^1.0.3"
 	}
 }
