@@ -26,7 +26,7 @@ describe("checkWorkingDirectory", () => {
 		expect(() =>
 			checkWorkingDirectory("/does/not/exist"),
 		).toThrowErrorMatchingInlineSnapshot(
-			'"Directory /does/not/exist does not exist."',
+			`[Error: Directory /does/not/exist does not exist.]`,
 		);
 	});
 });
