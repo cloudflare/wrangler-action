@@ -26,7 +26,30 @@ describe("checkWorkingDirectory", () => {
 		expect(() =>
 			checkWorkingDirectory("/does/not/exist"),
 		).toThrowErrorMatchingInlineSnapshot(
-			'"Directory /does/not/exist does not exist."',
+			`[Error: Directory /does/not/exist does not exist.]`,
 		);
 	});
+});
+
+describe("semverCompare", () => {
+	test.each([
+		["1.2.3", "1.2.3", false],
+		["1.2.2", "1.2.3", true],
+		["2.0.0", "3.0.0", true],
+		["3.1.0", "3.1.1", true],
+		["3.1.0", "3.5.0", true],
+		["3.1.0", "3.10.0", true],
+		["3.1.0", "3.15.0", true],
+		["3.10.0", "3.1.0", false],
+		["3.20.0", "3.2.0", false],
+		["3.1.0", "latest", true],
+		["4.0.0", "latest", true],
+	])(
+		"should semver compare %s vs %s correctly, expecting %s",
+		(version1, version2, expected) => {
+			const isVersion1LessThanVersion2 = semverCompare(version1, version2);
+
+			expect(isVersion1LessThanVersion2).toBe(expected);
+		},
+	);
 });
