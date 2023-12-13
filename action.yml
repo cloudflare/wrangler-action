@@ -50,4 +50,4 @@ outputs:
   command-stderr:
     description: "The error output of the Wrangler command (comes from stderr)"
   deployment-url:
-    description: "If the command was a workers or pages deployment, this will be the URL of the deployment"
+    description: "If the command was a Workers or Pages deployment, this will be the URL of the deployment"
