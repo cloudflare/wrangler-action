@@ -2,7 +2,7 @@
 "wrangler-action": minor
 ---
 
-This change introduces three new GitHub Action's output variables. These variables are as follows:
+This change introduces three new GitHub Actions output variables. These variables are as follows:
 
 - `command-output` - contains the string results of `stdout`
 - `command-stderr` - contains the string results of `stderr`

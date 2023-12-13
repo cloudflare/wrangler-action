@@ -245,7 +245,7 @@ Now when you run your workflow, you will see the full output of the Wrangler com
 
 ### Using the `deployment-url` Output Variable
 
-If you are executing a Wrangler command that results in either a workers or pages deployment, you can utilize the `deployment-url` output variable to get the URL of the deployment. For example, if you want to print the deployment URL after deploying your application, you can do the following:
+If you are executing a Wrangler command that results in either a Workers or Pages deployment, you can utilize the `deployment-url` output variable to get the URL of the deployment. For example, if you want to print the deployment URL after deploying your application, you can do the following:
 
 ```yaml
 - name: Deploy
