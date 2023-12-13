@@ -272,7 +272,8 @@ async function wranglerCommands() {
 			if (
 				command.startsWith("deploy") ||
 				command.startsWith("publish") ||
-				command.startsWith("pages publish")
+				command.startsWith("pages publish") ||
+				command.startsWith("pages deploy")
 			) {
 				// If this is a workers or pages deployment, try to extract the deployment URL
 				let deploymentUrl = "";
