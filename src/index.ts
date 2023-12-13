@@ -277,7 +277,7 @@ async function wranglerCommands() {
 			) {
 				// If this is a workers or pages deployment, try to extract the deployment URL
 				let deploymentUrl = "";
-				const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-\.\/]+/);
+				const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
 				if (deploymentUrlMatch && deploymentUrlMatch[0]) {
 					deploymentUrl = deploymentUrlMatch[0].trim();
 					setOutput("deployment-url", deploymentUrl);
