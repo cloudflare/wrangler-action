@@ -208,7 +208,7 @@ async function uploadSecrets() {
 	} catch (err: unknown) {
 		if (err instanceof Error) {
 			error(err.message);
-			debug(`Secret upload error stack: ${err.stack}`);
+			debug(`wrangler secret:bulk error stack: ${err.stack}`);
 		}
 		throw new Error(`Failed to upload secrets.`);
 	} finally {
