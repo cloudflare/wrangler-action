@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.4.1
+
+### Patch Changes
+
+- [#227](https://github.com/cloudflare/wrangler-action/pull/227) [`bbedd8e54f256d36f81f81f1f05b90937d533bb7`](https://github.com/cloudflare/wrangler-action/commit/bbedd8e54f256d36f81f81f1f05b90937d533bb7) Thanks [@AdiRishi](https://github.com/AdiRishi)! - Surface inner exception when secret:bulk upload command fails
+
 ## 3.4.0
 
 ### Minor Changes
