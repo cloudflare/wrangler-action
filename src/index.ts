@@ -5,6 +5,7 @@ import {
 	endGroup as originalEndGroup,
 	error as originalError,
 	info as originalInfo,
+	debug,
 	startGroup as originalStartGroup,
 	setFailed,
 	setOutput,
@@ -204,7 +205,11 @@ async function uploadSecrets() {
 				),
 			),
 		});
-	} catch (err) {
+	} catch (err: unknown) {
+		if (err instanceof Error) {
+			error(err.message);
+			err.stack && debug(err.stack);
+		}
 		throw new Error(`Failed to upload secrets.`);
 	} finally {
 		endGroup();
