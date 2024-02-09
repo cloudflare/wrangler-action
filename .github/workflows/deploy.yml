@@ -159,3 +159,16 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
+
+      - name: Change directory to pre-installed-wrangler and install dependencies
+        run: |
+          cd ./test/pre-installed-wrangler
+          npm install
+
+      - name: Support pre-installed wrangler
+        uses: ./
+        with:
+          workingDirectory: "./test/pre-installed-wrangler"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --dry-run

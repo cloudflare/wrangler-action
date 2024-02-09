@@ -1,0 +1,8 @@
+{
+	"name": "wrangler-action-pre-installed-wrangler-test",
+	"license": "MIT",
+	"private": true,
+	"devDependencies": {
+		"wrangler": "^3.28.0"
+	}
+}
