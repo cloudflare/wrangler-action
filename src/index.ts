@@ -10,6 +10,8 @@ import {
 	setFailed,
 	setOutput,
 } from "@actions/core";
+import { getExecOutput } from "@actions/exec";
+import semverGt from "semver/functions/gt";
 import { exec, execShell } from "./exec";
 import { checkWorkingDirectory, semverCompare } from "./utils";
 import { getPackageManager } from "./packageManagers";
@@ -80,6 +82,44 @@ async function installWrangler() {
 		throw new Error(
 			`Wrangler v1 is no longer supported by this action. Please use major version 2 or greater`,
 		);
+	}
+
+	startGroup("🔍 Checking for existing Wrangler installation");
+	let installedVersion = "";
+	try {
+		const { stdout } = await getExecOutput(
+			packageManager.exec,
+			["wrangler", "--version"],
+			{
+				cwd: config["workingDirectory"],
+				silent: true,
+			},
+		);
+		const versionMatch = stdout.match(/wrangler (\d+\.\d+\.\d+)/);
+		if (!versionMatch) {
+			throw new Error(
+				`Unable to parse Wrangler version from the output: ${stdout}`,
+			);
+		}
+		installedVersion = versionMatch[1];
+		if (semverGt(config["WRANGLER_VERSION"], installedVersion)) {
+			info(
+				`Wrangler version ${installedVersion} is less than required. Installing...`,
+				true,
+			);
+		} else {
+			info(`✅ Using Wrangler ${installedVersion}`, true);
+			endGroup();
+			return;
+		}
+	} catch (error) {
+		debug(`Error checking Wrangler version: ${error}`);
+		info(
+			"Wrangler not found or version is not compatible. Installing...",
+			true,
+		);
+	} finally {
+		endGroup();
 	}
 
 	startGroup("📥 Installing Wrangler");
