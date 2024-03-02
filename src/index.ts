@@ -11,7 +11,7 @@ import {
 	setOutput,
 } from "@actions/core";
 import { getExecOutput } from "@actions/exec";
-import semverGt from "semver/functions/gt";
+import semverEq from "semver/functions/eq";
 import { exec, execShell } from "./exec";
 import { checkWorkingDirectory, semverCompare } from "./utils";
 import { getPackageManager } from "./packageManagers";
@@ -23,6 +23,7 @@ const DEFAULT_WRANGLER_VERSION = "3.13.2";
  */
 const config = {
 	WRANGLER_VERSION: getInput("wranglerVersion") || DEFAULT_WRANGLER_VERSION,
+	didUserProvideWranglerVersion: Boolean(getInput("wranglerVersion")),
 	secrets: getMultilineInput("secrets"),
 	workingDirectory: checkWorkingDirectory(getInput("workingDirectory")),
 	CLOUDFLARE_API_TOKEN: getInput("apiToken"),
@@ -102,13 +103,22 @@ async function installWrangler() {
 			);
 		}
 		installedVersion = versionMatch[1];
-		if (semverGt(config["WRANGLER_VERSION"], installedVersion)) {
+		if (config.didUserProvideWranglerVersion) {
+			if (semverEq(config.WRANGLER_VERSION, installedVersion)) {
+				info(`✅ Using Wrangler ${installedVersion}`, true);
+				endGroup();
+				return;
+			} else {
+				info(
+					`Wrangler version ${installedVersion} is not equal to the required version. Installing...`,
+					true,
+				);
+			}
+		} else {
 			info(
-				`Wrangler version ${installedVersion} is less than required. Installing...`,
+				`✅ No wrangler version specified, using pre-installed wrangler version ${installedVersion}`,
 				true,
 			);
-		} else {
-			info(`✅ Using Wrangler ${installedVersion}`, true);
 			endGroup();
 			return;
 		}
