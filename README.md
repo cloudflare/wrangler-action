@@ -31,7 +31,6 @@ jobs:
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
-          packageManager: pnpm # you can omit this if you use npm
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 ```
 
@@ -52,10 +51,6 @@ jobs:
 ```
 
 ## Configuration
-
-### packageManager
-
-⚠️ you must specify package manager. If not specified GH action assumes you are using npm and other managers might be failing. For example pnpm will fail with: `Cannot read properties of null (reading 'matches')`
 
 If you need to install a specific version of Wrangler to use for deployment, you can also pass the input `wranglerVersion` to install a specific version of Wrangler from NPM. This should be a [SemVer](https://semver.org/)-style version number, such as `2.20.0`:
 
