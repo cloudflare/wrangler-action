@@ -274,7 +274,6 @@ By default, this action will detect which package manager to use, based on the p
 
 If you need to use a specific package manager for your application, you can set the `packageManager` input to `npm`, `yarn`, `pnpm`, or `bun`. You don't need to set this option unless you want to override the default behavior.
 
-
 ```yaml
 jobs:
   deploy:
