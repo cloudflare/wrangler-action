@@ -218,6 +218,25 @@ jobs:
 
 For more advanced usage or to programmatically trigger the workflow from scripts, refer to [the GitHub documentation](https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event) for making API calls.
 
+### Upload a Worker Version
+
+To create a new Version of your Worker that is not deployed immediately, use the `wrangler versions upload --experimental-versions` command. Worker Versions created in this way can then be deployed all at once or gradually deployed using the `wranger versions deploy --experimental-versions` command or via the Cloudflare dashboard under the Deployments tab. For now, the `--experimental-versions` flag is required to use this feature.
+
+```yaml
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload Worker Version
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: versions upload --experimental-versions
+```
+
 ## Advanced Usage
 
 ### Using Wrangler Command Output in Subsequent Steps
