@@ -165,7 +165,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy --project-name=example
+          command: pages deploy YOUR_DIST_FOLDER --project-name=example
 ```
 
 ### Deploying on a schedule
