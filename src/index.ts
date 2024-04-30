@@ -152,24 +152,22 @@ function getEnvVar(envVar: string) {
 	return value;
 }
 
-function legacyUploadSecrets(
+async function legacyUploadSecrets(
 	secrets: string[],
 	environment?: string,
 	workingDirectory?: string,
 ) {
-	return Promise.all(
-		secrets.map((secret) => {
-			const args = ["wrangler", "secret", "put", secret];
-			if (environment) {
-				args.push("--env", environment);
-			}
-			return exec(packageManager.exec, args, {
-				cwd: workingDirectory,
-				silent: config["QUIET_MODE"],
-				input: Buffer.from(getSecret(secret)),
-			});
-		}),
-	);
+	for (const secret of secrets) {
+		const args = ["wrangler", "secret", "put", secret];
+		if (environment) {
+			args.push("--env", environment);
+		}
+		await exec(packageManager.exec, args, {
+			cwd: workingDirectory,
+			silent: config["QUIET_MODE"],
+			input: Buffer.from(getSecret(secret)),
+		});
+	}
 }
 
 async function uploadSecrets() {
