@@ -1,0 +1,7 @@
+{
+	"private": true,
+	"name": "wrangler",
+	"version": "1.1.1",
+	"main": "index.js",
+	"bin": "bin/wrangler"
+}

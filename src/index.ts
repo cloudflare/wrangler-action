@@ -93,34 +93,39 @@ async function installWrangler() {
 			["wrangler", "--version"],
 			{
 				cwd: config["workingDirectory"],
-				silent: true,
+				silent: config.QUIET_MODE,
 			},
 		);
-		const versionMatch = stdout.match(/wrangler (\d+\.\d+\.\d+)/);
-		if (!versionMatch) {
-			throw new Error(
-				`Unable to parse Wrangler version from the output: ${stdout}`,
-			);
+		// There are two possible outputs from `wrangler --version`:
+		// ` ⛅️ wrangler 3.48.0 (update available 3.53.1)`
+		// and
+		// `3.48.0`
+		const versionMatch =
+			stdout.match(/wrangler (\d+\.\d+\.\d+)/) ??
+			stdout.match(/^(\d+\.\d+\.\d+)/);
+		if (versionMatch) {
+			installedVersion = versionMatch[1];
 		}
-		installedVersion = versionMatch[1];
-		if (config.didUserProvideWranglerVersion) {
-			if (semverEq(config.WRANGLER_VERSION, installedVersion)) {
-				info(`✅ Using Wrangler ${installedVersion}`, true);
-				endGroup();
-				return;
+		if (installedVersion) {
+			if (config.didUserProvideWranglerVersion) {
+				if (semverEq(config.WRANGLER_VERSION, installedVersion)) {
+					info(`✅ Using Wrangler ${installedVersion}`, true);
+					endGroup();
+					return;
+				} else {
+					info(
+						`Wrangler version ${installedVersion} is not equal to the required version. Installing...`,
+						true,
+					);
+				}
 			} else {
 				info(
-					`Wrangler version ${installedVersion} is not equal to the required version. Installing...`,
+					`✅ No wrangler version specified, using pre-installed wrangler version ${installedVersion}`,
 					true,
 				);
+				endGroup();
+				return;
 			}
-		} else {
-			info(
-				`✅ No wrangler version specified, using pre-installed wrangler version ${installedVersion}`,
-				true,
-			);
-			endGroup();
-			return;
 		}
 	} catch (error) {
 		debug(`Error checking Wrangler version: ${error}`);

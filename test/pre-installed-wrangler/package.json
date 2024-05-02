@@ -3,6 +3,6 @@
 	"license": "MIT",
 	"private": true,
 	"devDependencies": {
-		"wrangler": "^3.28.0"
+		"wrangler": "file:mock_packages/wrangler"
 	}
 }

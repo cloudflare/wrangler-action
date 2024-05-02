@@ -169,6 +169,4 @@ jobs:
         uses: ./
         with:
           workingDirectory: "./test/pre-installed-wrangler"
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --dry-run
+          command: action-test
