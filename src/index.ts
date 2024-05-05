@@ -87,6 +87,7 @@ async function installWrangler() {
 
 	startGroup("🔍 Checking for existing Wrangler installation");
 	let installedVersion = "";
+	let installedVersionSatisfiesRequirement = false;
 	try {
 		const { stdout } = await getExecOutput(
 			packageManager.exec,
@@ -106,31 +107,27 @@ async function installWrangler() {
 		if (versionMatch) {
 			installedVersion = versionMatch[1];
 		}
-		if (installedVersion) {
-			if (config.didUserProvideWranglerVersion) {
-				if (semverEq(config.WRANGLER_VERSION, installedVersion)) {
-					info(`✅ Using Wrangler ${installedVersion}`, true);
-					endGroup();
-					return;
-				} else {
-					info(
-						`Wrangler version ${installedVersion} is not equal to the required version. Installing...`,
-						true,
-					);
-				}
-			} else {
-				info(
-					`✅ No wrangler version specified, using pre-installed wrangler version ${installedVersion}`,
-					true,
-				);
-				endGroup();
-				return;
-			}
+		if (config.didUserProvideWranglerVersion) {
+			installedVersionSatisfiesRequirement = semverEq(
+				installedVersion,
+				config["WRANGLER_VERSION"],
+			);
 		}
+		if (!config.didUserProvideWranglerVersion && installedVersion) {
+			info(`✅ No wrangler version specified, using pre-installed wrangler version ${installedVersion}`, true);
+			endGroup();
+			return;
+		}
+		if (config.didUserProvideWranglerVersion && installedVersionSatisfiesRequirement) {
+			info(`✅ Using Wrangler ${installedVersion}`, true);
+			endGroup();
+			return;
+		}
+		info('⚠️ Wrangler not found or version is incompatible. Installing...', true);
 	} catch (error) {
 		debug(`Error checking Wrangler version: ${error}`);
 		info(
-			"Wrangler not found or version is not compatible. Installing...",
+			"⚠️ Wrangler not found or version is incompatible. Installing...",
 			true,
 		);
 	} finally {
