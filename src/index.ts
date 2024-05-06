@@ -114,16 +114,25 @@ async function installWrangler() {
 			);
 		}
 		if (!config.didUserProvideWranglerVersion && installedVersion) {
-			info(`✅ No wrangler version specified, using pre-installed wrangler version ${installedVersion}`, true);
+			info(
+				`✅ No wrangler version specified, using pre-installed wrangler version ${installedVersion}`,
+				true,
+			);
 			endGroup();
 			return;
 		}
-		if (config.didUserProvideWranglerVersion && installedVersionSatisfiesRequirement) {
+		if (
+			config.didUserProvideWranglerVersion &&
+			installedVersionSatisfiesRequirement
+		) {
 			info(`✅ Using Wrangler ${installedVersion}`, true);
 			endGroup();
 			return;
 		}
-		info('⚠️ Wrangler not found or version is incompatible. Installing...', true);
+		info(
+			"⚠️ Wrangler not found or version is incompatible. Installing...",
+			true,
+		);
 	} catch (error) {
 		debug(`Error checking Wrangler version: ${error}`);
 		info(

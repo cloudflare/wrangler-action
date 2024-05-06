@@ -7,8 +7,7 @@ switch (command) {
 	case "--version":
 		console.log(`
 ⛅️ wrangler 1.1.1 (update available 1.2.3)
-------------------------------------------`
-		);
+------------------------------------------`);
 		process.exit(0);
 	case "action-test":
 		console.log("Test successful.");
