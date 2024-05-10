@@ -29,7 +29,7 @@ jobs:
       - name: Only build app
         uses: ./
         with:
-          workingDirectory: "./test/base"
+          workingDirectory: "./test/only-build"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
@@ -38,12 +38,11 @@ jobs:
         uses: ./
         with:
           quiet: true
-          workingDirectory: "./test/base"
+          workingDirectory: "./test/build-quiet"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
 
-      # START Setup and teardown of Worker Environment Tests
       - name: Environment support
         uses: ./
         with:
@@ -52,6 +51,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           environment: dev
           preCommands: npx wrangler deploy --env dev # https://github.com/cloudflare/wrangler-action/issues/162
+          postCommands: npx wrangler delete --name wrangler-action-dev-environment-test --force
           secrets: |
             SECRET1
             SECRET2
@@ -59,21 +59,12 @@ jobs:
           SECRET1: ${{ secrets.SECRET1 }}
           SECRET2: ${{ secrets.SECRET2 }}
 
-      - name: Clean up Deployed Environment Worker
-        uses: ./
-        with:
-          workingDirectory: "./test/base"
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: delete --name wrangler-action-dev-environment-test --force
-
-      # END Setup and teardown of Worker Environment Tests
       # START Setup and teardown of Workers w/ Secrets Tests
       - name: Deploy app secrets w/ hardcoded Wrangler v2
         uses: ./
         with:
           wranglerVersion: "2.20.0"
-          workingDirectory: "./test/base"
+          workingDirectory: "./test/secrets-v2"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           secrets: |
@@ -84,13 +75,13 @@ jobs:
           SECRET2: ${{ secrets.SECRET2 }}
 
       - name: Health Check Deployed Worker
-        run: node .github/workflows/workerHealthCheck.cjs
+        run: node .github/workflows/workerHealthCheck.cjs wrangler-action-test-secrets-v2
         shell: bash
 
       - name: Deploy app secrets w/ default version
         uses: ./
         with:
-          workingDirectory: "./test/base"
+          workingDirectory: "./test/secrets-default"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           secrets: |
@@ -101,22 +92,23 @@ jobs:
           SECRET2: ${{ secrets.SECRET2 }}
 
       - name: Health Check Deployed Worker
-        run: node .github/workflows/workerHealthCheck.cjs
+        run: node .github/workflows/workerHealthCheck.cjs wrangler-action-test-secrets-default
         shell: bash
 
       - name: Clean Up Deployed Workers
         uses: ./
         with:
-          workingDirectory: "./test/base"
+          workingDirectory: "./test/secrets-default"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: delete --name wrangler-action-test --force
+          command: delete --name wrangler-action-test-secrets-v2 --force
+          postCommands: npx wrangler delete --name wrangler-action-test-secrets-default --force
       # END Setup and teardown of Workers w/ Secrets Tests
 
       - name: Support packageManager variable
         uses: ./
         with:
-          workingDirectory: "./test/empty"
+          workingDirectory: "./test/specify-package-manager"
           packageManager: "npm"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -125,7 +117,7 @@ jobs:
       - name: Support unspecified packageManager with no lockfile
         uses: ./
         with:
-          workingDirectory: "./test/empty"
+          workingDirectory: "./test/unspecified-package-manager"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run

@@ -1,0 +1,4 @@
+name = "wrangler-action-test-secrets-default"
+main = "./index.ts"
+compatibility_date = "2023-07-07"
+workers_dev = true
