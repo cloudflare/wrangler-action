@@ -1,0 +1,8 @@
+{
+	"name": "wrangler-action-pre-installed-wrangler-test",
+	"license": "MIT",
+	"private": true,
+	"devDependencies": {
+		"wrangler": "file:mock_packages/wrangler"
+	}
+}
