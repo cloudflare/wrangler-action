@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.6.0
+
+### Minor Changes
+
+- [#235](https://github.com/cloudflare/wrangler-action/pull/235) [`0545ad285acaff2b92053d636ee17fb303b4c5f5`](https://github.com/cloudflare/wrangler-action/commit/0545ad285acaff2b92053d636ee17fb303b4c5f5) Thanks [@AdiRishi](https://github.com/AdiRishi)! - wrangler-action will now re-use existing wrangler installations when available
+
 ## 3.5.0
 
 ### Minor Changes
