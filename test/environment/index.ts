@@ -12,6 +12,7 @@ export default {
 			return new Response(`${SECRET1} ${SECRET2}`);
 		}
 
+		// @ts-expect-error
 		return Response.json({
 			...request,
 			headers: Object.fromEntries(request.headers),
