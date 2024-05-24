@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.6.1
+
+### Patch Changes
+
+- [#265](https://github.com/cloudflare/wrangler-action/pull/265) [`2d275a8f2d279dc91912c1ff8023af109ef3280c`](https://github.com/cloudflare/wrangler-action/commit/2d275a8f2d279dc91912c1ff8023af109ef3280c) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - Reverts #235 which may have caused the latest version of wrangler to be installed, if no wrangler version was found
+
 ## 3.6.0
 
 ### Minor Changes
