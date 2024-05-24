@@ -17,6 +17,7 @@ export default {
 			return new Response("OK");
 		}
 
+		// @ts-expect-error
 		return Response.json({
 			...request,
 			headers: Object.fromEntries(request.headers),
