@@ -90,7 +90,8 @@ async function installWrangler() {
 	let installedVersionSatisfiesRequirement = false;
 	try {
 		const { stdout } = await getExecOutput(
-			packageManager.exec,
+			// We want to simply invoke wrangler to check if it's installed, but don't want to auto-install it at this stage
+			packageManager.execNoInstall,
 			["wrangler", "--version"],
 			{
 				cwd: config["workingDirectory"],
