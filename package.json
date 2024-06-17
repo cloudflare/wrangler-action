@@ -7,7 +7,7 @@
 	"bugs": {
 		"url": "https://github.com/cloudflare/wrangler-action/issues"
 	},
-	"homepage": "https://github.com/cloudflare/wrangler-action#readme",
+	"homepage": "https://github.com/HL cloudflare/wrangler-action#readme",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/cloudflare/wrangler-action.git"
