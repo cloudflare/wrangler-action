@@ -31,7 +31,9 @@
 	"dependencies": {
 		"@actions/core": "^1.10.1",
 		"@actions/exec": "^1.1.1",
+		"@glint-solar/mbview": "^5.1.2",
 		"bootstrap": "^5.3.3",
+		"https-localhost": "^4.7.1",
 		"private-ip": "^3.0.2"
 	},
 	"devDependencies": {
