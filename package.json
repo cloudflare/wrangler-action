@@ -38,6 +38,7 @@
 		"@cloudflare/workers-types": "^4.20231121.0",
 		"@types/node": "^20.10.4",
 		"@vercel/ncc": "^0.38.1",
+		"localhost": "^0.4.1",
 		"prettier": "^3.3.2",
 		"semver": "^7.5.4",
 		"typescript": "^5.3.3",
