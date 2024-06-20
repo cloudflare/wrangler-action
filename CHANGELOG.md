@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.7.0
+
+### Minor Changes
+
+- [#271](https://github.com/cloudflare/wrangler-action/pull/271) [`66efca2cbb82a5a49df6af2e14c4b58d53b0e266`](https://github.com/cloudflare/wrangler-action/commit/66efca2cbb82a5a49df6af2e14c4b58d53b0e266) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - This unreverts #235 ensuring wrangler-action will re-use existing wrangler installations, thanks @AdiRishi! and ensures we don't automatically install wrangler when checking if it present
+
 ## 3.6.1
 
 ### Patch Changes
