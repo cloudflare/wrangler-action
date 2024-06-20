@@ -4,24 +4,29 @@ import * as path from "node:path";
 interface PackageManager {
 	install: string;
 	exec: string;
+	execNoInstall: string;
 }
 
 const PACKAGE_MANAGERS = {
 	npm: {
 		install: "npm i",
 		exec: "npx",
+		execNoInstall: "npx --no-install",
 	},
 	yarn: {
 		install: "yarn add",
 		exec: "yarn",
+		execNoInstall: "yarn",
 	},
 	pnpm: {
 		install: "pnpm add",
 		exec: "pnpm exec",
+		execNoInstall: "pnpm exec",
 	},
 	bun: {
 		install: "bun i",
 		exec: "bunx",
+		execNoInstall: "bun run",
 	},
 } as const satisfies Readonly<Record<string, PackageManager>>;
 

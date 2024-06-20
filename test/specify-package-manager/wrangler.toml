@@ -1,4 +1,4 @@
-name = "wrangler-action-test"
+name = "wrangler-action-test-specify-package-manager"
 main = "./index.ts"
 compatibility_date = "2023-07-07"
 workers_dev = true

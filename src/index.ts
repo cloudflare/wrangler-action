@@ -10,6 +10,8 @@ import {
 	setFailed,
 	setOutput,
 } from "@actions/core";
+import { getExecOutput } from "@actions/exec";
+import semverEq from "semver/functions/eq";
 import { exec, execShell } from "./exec";
 import { checkWorkingDirectory, semverCompare } from "./utils";
 import { getPackageManager } from "./packageManagers";
@@ -21,6 +23,7 @@ const DEFAULT_WRANGLER_VERSION = "3.13.2";
  */
 const config = {
 	WRANGLER_VERSION: getInput("wranglerVersion") || DEFAULT_WRANGLER_VERSION,
+	didUserProvideWranglerVersion: Boolean(getInput("wranglerVersion")),
 	secrets: getMultilineInput("secrets"),
 	workingDirectory: checkWorkingDirectory(getInput("workingDirectory")),
 	CLOUDFLARE_API_TOKEN: getInput("apiToken"),
@@ -80,6 +83,65 @@ async function installWrangler() {
 		throw new Error(
 			`Wrangler v1 is no longer supported by this action. Please use major version 2 or greater`,
 		);
+	}
+
+	startGroup("🔍 Checking for existing Wrangler installation");
+	let installedVersion = "";
+	let installedVersionSatisfiesRequirement = false;
+	try {
+		const { stdout } = await getExecOutput(
+			// We want to simply invoke wrangler to check if it's installed, but don't want to auto-install it at this stage
+			packageManager.execNoInstall,
+			["wrangler", "--version"],
+			{
+				cwd: config["workingDirectory"],
+				silent: config.QUIET_MODE,
+			},
+		);
+		// There are two possible outputs from `wrangler --version`:
+		// ` ⛅️ wrangler 3.48.0 (update available 3.53.1)`
+		// and
+		// `3.48.0`
+		const versionMatch =
+			stdout.match(/wrangler (\d+\.\d+\.\d+)/) ??
+			stdout.match(/^(\d+\.\d+\.\d+)/);
+		if (versionMatch) {
+			installedVersion = versionMatch[1];
+		}
+		if (config.didUserProvideWranglerVersion) {
+			installedVersionSatisfiesRequirement = semverEq(
+				installedVersion,
+				config["WRANGLER_VERSION"],
+			);
+		}
+		if (!config.didUserProvideWranglerVersion && installedVersion) {
+			info(
+				`✅ No wrangler version specified, using pre-installed wrangler version ${installedVersion}`,
+				true,
+			);
+			endGroup();
+			return;
+		}
+		if (
+			config.didUserProvideWranglerVersion &&
+			installedVersionSatisfiesRequirement
+		) {
+			info(`✅ Using Wrangler ${installedVersion}`, true);
+			endGroup();
+			return;
+		}
+		info(
+			"⚠️ Wrangler not found or version is incompatible. Installing...",
+			true,
+		);
+	} catch (error) {
+		debug(`Error checking Wrangler version: ${error}`);
+		info(
+			"⚠️ Wrangler not found or version is incompatible. Installing...",
+			true,
+		);
+	} finally {
+		endGroup();
 	}
 
 	startGroup("📥 Installing Wrangler");
