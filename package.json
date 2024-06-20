@@ -37,7 +37,7 @@
 		"private-ip": "^3.0.2"
 	},
 	"devDependencies": {
-		"@changesets/changelog-github": "^0.4.8",
+		"@changesets/changelog-github": "^0.5.0",
 		"@changesets/cli": "^2.26.2",
 		"@cloudflare/workers-types": "^4.20231121.0",
 		"@types/node": "^20.10.4",
