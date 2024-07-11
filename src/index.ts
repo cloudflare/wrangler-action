@@ -104,7 +104,7 @@ async function installWrangler() {
 		// `3.48.0`
 		const versionMatch =
 			stdout.match(/wrangler (\d+\.\d+\.\d+)/) ??
-			stdout.match(/^(\d+\.\d+\.\d+)/);
+			stdout.match(/^(\d+\.\d+\.\d+)/m);
 		if (versionMatch) {
 			installedVersion = versionMatch[1];
 		}
