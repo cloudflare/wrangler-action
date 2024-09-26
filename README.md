@@ -289,7 +289,7 @@ https://<your_pages_site>.pages.dev
 
 ### Using a different package manager
 
-By default, this action will detect which package manager to use, based on the presence of a `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, or `bun.lockb` file.
+By default, this action will detect which package manager to use, based on the presence of a `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, or `bun.lockb`/`bun.lock` file.
 
 If you need to use a specific package manager for your application, you can set the `packageManager` input to `npm`, `yarn`, `pnpm`, or `bun`. You don't need to set this option unless you want to override the default behavior.
 
