@@ -44,7 +44,10 @@ function detectPackageManager(
 	if (existsSync(path.join(workingDirectory, "pnpm-lock.yaml"))) {
 		return "pnpm";
 	}
-	if (existsSync(path.join(workingDirectory, "bun.lockb"))) {
+	if (
+		existsSync(path.join(workingDirectory, "bun.lockb")) ||
+		existsSync(path.join(workingDirectory, "bun.lock"))
+	) {
 		return "bun";
 	}
 	return null;
