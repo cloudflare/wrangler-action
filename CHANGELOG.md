@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.8.0
+
+### Minor Changes
+
+- [#291](https://github.com/cloudflare/wrangler-action/pull/291) [`a1467a0c8f2a058f8d43a4d0c40a55176ed5efe6`](https://github.com/cloudflare/wrangler-action/commit/a1467a0c8f2a058f8d43a4d0c40a55176ed5efe6) Thanks [@Ambroos](https://github.com/Ambroos)! - Adds `deployment-alias-url` output for Pages deployment aliases (since Wrangler v3.78.0): https://github.com/cloudflare/workers-sdk/pull/6643
+
 ## 3.7.0
 
 ### Minor Changes
