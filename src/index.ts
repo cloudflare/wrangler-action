@@ -347,6 +347,15 @@ async function wranglerCommands() {
 					deploymentUrl = deploymentUrlMatch[0].trim();
 					setOutput("deployment-url", deploymentUrl);
 				}
+
+				// And also try to extract the alias URL (since wrangler@3.78.0)
+				const aliasUrlMatch = stdOut.match(
+					/alias URL: (https?:\/\/[a-zA-Z0-9-./]+)/,
+				);
+				if (aliasUrlMatch && aliasUrlMatch.length == 2 && aliasUrlMatch[1]) {
+					const aliasUrl = aliasUrlMatch[1].trim();
+					setOutput("deployment-alias-url", aliasUrl);
+				}
 			}
 		}
 	} finally {
