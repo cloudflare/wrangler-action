@@ -1,11 +1,11 @@
 import {
+	debug,
 	getBooleanInput,
 	getInput,
 	getMultilineInput,
 	endGroup as originalEndGroup,
 	error as originalError,
 	info as originalInfo,
-	debug,
 	startGroup as originalStartGroup,
 	setFailed,
 	setOutput,
@@ -13,8 +13,8 @@ import {
 import { getExecOutput } from "@actions/exec";
 import semverEq from "semver/functions/eq";
 import { exec, execShell } from "./exec";
-import { checkWorkingDirectory, semverCompare } from "./utils";
 import { getPackageManager } from "./packageManagers";
+import { checkWorkingDirectory, semverCompare } from "./utils";
 
 const DEFAULT_WRANGLER_VERSION = "3.78.10";
 
@@ -295,6 +295,9 @@ async function wranglerCommands() {
 
 			if (environment && !command.includes("--env")) {
 				args.push("--env", environment);
+			} else if (command.includes("--env")) {
+				const index = command.indexOf("--env");
+				const environment = command[index+1];
 			}
 
 			if (
@@ -356,6 +359,20 @@ async function wranglerCommands() {
 					const aliasUrl = aliasUrlMatch[1].trim();
 					setOutput("deployment-alias-url", aliasUrl);
 				}
+
+				// And also try to extract the version ID
+				const versionIdRegex = new RegExp("ID: ([a-zA-Z0-9-]+)", "g");
+				const versionIdMatch = versionIdRegex.exec(stdOut);
+				if (versionIdMatch && versionIdMatch.length == 2 && versionIdMatch[1]) {
+					const versionId = versionIdMatch[1].trim();
+					setOutput("version-id", versionId);
+				}
+				
+				// We already have the environment
+				if (environment) {
+					setOutput("environment", environment);
+				}
+
 			}
 		}
 	} finally {
@@ -370,5 +387,6 @@ export {
 	execCommands,
 	installWrangler,
 	uploadSecrets,
-	wranglerCommands,
+	wranglerCommands
 };
+
