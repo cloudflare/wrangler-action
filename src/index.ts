@@ -364,6 +364,7 @@ async function wranglerCommands() {
 				const versionIdRegex = new RegExp("ID: ([a-zA-Z0-9-]+)", "g");
 				const versionIdMatch = versionIdRegex.exec(stdOut);
 				if (versionIdMatch && versionIdMatch.length == 2 && versionIdMatch[1]) {
+					setOutput("test", "here")
 					const versionId = versionIdMatch[1].trim();
 					setOutput("version-id", versionId);
 				}
