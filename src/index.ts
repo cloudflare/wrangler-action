@@ -361,12 +361,19 @@ async function wranglerCommands() {
 				}
 
 				// And also try to extract the version ID
-				const versionIdRegex = new RegExp("ID: ([a-zA-Z0-9-]+)", "g");
-				const versionIdMatch = versionIdRegex.exec(stdOut);
-				if (versionIdMatch && versionIdMatch.length == 2 && versionIdMatch[1]) {
-					setOutput("test", "here")
-					const versionId = versionIdMatch[1].trim();
-					setOutput("version-id", versionId);
+				// const versionIdRegex = new RegExp("ID: ([a-zA-Z0-9-]+)", "g");
+				// const versionIdMatch = versionIdRegex.exec(stdOut);
+				//COURT - looks like we're not making it into this if
+				//Is ID coming from the wrangler output like I would expect? Is it coming from somewhere else?
+				// if (versionIdMatch && versionIdMatch.length == 2 && versionIdMatch[1]) {
+					// setOutput("test", "here")
+					// const versionId = versionIdMatch[1].trim();
+					// setOutput("version-id", versionId);
+				// }
+				const versionIdMatch = stdOut.match("ID:");
+				if (versionIdMatch && versionIdMatch[0]) {
+					const versionId = versionIdMatch[0].trim();
+					setOutput("version-id", versionId)
 				}
 				
 				// We already have the environment
