@@ -28977,8 +28977,9 @@ async function wranglerCommands() {
             else if (command.includes("--branch")) {
                 const options = command.split(" ");
                 const indexofBranchOpt = options.findIndex(element => element.includes("--branch"));
-                const indexOfBranchVal = indexofBranchOpt + 9;
-                environment = command[indexofBranchOpt].slice(indexOfBranchVal);
+                //const indexOfBranchVal = indexofBranchOpt+9
+                environment = command[indexofBranchOpt];
+                //.slice(indexOfBranchVal)
             }
             if (config["VARS"].length &&
                 (command.startsWith("deploy") || command.startsWith("publish")) &&
