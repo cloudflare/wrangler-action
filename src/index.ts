@@ -299,8 +299,9 @@ async function wranglerCommands() {
 				const index = command.indexOf("--env");
 				const environment = command[index+1];
 			} else if (command.includes("--branch")) {
-				const index = command.indexOf("--branch");
-				const environment = command[index+1]
+				const index = command.indexOf("--branch=");
+				const indexOfBranchVal = index+9
+				const environment = command.slice(indexOfBranchVal)
 			}
 
 			if (
@@ -383,9 +384,6 @@ async function wranglerCommands() {
 				if (environment) {
 					setOutput("environment", environment);
 				}
-
-				setOutput("command", command)
-
 			}
 		}
 	} finally {

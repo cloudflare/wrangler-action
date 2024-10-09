@@ -28976,8 +28976,9 @@ async function wranglerCommands() {
                 const environment = command[index + 1];
             }
             else if (command.includes("--branch")) {
-                const index = command.indexOf("--branch");
-                const environment = command[index + 1];
+                const index = command.indexOf("--branch=");
+                const indexOfBranchVal = index + 9;
+                const environment = command.slice(indexOfBranchVal);
             }
             if (config["VARS"].length &&
                 (command.startsWith("deploy") || command.startsWith("publish")) &&
@@ -29045,7 +29046,6 @@ async function wranglerCommands() {
                 if (environment) {
                     (0,core.setOutput)("environment", environment);
                 }
-                (0,core.setOutput)("command", command);
             }
         }
     }
