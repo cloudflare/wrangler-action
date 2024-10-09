@@ -370,7 +370,7 @@ async function wranglerCommands() {
 					// const versionId = versionIdMatch[1].trim();
 					// setOutput("version-id", versionId);
 				// }
-				const versionIdMatch = stdOut.match("ID:");
+				const versionIdMatch = stdOut.match(/ID:[a-zA-Z0-9-./]+/);
 				if (versionIdMatch && versionIdMatch[0]) {
 					const versionId = versionIdMatch[0].trim();
 					setOutput("version-id", versionId)
