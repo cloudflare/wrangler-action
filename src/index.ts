@@ -384,6 +384,8 @@ async function wranglerCommands() {
 					setOutput("environment", environment);
 				}
 
+				setOutput("command", command)
+
 			}
 		}
 	} finally {

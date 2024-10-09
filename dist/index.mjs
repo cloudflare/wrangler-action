@@ -29045,6 +29045,7 @@ async function wranglerCommands() {
                 if (environment) {
                     (0,core.setOutput)("environment", environment);
                 }
+                (0,core.setOutput)("command", command);
             }
         }
     }
