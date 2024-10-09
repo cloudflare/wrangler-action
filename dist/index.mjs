@@ -28975,6 +28975,10 @@ async function wranglerCommands() {
                 const index = command.indexOf("--env");
                 const environment = command[index + 1];
             }
+            else if (command.includes("--branch")) {
+                const index = command.indexOf("--branch");
+                const environment = command[index + 1];
+            }
             if (config["VARS"].length &&
                 (command.startsWith("deploy") || command.startsWith("publish")) &&
                 !command.includes("--var")) {
