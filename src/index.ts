@@ -295,13 +295,14 @@ async function wranglerCommands() {
 
 			if (environment && !command.includes("--env")) {
 				args.push("--env", environment);
-			} else if (command.includes("--env")) {
-				const index = command.indexOf("--env");
-				environment = command[index+1];
+			// } else if (command.includes("--env")) {
+			// 	const index = command.indexOf("--env");
+			// 	environment = command[index+1];
 			} else if (command.includes("--branch")) {
-				const index = command.indexOf("--branch=");
-				const indexOfBranchVal = index+9
-				environment = command.slice(indexOfBranchVal)
+				const options = command.split(" ") 
+				const indexofBranchOpt = options.findIndex(element => element.includes("--branch"))
+				const indexOfBranchVal = indexofBranchOpt+9
+				environment = command[indexofBranchOpt].slice(indexOfBranchVal)
 			}
 
 			if (
