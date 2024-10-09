@@ -280,7 +280,7 @@ async function wranglerCommands() {
 	startGroup("🚀 Running Wrangler Commands");
 	try {
 		const commands = config["COMMANDS"];
-		const environment = config["ENVIRONMENT"];
+		let environment = config["ENVIRONMENT"];
 
 		if (!commands.length) {
 			const wranglerVersion = config["WRANGLER_VERSION"];
@@ -297,11 +297,11 @@ async function wranglerCommands() {
 				args.push("--env", environment);
 			} else if (command.includes("--env")) {
 				const index = command.indexOf("--env");
-				const environment = command[index+1];
+				environment = command[index+1];
 			} else if (command.includes("--branch")) {
 				const index = command.indexOf("--branch=");
 				const indexOfBranchVal = index+9
-				const environment = command.slice(indexOfBranchVal)
+				environment = command.slice(indexOfBranchVal)
 			}
 
 			if (
@@ -364,23 +364,12 @@ async function wranglerCommands() {
 					setOutput("deployment-alias-url", aliasUrl);
 				}
 
-				// And also try to extract the version ID
-				// const versionIdRegex = new RegExp("ID: ([a-zA-Z0-9-]+)", "g");
-				// const versionIdMatch = versionIdRegex.exec(stdOut);
-				//COURT - looks like we're not making it into this if
-				//Is ID coming from the wrangler output like I would expect? Is it coming from somewhere else?
-				// if (versionIdMatch && versionIdMatch.length == 2 && versionIdMatch[1]) {
-					// setOutput("test", "here")
-					// const versionId = versionIdMatch[1].trim();
-					// setOutput("version-id", versionId);
-				// }
 				const versionIdMatch = stdOut.match(/Current Version ID: [a-zA-Z0-9-]+/);
 				if (versionIdMatch && versionIdMatch[0]) {
 					const versionId = versionIdMatch[0].trim();
 					setOutput("version-id", versionId)
 				}
 				
-				// We already have the environment
 				if (environment) {
 					setOutput("environment", environment);
 				}
