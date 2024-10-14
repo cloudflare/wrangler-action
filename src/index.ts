@@ -12,6 +12,7 @@ import {
 } from "@actions/core";
 import { getExecOutput } from "@actions/exec";
 import semverEq from "semver/functions/eq";
+import { getWranglerArtifacts } from "./archiveManager";
 import { exec, execShell } from "./exec";
 import { getPackageManager } from "./packageManagers";
 import { checkWorkingDirectory, semverCompare } from "./utils";
@@ -279,6 +280,8 @@ async function uploadSecrets() {
 async function wranglerCommands() {
 	startGroup("🚀 Running Wrangler Commands");
 	try {
+		process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = '/opt/wranglerArtifacts';
+
 		const commands = config["COMMANDS"];
 		let environment = config["ENVIRONMENT"];
 
@@ -342,12 +345,10 @@ async function wranglerCommands() {
 			setOutput("command-output", stdOut);
 			setOutput("command-stderr", stdErr);
 
-			// Check if this command is a workers or pages deployment
+			// Check if this command is a workers deployment
 			if (
 				command.startsWith("deploy") ||
-				command.startsWith("publish") ||
-				command.startsWith("pages publish") ||
-				command.startsWith("pages deploy")
+				command.startsWith("publish")
 			) {
 				// If this is a workers or pages deployment, try to extract the deployment URL
 				let deploymentUrl = "";
@@ -365,15 +366,18 @@ async function wranglerCommands() {
 					const aliasUrl = aliasUrlMatch[1].trim();
 					setOutput("deployment-alias-url", aliasUrl);
 				}
-
-				const versionIdMatch = stdOut.match(/Current Version ID: [a-zA-Z0-9-]+/);
-				if (versionIdMatch && versionIdMatch[0]) {
-					const versionId = versionIdMatch[0].trim();
-					setOutput("version-id", versionId)
-				}
-				
-				if (environment) {
-					setOutput("environment", environment);
+			}
+			// Check if this command is a pages deployment
+			if (
+				command.startsWith("pages publish") ||
+				command.startsWith("pages deploy")
+			) {
+				const pagesArtifactFields = await getWranglerArtifacts('replace-with-output-dir')
+				if (pagesArtifactFields){
+					setOutput("id", pagesArtifactFields.deployment_id)
+					setOutput("url", pagesArtifactFields.url);
+					setOutput("alias", pagesArtifactFields.alias);
+					setOutput("environment", pagesArtifactFields.environment);
 				}
 			}
 		}
