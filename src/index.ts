@@ -283,7 +283,7 @@ async function wranglerCommands() {
 		process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = '/opt/wranglerArtifacts';
 
 		const commands = config["COMMANDS"];
-		let environment = config["ENVIRONMENT"];
+		const environment = config["ENVIRONMENT"];
 
 		if (!commands.length) {
 			const wranglerVersion = config["WRANGLER_VERSION"];
@@ -298,15 +298,6 @@ async function wranglerCommands() {
 
 			if (environment && !command.includes("--env")) {
 				args.push("--env", environment);
-			// } else if (command.includes("--env")) {
-			// 	const index = command.indexOf("--env");
-			// 	environment = command[index+1];
-			} else if (command.includes("--branch")) {
-				const options = command.split(" ") 
-				const indexofBranchOpt = options.findIndex(element => element.includes("--branch"))
-				//const indexOfBranchVal = indexofBranchOpt+9
-				environment = command[indexofBranchOpt]
-				//.slice(indexOfBranchVal)
 			}
 
 			if (
@@ -350,6 +341,7 @@ async function wranglerCommands() {
 				command.startsWith("deploy") ||
 				command.startsWith("publish")
 			) {
+				setOutput("type", "worker");
 				// If this is a workers or pages deployment, try to extract the deployment URL
 				let deploymentUrl = "";
 				const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
@@ -372,6 +364,7 @@ async function wranglerCommands() {
 				command.startsWith("pages publish") ||
 				command.startsWith("pages deploy")
 			) {
+				setOutput("type", "pages");
 				const pagesArtifactFields = await getWranglerArtifacts('replace-with-output-dir')
 				if (pagesArtifactFields){
 					setOutput("id", pagesArtifactFields.deployment_id)
