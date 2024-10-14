@@ -280,7 +280,8 @@ async function uploadSecrets() {
 async function wranglerCommands() {
 	startGroup("🚀 Running Wrangler Commands");
 	try {
-		process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = '/opt/wranglerArtifacts';
+		const wranglerOutputDir = '/opt/wranglerArtifacts'
+		process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = wranglerOutputDir;
 
 		const commands = config["COMMANDS"];
 		const environment = config["ENVIRONMENT"];
@@ -365,7 +366,7 @@ async function wranglerCommands() {
 				command.startsWith("pages deploy")
 			) {
 				setOutput("type", "pages");
-				const pagesArtifactFields = await getWranglerArtifacts('replace-with-output-dir')
+				const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
 				if (pagesArtifactFields){
 					setOutput("id", pagesArtifactFields.deployment_id);
 					setOutput("deployment-url", "pagesTest");
