@@ -12,6 +12,7 @@ import {
 } from "@actions/core";
 import { getExecOutput } from "@actions/exec";
 import semverEq from "semver/functions/eq";
+import { getWranglerArtifacts } from "./archiveManager";
 import { exec, execShell } from "./exec";
 import { getPackageManager } from "./packageManagers";
 import { checkWorkingDirectory, semverCompare } from "./utils";
@@ -279,104 +280,103 @@ async function uploadSecrets() {
 async function wranglerCommands() {
 	startGroup("🚀 Running Wrangler Commands");
 	try {
-		const wranglerOutputDir = '/opt/wranglerArtifacts'
-		process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = wranglerOutputDir;
-		setOutput("environment", process.env);
 
+		const commands = config["COMMANDS"];
+		const environment = config["ENVIRONMENT"];
 
-		// const commands = config["COMMANDS"];
-		// const environment = config["ENVIRONMENT"];
+		if (!commands.length) {
+			const wranglerVersion = config["WRANGLER_VERSION"];
+			const deployCommand = semverCompare("2.20.0", wranglerVersion)
+				? "deploy"
+				: "publish";
+			commands.push(deployCommand);
+		}
 
-		// if (!commands.length) {
-		// 	const wranglerVersion = config["WRANGLER_VERSION"];
-		// 	const deployCommand = semverCompare("2.20.0", wranglerVersion)
-		// 		? "deploy"
-		// 		: "publish";
-		// 	commands.push(deployCommand);
-		// }
+		for (let command of commands) {
+			const args = [];
 
-		// for (let command of commands) {
-		// 	const args = [];
+			if (environment && !command.includes("--env")) {
+				args.push("--env", environment);
+			}
 
-		// 	if (environment && !command.includes("--env")) {
-		// 		args.push("--env", environment);
-		// 	}
+			if (
+				config["VARS"].length &&
+				(command.startsWith("deploy") || command.startsWith("publish")) &&
+				!command.includes("--var")
+			) {
+				args.push("--var");
+				for (const v of config["VARS"]) {
+					args.push(`${v}:${getEnvVar(v)}`);
+				}
+			}
 
-		// 	if (
-		// 		config["VARS"].length &&
-		// 		(command.startsWith("deploy") || command.startsWith("publish")) &&
-		// 		!command.includes("--var")
-		// 	) {
-		// 		args.push("--var");
-		// 		for (const v of config["VARS"]) {
-		// 			args.push(`${v}:${getEnvVar(v)}`);
-		// 		}
-		// 	}
+			// Used for saving the wrangler output
+			let stdOut = "";
+			let stdErr = "";
+			
+			// Construct the options for the exec command
+			const wranglerOutputDir = '/opt/wranglerArtifacts'
 
-		// 	// Used for saving the wrangler output
-		// 	let stdOut = "";
-		// 	let stdErr = "";
+			const options = {
+				cwd: config["workingDirectory"],
+				silent: config["QUIET_MODE"],
+				listeners: {
+					stdout: (data: Buffer) => {
+						stdOut += data.toString();
+					},
+					stderr: (data: Buffer) => {
+						stdErr += data.toString();
+					},
+				},
+				env: {'WRANGLER_OUTPUT_FILE_DIRECTORY': '/opt/wranglerArtifacts'}
+			};
 
-		// 	// Construct the options for the exec command
-		// 	const options = {
-		// 		cwd: config["workingDirectory"],
-		// 		silent: config["QUIET_MODE"],
-		// 		listeners: {
-		// 			stdout: (data: Buffer) => {
-		// 				stdOut += data.toString();
-		// 			},
-		// 			stderr: (data: Buffer) => {
-		// 				stdErr += data.toString();
-		// 			},
-		// 		},
-		// 	};
+			// Execute the wrangler command
+			await exec(`${packageManager.exec} wrangler ${command}`, args, options);
 
-		// 	// Execute the wrangler command
-		// 	await exec(`${packageManager.exec} wrangler ${command}`, args, options);
+			// Set the outputs for the command
+			setOutput("command-output", stdOut);
+			setOutput("command-stderr", stdErr);
 
-		// 	// Set the outputs for the command
-		// 	setOutput("command-output", stdOut);
-		// 	setOutput("command-stderr", stdErr);
+			// Check if this command is a workers deployment
+			if (
+				command.startsWith("deploy") ||
+				command.startsWith("publish")
+			) {
+				// If this is a workers or pages deployment, try to extract the deployment URL
+				let deploymentUrl = "";
+				const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
+				if (deploymentUrlMatch && deploymentUrlMatch[0]) {
+					deploymentUrl = deploymentUrlMatch[0].trim();
+					//setOutput("deployment-url", deploymentUrl);
+					setOutput("deployment-url", "test");
+				}
 
-		// 	// Check if this command is a workers deployment
-		// 	if (
-		// 		command.startsWith("deploy") ||
-		// 		command.startsWith("publish")
-		// 	) {
-		// 		// If this is a workers or pages deployment, try to extract the deployment URL
-		// 		let deploymentUrl = "";
-		// 		const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
-		// 		if (deploymentUrlMatch && deploymentUrlMatch[0]) {
-		// 			deploymentUrl = deploymentUrlMatch[0].trim();
-		// 			//setOutput("deployment-url", deploymentUrl);
-		// 			setOutput("deployment-url", "test");
-		// 		}
-
-		// 		// And also try to extract the alias URL (since wrangler@3.78.0)
-		// 		const aliasUrlMatch = stdOut.match(
-		// 			/alias URL: (https?:\/\/[a-zA-Z0-9-./]+)/,
-		// 		);
-		// 		if (aliasUrlMatch && aliasUrlMatch.length == 2 && aliasUrlMatch[1]) {
-		// 			const aliasUrl = aliasUrlMatch[1].trim();
-		// 			setOutput("deployment-alias-url", aliasUrl);
-		// 		}
-		// 	}
-		// 	// Check if this command is a pages deployment
-		// 	if (
-		// 		command.startsWith("pages publish") ||
-		// 		command.startsWith("pages deploy")
-		// 	) {
-		// 		setOutput("type", "pages");
-		// 		const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
-		// 		if (pagesArtifactFields){
-		// 			setOutput("id", pagesArtifactFields.deployment_id);
-		// 			setOutput("deployment-url", "pagesTest");
-		// 			//setOutput("url", pagesArtifactFields.url);
-		// 			setOutput("alias", pagesArtifactFields.alias);
-		// 			setOutput("environment", pagesArtifactFields.environment);
-		// 		}
-		// 	}
-		// }
+				// And also try to extract the alias URL (since wrangler@3.78.0)
+				const aliasUrlMatch = stdOut.match(
+					/alias URL: (https?:\/\/[a-zA-Z0-9-./]+)/,
+				);
+				if (aliasUrlMatch && aliasUrlMatch.length == 2 && aliasUrlMatch[1]) {
+					const aliasUrl = aliasUrlMatch[1].trim();
+					setOutput("deployment-alias-url", aliasUrl);
+				}
+			}
+			// Check if this command is a pages deployment
+			if (
+				command.startsWith("pages publish") ||
+				command.startsWith("pages deploy")
+			) {
+				setOutput("type", "pages");
+				const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
+				if (pagesArtifactFields){
+					setOutput("id", pagesArtifactFields.deployment_id);
+					setOutput("deployment-url", "pagesTest");
+					//setOutput("url", pagesArtifactFields.url);
+					setOutput("alias", pagesArtifactFields.alias);
+					setOutput("environment", pagesArtifactFields.environment);
+				}
+			}
+		}
 	} finally {
 		endGroup();
 	}

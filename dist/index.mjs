@@ -28623,6 +28623,43 @@ var exec = __nccwpck_require__(1514);
 // EXTERNAL MODULE: ./node_modules/semver/functions/eq.js
 var eq = __nccwpck_require__(1898);
 var eq_default = /*#__PURE__*/__nccwpck_require__.n(eq);
+;// CONCATENATED MODULE: external "fs/promises"
+const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs/promises");
+;// CONCATENATED MODULE: ./src/archiveManager.ts
+
+//COURT: name this better. same for the file
+async function getWranglerArtifacts(artifactDirectory) {
+    // read files in asset directory
+    const dirent = await (0,promises_namespaceObject.readdir)(artifactDirectory, {
+        withFileTypes: true,
+        recursive: false,
+    });
+    //  Match files to wrangler-output-<timestamp>-xxxxxx.json
+    const regex = new RegExp(/^wrangler-output-[\d]{4}-[\d]{2}-[\d]{2}_[\d]{2}-[\d]{2}-[\d]{2}_[\d]{3}-[A-Fa-f0-9]{6}\.json$/);
+    const artifactFilePaths = dirent
+        .filter((d) => d.name.match(regex))
+        .map((d) => `${artifactDirectory}/${d.name}`);
+    for (let i = 0; i < artifactFilePaths.length; i++) {
+        const file = await (0,promises_namespaceObject.open)(artifactFilePaths[i]);
+        for await (const line of file.readLines()) {
+            // parse each line of output
+            const output = JSON.parse(line);
+            // try-catch around zod parsing so we can fail open
+            try {
+                if (output.type === 'pages-deploy') {
+                    //COURT: Assuming in the context of the action, for a specific pages command we'll want to output the first instance we see?
+                    return output;
+                }
+            }
+            catch (err) {
+                //COURT: what to do here??
+            }
+        }
+        await file.close();
+    }
+    return null;
+}
+
 ;// CONCATENATED MODULE: external "node:child_process"
 const external_node_child_process_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:child_process");
 ;// CONCATENATED MODULE: external "node:os"
@@ -28745,6 +28782,7 @@ function checkWorkingDirectory(workingDirectory = ".") {
 }
 
 ;// CONCATENATED MODULE: ./src/index.ts
+
 
 
 
@@ -28957,92 +28995,83 @@ async function uploadSecrets() {
 async function wranglerCommands() {
     startGroup("🚀 Running Wrangler Commands");
     try {
-        const wranglerOutputDir = '/opt/wranglerArtifacts';
-        process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = wranglerOutputDir;
-        (0,core.setOutput)("environment", process.env);
-        // const commands = config["COMMANDS"];
-        // const environment = config["ENVIRONMENT"];
-        // if (!commands.length) {
-        // 	const wranglerVersion = config["WRANGLER_VERSION"];
-        // 	const deployCommand = semverCompare("2.20.0", wranglerVersion)
-        // 		? "deploy"
-        // 		: "publish";
-        // 	commands.push(deployCommand);
-        // }
-        // for (let command of commands) {
-        // 	const args = [];
-        // 	if (environment && !command.includes("--env")) {
-        // 		args.push("--env", environment);
-        // 	}
-        // 	if (
-        // 		config["VARS"].length &&
-        // 		(command.startsWith("deploy") || command.startsWith("publish")) &&
-        // 		!command.includes("--var")
-        // 	) {
-        // 		args.push("--var");
-        // 		for (const v of config["VARS"]) {
-        // 			args.push(`${v}:${getEnvVar(v)}`);
-        // 		}
-        // 	}
-        // 	// Used for saving the wrangler output
-        // 	let stdOut = "";
-        // 	let stdErr = "";
-        // 	// Construct the options for the exec command
-        // 	const options = {
-        // 		cwd: config["workingDirectory"],
-        // 		silent: config["QUIET_MODE"],
-        // 		listeners: {
-        // 			stdout: (data: Buffer) => {
-        // 				stdOut += data.toString();
-        // 			},
-        // 			stderr: (data: Buffer) => {
-        // 				stdErr += data.toString();
-        // 			},
-        // 		},
-        // 	};
-        // 	// Execute the wrangler command
-        // 	await exec(`${packageManager.exec} wrangler ${command}`, args, options);
-        // 	// Set the outputs for the command
-        // 	setOutput("command-output", stdOut);
-        // 	setOutput("command-stderr", stdErr);
-        // 	// Check if this command is a workers deployment
-        // 	if (
-        // 		command.startsWith("deploy") ||
-        // 		command.startsWith("publish")
-        // 	) {
-        // 		// If this is a workers or pages deployment, try to extract the deployment URL
-        // 		let deploymentUrl = "";
-        // 		const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
-        // 		if (deploymentUrlMatch && deploymentUrlMatch[0]) {
-        // 			deploymentUrl = deploymentUrlMatch[0].trim();
-        // 			//setOutput("deployment-url", deploymentUrl);
-        // 			setOutput("deployment-url", "test");
-        // 		}
-        // 		// And also try to extract the alias URL (since wrangler@3.78.0)
-        // 		const aliasUrlMatch = stdOut.match(
-        // 			/alias URL: (https?:\/\/[a-zA-Z0-9-./]+)/,
-        // 		);
-        // 		if (aliasUrlMatch && aliasUrlMatch.length == 2 && aliasUrlMatch[1]) {
-        // 			const aliasUrl = aliasUrlMatch[1].trim();
-        // 			setOutput("deployment-alias-url", aliasUrl);
-        // 		}
-        // 	}
-        // 	// Check if this command is a pages deployment
-        // 	if (
-        // 		command.startsWith("pages publish") ||
-        // 		command.startsWith("pages deploy")
-        // 	) {
-        // 		setOutput("type", "pages");
-        // 		const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
-        // 		if (pagesArtifactFields){
-        // 			setOutput("id", pagesArtifactFields.deployment_id);
-        // 			setOutput("deployment-url", "pagesTest");
-        // 			//setOutput("url", pagesArtifactFields.url);
-        // 			setOutput("alias", pagesArtifactFields.alias);
-        // 			setOutput("environment", pagesArtifactFields.environment);
-        // 		}
-        // 	}
-        // }
+        const commands = config["COMMANDS"];
+        const environment = config["ENVIRONMENT"];
+        if (!commands.length) {
+            const wranglerVersion = config["WRANGLER_VERSION"];
+            const deployCommand = semverCompare("2.20.0", wranglerVersion)
+                ? "deploy"
+                : "publish";
+            commands.push(deployCommand);
+        }
+        for (let command of commands) {
+            const args = [];
+            if (environment && !command.includes("--env")) {
+                args.push("--env", environment);
+            }
+            if (config["VARS"].length &&
+                (command.startsWith("deploy") || command.startsWith("publish")) &&
+                !command.includes("--var")) {
+                args.push("--var");
+                for (const v of config["VARS"]) {
+                    args.push(`${v}:${getEnvVar(v)}`);
+                }
+            }
+            // Used for saving the wrangler output
+            let stdOut = "";
+            let stdErr = "";
+            // Construct the options for the exec command
+            const wranglerOutputDir = '/opt/wranglerArtifacts';
+            const options = {
+                cwd: config["workingDirectory"],
+                silent: config["QUIET_MODE"],
+                listeners: {
+                    stdout: (data) => {
+                        stdOut += data.toString();
+                    },
+                    stderr: (data) => {
+                        stdErr += data.toString();
+                    },
+                },
+                env: { 'WRANGLER_OUTPUT_FILE_DIRECTORY': '/opt/wranglerArtifacts' }
+            };
+            // Execute the wrangler command
+            await (0,exec.exec)(`${packageManager.exec} wrangler ${command}`, args, options);
+            // Set the outputs for the command
+            (0,core.setOutput)("command-output", stdOut);
+            (0,core.setOutput)("command-stderr", stdErr);
+            // Check if this command is a workers deployment
+            if (command.startsWith("deploy") ||
+                command.startsWith("publish")) {
+                // If this is a workers or pages deployment, try to extract the deployment URL
+                let deploymentUrl = "";
+                const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
+                if (deploymentUrlMatch && deploymentUrlMatch[0]) {
+                    deploymentUrl = deploymentUrlMatch[0].trim();
+                    //setOutput("deployment-url", deploymentUrl);
+                    (0,core.setOutput)("deployment-url", "test");
+                }
+                // And also try to extract the alias URL (since wrangler@3.78.0)
+                const aliasUrlMatch = stdOut.match(/alias URL: (https?:\/\/[a-zA-Z0-9-./]+)/);
+                if (aliasUrlMatch && aliasUrlMatch.length == 2 && aliasUrlMatch[1]) {
+                    const aliasUrl = aliasUrlMatch[1].trim();
+                    (0,core.setOutput)("deployment-alias-url", aliasUrl);
+                }
+            }
+            // Check if this command is a pages deployment
+            if (command.startsWith("pages publish") ||
+                command.startsWith("pages deploy")) {
+                (0,core.setOutput)("type", "pages");
+                const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir);
+                if (pagesArtifactFields) {
+                    (0,core.setOutput)("id", pagesArtifactFields.deployment_id);
+                    (0,core.setOutput)("deployment-url", "pagesTest");
+                    //setOutput("url", pagesArtifactFields.url);
+                    (0,core.setOutput)("alias", pagesArtifactFields.alias);
+                    (0,core.setOutput)("environment", pagesArtifactFields.environment);
+                }
+            }
+        }
     }
     finally {
         endGroup();
