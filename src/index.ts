@@ -341,13 +341,13 @@ async function wranglerCommands() {
 				command.startsWith("deploy") ||
 				command.startsWith("publish")
 			) {
-				setOutput("type", "worker");
 				// If this is a workers or pages deployment, try to extract the deployment URL
 				let deploymentUrl = "";
 				const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
 				if (deploymentUrlMatch && deploymentUrlMatch[0]) {
 					deploymentUrl = deploymentUrlMatch[0].trim();
-					setOutput("deployment-url", deploymentUrl);
+					//setOutput("deployment-url", deploymentUrl);
+					setOutput("deployment-url", "test");
 				}
 
 				// And also try to extract the alias URL (since wrangler@3.78.0)
@@ -367,8 +367,9 @@ async function wranglerCommands() {
 				setOutput("type", "pages");
 				const pagesArtifactFields = await getWranglerArtifacts('replace-with-output-dir')
 				if (pagesArtifactFields){
-					setOutput("id", pagesArtifactFields.deployment_id)
-					setOutput("url", pagesArtifactFields.url);
+					setOutput("id", pagesArtifactFields.deployment_id);
+					setOutput("deployment-url", "pagesTest");
+					//setOutput("url", pagesArtifactFields.url);
 					setOutput("alias", pagesArtifactFields.alias);
 					setOutput("environment", pagesArtifactFields.environment);
 				}
