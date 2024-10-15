@@ -315,6 +315,7 @@ async function wranglerCommands() {
 			
 			// Construct the options for the exec command
 			const wranglerOutputDir = '/opt/wranglerArtifacts'
+			process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = wranglerOutputDir;
 
 			const options = {
 				cwd: config["workingDirectory"],
@@ -327,7 +328,7 @@ async function wranglerCommands() {
 						stdErr += data.toString();
 					},
 				},
-				env: {'WRANGLER_OUTPUT_FILE_DIRECTORY': '/opt/wranglerArtifacts'}
+				//env: {'WRANGLER_OUTPUT_FILE_DIRECTORY': '/opt/wranglerArtifacts'}
 			};
 
 			// Execute the wrangler command
