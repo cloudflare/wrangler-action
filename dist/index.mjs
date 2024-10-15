@@ -28995,7 +28995,7 @@ async function wranglerCommands() {
                         stdErr += data.toString();
                     },
                 },
-                //env: {'WRANGLER_OUTPUT_FILE_DIRECTORY': '/opt/wranglerArtifacts'}
+                env: { 'WRANGLER_OUTPUT_FILE_DIRECTORY': '/opt/wranglerArtifacts' }
             };
             // Execute the wrangler command
             await (0,exec.exec)(`${packageManager.exec} wrangler ${command}`, args, options);
