@@ -12,7 +12,6 @@ import {
 } from "@actions/core";
 import { getExecOutput } from "@actions/exec";
 import semverEq from "semver/functions/eq";
-import { getWranglerArtifacts } from "./archiveManager";
 import { exec, execShell } from "./exec";
 import { getPackageManager } from "./packageManagers";
 import { checkWorkingDirectory, semverCompare } from "./utils";
@@ -368,14 +367,14 @@ async function wranglerCommands() {
 				command.startsWith("pages deploy")
 			) {
 				setOutput("type", "pages");
-				const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
-				if (pagesArtifactFields){
-					setOutput("id", pagesArtifactFields.deployment_id);
-					setOutput("deployment-url", "pagesTest");
-					//setOutput("url", pagesArtifactFields.url);
-					setOutput("alias", pagesArtifactFields.alias);
-					setOutput("environment", pagesArtifactFields.environment);
-				}
+				// const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
+				// if (pagesArtifactFields){
+				// 	setOutput("id", pagesArtifactFields.deployment_id);
+				// 	setOutput("deployment-url", "pagesTest");
+				// 	//setOutput("url", pagesArtifactFields.url);
+				// 	setOutput("alias", pagesArtifactFields.alias);
+				// 	setOutput("environment", pagesArtifactFields.environment);
+				// }
 			}
 		}
 	} finally {
