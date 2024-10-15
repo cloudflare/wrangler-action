@@ -370,6 +370,12 @@ async function wranglerCommands() {
 				command.startsWith("pages deploy")
 			) {
 				setOutput("type", "pages");
+				if(process.env.WRANGLER_OUTPUT_FILE_DIRECTORY) { 
+					console.log('It is set!'); 
+				}
+				else { 
+					console.log('No set!'); 
+				}
 				const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
 				if (pagesArtifactFields){
 					setOutput("id", pagesArtifactFields.deployment_id);
