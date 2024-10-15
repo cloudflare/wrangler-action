@@ -362,6 +362,7 @@ async function wranglerCommands() {
 				}
 			}
 			// Check if this command is a pages deployment
+			//COURT - test comment
 			if (
 				command.startsWith("pages publish") ||
 				command.startsWith("pages deploy")

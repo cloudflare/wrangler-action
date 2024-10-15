@@ -31,6 +31,7 @@ export async function getWranglerArtifacts(artifactDirectory: string): Promise<O
 	})
 
 	//  Match files to wrangler-output-<timestamp>-xxxxxx.json
+    // COURT test comment
 	const regex = new RegExp(
 		/^wrangler-output-[\d]{4}-[\d]{2}-[\d]{2}_[\d]{2}-[\d]{2}-[\d]{2}_[\d]{3}-[A-Fa-f0-9]{6}\.json$/
 	)

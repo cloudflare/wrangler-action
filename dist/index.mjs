@@ -28635,6 +28635,7 @@ async function getWranglerArtifacts(artifactDirectory) {
         recursive: false,
     });
     //  Match files to wrangler-output-<timestamp>-xxxxxx.json
+    // COURT test comment
     const regex = new RegExp(/^wrangler-output-[\d]{4}-[\d]{2}-[\d]{2}_[\d]{2}-[\d]{2}-[\d]{2}_[\d]{3}-[A-Fa-f0-9]{6}\.json$/);
     const artifactFilePaths = dirent
         .filter((d) => d.name.match(regex))
@@ -29059,6 +29060,7 @@ async function wranglerCommands() {
                 }
             }
             // Check if this command is a pages deployment
+            //COURT - test comment
             if (command.startsWith("pages publish") ||
                 command.startsWith("pages deploy")) {
                 (0,core.setOutput)("type", "pages");
