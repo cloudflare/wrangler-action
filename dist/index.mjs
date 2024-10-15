@@ -28623,6 +28623,44 @@ var exec = __nccwpck_require__(1514);
 // EXTERNAL MODULE: ./node_modules/semver/functions/eq.js
 var eq = __nccwpck_require__(1898);
 var eq_default = /*#__PURE__*/__nccwpck_require__.n(eq);
+;// CONCATENATED MODULE: external "fs/promises"
+const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs/promises");
+;// CONCATENATED MODULE: ./src/archiveManager.ts
+
+//COURT: name this better. same for the file
+async function getWranglerArtifacts(artifactDirectory) {
+    // read files in asset directory
+    const dirent = await (0,promises_namespaceObject.readdir)(artifactDirectory, {
+        withFileTypes: true,
+        recursive: false,
+    });
+    //  Match files to wrangler-output-<timestamp>-xxxxxx.json
+    // COURT test comment
+    const regex = new RegExp(/^wrangler-output-[\d]{4}-[\d]{2}-[\d]{2}_[\d]{2}-[\d]{2}-[\d]{2}_[\d]{3}-[A-Fa-f0-9]{6}\.json$/);
+    const artifactFilePaths = dirent
+        .filter((d) => d.name.match(regex))
+        .map((d) => `${artifactDirectory}/${d.name}`);
+    for (let i = 0; i < artifactFilePaths.length; i++) {
+        const file = await (0,promises_namespaceObject.open)(artifactFilePaths[i]);
+        for await (const line of file.readLines()) {
+            // parse each line of output
+            const output = JSON.parse(line);
+            // try-catch around zod parsing so we can fail open
+            try {
+                if (output.type === 'pages-deploy') {
+                    //COURT: Assuming in the context of the action, for a specific pages command we'll want to output the first instance we see?
+                    return output;
+                }
+            }
+            catch (err) {
+                //COURT: what to do here??
+            }
+        }
+        await file.close();
+    }
+    return null;
+}
+
 ;// CONCATENATED MODULE: external "node:child_process"
 const external_node_child_process_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:child_process");
 ;// CONCATENATED MODULE: external "node:os"
@@ -28745,6 +28783,7 @@ function checkWorkingDirectory(workingDirectory = ".") {
 }
 
 ;// CONCATENATED MODULE: ./src/index.ts
+
 
 
 
@@ -28984,6 +29023,7 @@ async function wranglerCommands() {
             let stdErr = "";
             // Construct the options for the exec command
             const wranglerOutputDir = '/opt/wranglerArtifacts';
+            // COURT: with this approach, npx runs
             process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = wranglerOutputDir;
             const options = {
                 cwd: config["workingDirectory"],
@@ -28996,7 +29036,7 @@ async function wranglerCommands() {
                         stdErr += data.toString();
                     },
                 },
-                //env: {'WRANGLER_OUTPUT_FILE_DIRECTORY': '/opt/wranglerArtifacts'}
+                //with this approach, env seems to be overwritten in a way that prevents access to npx env: {'WRANGLER_OUTPUT_FILE_DIRECTORY': '/opt/wranglerArtifacts'}
             };
             // Execute the wrangler command
             await (0,exec.exec)(`${packageManager.exec} wrangler ${command}`, args, options);
@@ -29026,14 +29066,14 @@ async function wranglerCommands() {
             if (command.startsWith("pages publish") ||
                 command.startsWith("pages deploy")) {
                 (0,core.setOutput)("type", "pages");
-                // const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
-                // if (pagesArtifactFields){
-                // 	setOutput("id", pagesArtifactFields.deployment_id);
-                // 	setOutput("deployment-url", "pagesTest");
-                // 	//setOutput("url", pagesArtifactFields.url);
-                // 	setOutput("alias", pagesArtifactFields.alias);
-                // 	setOutput("environment", pagesArtifactFields.environment);
-                // }
+                const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir);
+                if (pagesArtifactFields) {
+                    (0,core.setOutput)("id", pagesArtifactFields.deployment_id);
+                    (0,core.setOutput)("url", "pagesTest");
+                    //setOutput("url", pagesArtifactFields.url);
+                    (0,core.setOutput)("alias", pagesArtifactFields.alias);
+                    (0,core.setOutput)("environment", pagesArtifactFields.environment);
+                }
             }
         }
     }
