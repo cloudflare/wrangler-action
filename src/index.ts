@@ -17,7 +17,7 @@ import { exec, execShell } from "./exec";
 import { getPackageManager } from "./packageManagers";
 import { checkWorkingDirectory, semverCompare } from "./utils";
 
-const DEFAULT_WRANGLER_VERSION = "3.81.0";
+const DEFAULT_WRANGLER_VERSION = "3.78.10";
 
 /**
  * A configuration object that contains all the inputs & immutable state for the action.
@@ -316,7 +316,6 @@ async function wranglerCommands() {
 			
 			// Construct the options for the exec command
 			const wranglerOutputDir = '/opt/wranglerArtifacts'
-			// COURT: with this approach, npx runs
 			process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = wranglerOutputDir;
 
 			const options = {
@@ -330,7 +329,6 @@ async function wranglerCommands() {
 						stdErr += data.toString();
 					},
 				},
-				//with this approach, env seems to be overwritten in a way that prevents access to npx env: {'WRANGLER_OUTPUT_FILE_DIRECTORY': '/opt/wranglerArtifacts'}
 			};
 
 			// Execute the wrangler command
@@ -350,8 +348,7 @@ async function wranglerCommands() {
 				const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
 				if (deploymentUrlMatch && deploymentUrlMatch[0]) {
 					deploymentUrl = deploymentUrlMatch[0].trim();
-					//setOutput("deployment-url", deploymentUrl);
-					setOutput("deployment-url", "test");
+					setOutput("deployment-url", deploymentUrl);
 				}
 
 				// And also try to extract the alias URL (since wrangler@3.78.0)
@@ -364,26 +361,11 @@ async function wranglerCommands() {
 				}
 			}
 			// Check if this command is a pages deployment
-			//COURT - test comment
 			if (
 				command.startsWith("pages publish") ||
 				command.startsWith("pages deploy")
 			) {
-				setOutput("type", "pages");
-				if(process.env.WRANGLER_OUTPUT_FILE_DIRECTORY) { 
-					console.log('It is set!'); 
-				}
-				else { 
-					console.log('No set!'); 
-				}
 				const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
-				if (pagesArtifactFields?.alias === null){
-					console.log("it's null");
-				} else if (pagesArtifactFields?.alias === '') {
-					console.log("it's an empty string");
-				} else {
-					console.log ("it's neither null nor an empty string")
-				}
 
 				if (pagesArtifactFields){
 					setOutput("id", pagesArtifactFields.deployment_id);
