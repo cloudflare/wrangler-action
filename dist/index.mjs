@@ -28647,7 +28647,7 @@ async function getWranglerArtifacts(artifactDirectory) {
             const output = JSON.parse(line);
             // try-catch around zod parsing so we can fail open
             try {
-                if (output.type === 'pages-deploy') {
+                if (output.type === 'pages-deploy-detailed') {
                     //COURT: Assuming in the context of the action, for a specific pages command we'll want to output the first instance we see?
                     return output;
                 }
