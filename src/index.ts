@@ -379,8 +379,7 @@ async function wranglerCommands() {
 				const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
 				if (pagesArtifactFields){
 					setOutput("id", pagesArtifactFields.deployment_id);
-					setOutput("url", "pagesTest");
-					//setOutput("url", pagesArtifactFields.url);
+					setOutput("url", pagesArtifactFields.url);
 					setOutput("alias", pagesArtifactFields.alias);
 					setOutput("environment", pagesArtifactFields.environment);
 				}
