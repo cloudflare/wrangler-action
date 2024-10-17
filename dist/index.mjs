@@ -29077,7 +29077,7 @@ async function wranglerCommands() {
                     (0,core.setOutput)("id", pagesArtifactFields.deployment_id);
                     (0,core.setOutput)("url", pagesArtifactFields.url);
                     // To ensure parity with pages-action, display url for alias if there is no alias
-                    (0,core.setOutput)("alias", pagesArtifactFields.alias ?? pagesArtifactFields.url);
+                    (0,core.setOutput)("alias", pagesArtifactFields.alias ? '' : pagesArtifactFields.url);
                     (0,core.setOutput)("environment", pagesArtifactFields.environment);
                 }
             }

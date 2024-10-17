@@ -381,7 +381,7 @@ async function wranglerCommands() {
 					setOutput("id", pagesArtifactFields.deployment_id);
 					setOutput("url", pagesArtifactFields.url);
 					// To ensure parity with pages-action, display url for alias if there is no alias
-					setOutput("alias", pagesArtifactFields.alias ?? pagesArtifactFields.url);
+					setOutput("alias", pagesArtifactFields.alias ? '' : pagesArtifactFields.url);
 					setOutput("environment", pagesArtifactFields.environment);
 				}
 			}
