@@ -28790,7 +28790,7 @@ function checkWorkingDirectory(workingDirectory = ".") {
 
 
 
-const DEFAULT_WRANGLER_VERSION = "3.78.10";
+const DEFAULT_WRANGLER_VERSION = "3.81.0";
 /**
  * A configuration object that contains all the inputs & immutable state for the action.
  */
