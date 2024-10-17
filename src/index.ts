@@ -377,6 +377,14 @@ async function wranglerCommands() {
 					console.log('No set!'); 
 				}
 				const pagesArtifactFields = await getWranglerArtifacts(wranglerOutputDir)
+				if (pagesArtifactFields?.alias === null){
+					console.log("it's null");
+				} else if (pagesArtifactFields?.alias === '') {
+					console.log("it's an empty string");
+				} else {
+					console.log ("it's neither null nor an empty string")
+				}
+
 				if (pagesArtifactFields){
 					setOutput("id", pagesArtifactFields.deployment_id);
 					setOutput("url", pagesArtifactFields.url);
