@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.10.0
+
+### Minor Changes
+
+- [#303](https://github.com/cloudflare/wrangler-action/pull/303) [`3ec7f8943ef83351f743cfaa8763a9056ef70993`](https://github.com/cloudflare/wrangler-action/commit/3ec7f8943ef83351f743cfaa8763a9056ef70993) Thanks [@courtney-sims](https://github.com/courtney-sims)! - Support id, environment, url, and alias outputs for Pages deploys.
+
 ## 3.9.0
 
 ### Minor Changes
