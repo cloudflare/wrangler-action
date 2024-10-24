@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.11.0
+
+### Minor Changes
+
+- [#309](https://github.com/cloudflare/wrangler-action/pull/309) [`10d5b9c1c1826adaec0a9ee49fdf5b91113508ef`](https://github.com/cloudflare/wrangler-action/commit/10d5b9c1c1826adaec0a9ee49fdf5b91113508ef) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - Revert "Add parity with pages-action for pages deploy outputs"
+
 ## 3.10.0
 
 ### Minor Changes
