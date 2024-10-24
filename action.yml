@@ -53,3 +53,11 @@ outputs:
     description: "If the command was a Workers or Pages deployment, this will be the URL of the deployment"
   deployment-alias-url:
     description: "If the command was a Workers or Pages deployment, this can be the URL of the deployment alias (if it exists) - needs wrangler >= 3.78.0"
+  id:
+    description: "If the command was a Pages deployment, the deployment ID"
+  url:
+    description: "If the command was a Pages deployment, the URL of the pages deployment"
+  alias:
+    description: "If the command was a Pages deployment, the alias if it exists otherwise the deployment URL"
+  environment:
+    description: "If the command was a Pages deployment, the environment that was deployed to"
