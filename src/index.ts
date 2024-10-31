@@ -1,11 +1,11 @@
 import {
+	debug,
 	getBooleanInput,
 	getInput,
 	getMultilineInput,
 	endGroup as originalEndGroup,
 	error as originalError,
 	info as originalInfo,
-	debug,
 	startGroup as originalStartGroup,
 	setFailed,
 	setOutput,
@@ -13,10 +13,11 @@ import {
 import { getExecOutput } from "@actions/exec";
 import semverEq from "semver/functions/eq";
 import { exec, execShell } from "./exec";
-import { checkWorkingDirectory, semverCompare } from "./utils";
 import { getPackageManager } from "./packageManagers";
+import { checkWorkingDirectory, semverCompare } from "./utils";
+import { getDetailedPagesDeployOutput } from "./wranglerArtifactManager";
 
-const DEFAULT_WRANGLER_VERSION = "3.78.10";
+const DEFAULT_WRANGLER_VERSION = "3.81.0";
 
 /**
  * A configuration object that contains all the inputs & immutable state for the action.
@@ -313,6 +314,9 @@ async function wranglerCommands() {
 			let stdErr = "";
 
 			// Construct the options for the exec command
+			const wranglerOutputDir = "/opt/wranglerArtifacts";
+			process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = wranglerOutputDir;
+
 			const options = {
 				cwd: config["workingDirectory"],
 				silent: config["QUIET_MODE"],
@@ -333,14 +337,9 @@ async function wranglerCommands() {
 			setOutput("command-output", stdOut);
 			setOutput("command-stderr", stdErr);
 
-			// Check if this command is a workers or pages deployment
-			if (
-				command.startsWith("deploy") ||
-				command.startsWith("publish") ||
-				command.startsWith("pages publish") ||
-				command.startsWith("pages deploy")
-			) {
-				// If this is a workers or pages deployment, try to extract the deployment URL
+			// Check if this command is a workers deployment
+			if (command.startsWith("deploy") || command.startsWith("publish")) {
+				// Try to extract the deployment URL
 				let deploymentUrl = "";
 				const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
 				if (deploymentUrlMatch && deploymentUrlMatch[0]) {
@@ -355,6 +354,26 @@ async function wranglerCommands() {
 				if (aliasUrlMatch && aliasUrlMatch.length == 2 && aliasUrlMatch[1]) {
 					const aliasUrl = aliasUrlMatch[1].trim();
 					setOutput("deployment-alias-url", aliasUrl);
+				}
+			}
+			// Check if this command is a pages deployment
+			if (
+				command.startsWith("pages publish") ||
+				command.startsWith("pages deploy")
+			) {
+				const pagesArtifactFields =
+					await getDetailedPagesDeployOutput(wranglerOutputDir);
+
+				if (pagesArtifactFields) {
+					setOutput("id", pagesArtifactFields.deployment_id);
+					setOutput("url", pagesArtifactFields.url);
+					// To ensure parity with pages-action, display url for alias if there is no alias
+					setOutput("alias", pagesArtifactFields.alias);
+					setOutput("environment", pagesArtifactFields.environment);
+				} else {
+					info(
+						"No fields available for output. Have you updated wrangler to version >=3.81.0?",
+					);
 				}
 			}
 		}
