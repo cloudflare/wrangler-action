@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.12.0
+
+### Minor Changes
+
+- [#312](https://github.com/cloudflare/wrangler-action/pull/312) [`122ee5cf5b66847e0b6cfa67ecd9e03e38a67a42`](https://github.com/cloudflare/wrangler-action/commit/122ee5cf5b66847e0b6cfa67ecd9e03e38a67a42) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - This reapplies [303](https://github.com/cloudflare/wrangler-action/pull/303) add parity with pages-action for pages deploy outputs. Thanks @courtney-sims! - Support pages-deployment-id, pages-environment, pages-deployment-alias-url and deployment-url outputs for Pages deploys when wrangler version is >=3.81.0. deployment-alias-url was also deprecated in favour of pages-deployment-alias.
+
 ## 3.11.0
 
 ### Minor Changes
