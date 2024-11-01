@@ -262,7 +262,7 @@ Now when you run your workflow, you will see the full output of the Wrangler com
 
 > Note: the `command-stderr` output variable is also available if you need to parse the standard error output of the Wrangler command.
 
-### Using the `deployment-url` and `deployment-alias-url` Output Variables
+### Using the `deployment-url` and `pages-deployment-alias-url` Output Variables
 
 If you are executing a Wrangler command that results in either a Workers or Pages deployment, you can utilize the `deployment-url` output variable to get the URL of the deployment. For example, if you want to print the deployment URL after deploying your application, you can do the following:
 
@@ -287,14 +287,14 @@ The resulting output will look something like this:
 https://<your_pages_site>.pages.dev
 ```
 
-Pages deployments will also provide their alias URL (since Wrangler v3.78.0). You can use the `deployment-alias-url` output variable to get the URL of the deployment alias. This is useful for, for example, branch aliases for preview deployments.
+Pages deployments will also provide their alias URL (since Wrangler v3.78.0). You can use the `pages-deployment-alias-url` output variable to get the URL of the deployment alias. This is useful for, for example, branch aliases for preview deployments.
 
 If the sample action above was used to deploy a branch other than main, you could use the following to get the branch URL:
 
 ```yaml
-- name: print deployment-alias-url
+- name: print pages-deployment-alias-url
   env:
-    DEPLOYMENT_ALIAS_URL: ${{ steps.deploy.outputs.deployment-alias-url }}
+    DEPLOYMENT_ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
   run: echo $DEPLOYMENT_ALIAS_URL
 ```
 
