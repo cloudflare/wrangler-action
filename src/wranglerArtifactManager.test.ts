@@ -25,7 +25,6 @@ describe("wranglerArtifactsManager", () => {
 			expect(artifacts).toEqual([
 				"./testOutputDir/wrangler-output-2024-10-17_18-48-40_463-2e6e83.json",
 			]);
-			//mock.restore();
 		});
 		it("Returns an empty list when the output directory doesn't exist", async () => {
 			mock({
@@ -34,7 +33,6 @@ describe("wranglerArtifactsManager", () => {
 
 			const artifacts = await getWranglerArtifacts("./testOutputDir");
 			expect(artifacts).toEqual([]);
-			//mock.restore();
 		});
 	});
 
@@ -60,7 +58,6 @@ describe("wranglerArtifactsManager", () => {
 				deployment_id: "123",
 				alias: "test.com",
 			});
-			//mock.restore();
 		}),
 			it("Skips artifact entries that are not parseable", async () => {
 				mock({
@@ -83,7 +80,6 @@ describe("wranglerArtifactsManager", () => {
 					deployment_id: "123",
 					alias: "test.com",
 				});
-				//mock.restore();
 			});
 	});
 });
