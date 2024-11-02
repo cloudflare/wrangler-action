@@ -76,7 +76,7 @@ jobs:
         workingDirectory: "subfoldername"
 ```
 
-[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can optionally be passed in via `secrets` as a string of names separated by newlines. Each secret name must match the name of an environment variable specified in the `env` field. This creates or replaces the value for the Worker secret using the `wrangler secret put` command.
+[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can optionally be passed in via `secrets` as a string of names separated by newlines. Each secret name must match the name of an environment variable specified in the `env` field. This creates or replaces the value for the Worker secret using the `wrangler secret put` command. It's also possible to specify worker environment using environment parameter.
 
 ```yaml
 jobs:
@@ -85,6 +85,7 @@ jobs:
       uses: cloudflare/wrangler-action@v3
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        environment: production
         secrets: |
           SECRET1
           SECRET2
