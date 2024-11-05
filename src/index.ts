@@ -36,7 +36,10 @@ const config = {
 	COMMANDS: getMultilineInput("command"),
 	QUIET_MODE: getBooleanInput("quiet"),
 	PACKAGE_MANAGER: getInput("packageManager"),
-	WRANGLER_OUTPUT_DIR: `${join(tmpdir(), "wranglerArtifacts")}`,
+	WRANGLER_OUTPUT_DIR: `${join(
+		tmpdir(),
+		`wranglerArtifacts-${crypto.randomUUID()}`,
+	)}`,
 } as const;
 
 const packageManager = getPackageManager(config.PACKAGE_MANAGER, {
