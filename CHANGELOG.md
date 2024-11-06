@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.12.1
+
+### Patch Changes
+
+- [#319](https://github.com/cloudflare/wrangler-action/pull/319) [`59c04629408d58978884fadd18755f1a15f96157`](https://github.com/cloudflare/wrangler-action/commit/59c04629408d58978884fadd18755f1a15f96157) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - Fixes #317: Generate a new output directory with a randomUUID in the tmpDir, so that when the action is executed multiple times, we use the artifacts from that run, opposed to the artifacts from a previous run.
+
 ## 3.12.0
 
 ### Minor Changes
