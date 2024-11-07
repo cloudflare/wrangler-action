@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import * as path from "node:path";
 
-interface PackageManager {
+export interface PackageManager {
 	install: string;
 	exec: string;
 	execNoInstall: string;
