@@ -27,7 +27,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "latest"
+          # Pinned due to compatibility issues on 23.2.0
+          node-version: "22"
           cache: "npm"
 
       - name: Install modules
