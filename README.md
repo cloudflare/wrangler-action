@@ -121,6 +121,20 @@ jobs:
         command: whoami
 ```
 
+You can also add a command that spans multiple lines:
+
+```yaml
+jobs:
+  deploy:
+    steps:
+      uses: cloudflare/wrangler-action@v3
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        command: |
+          pages project list
+          pages deploy .vercel/output/static --project-name=demo-actions --branch=test
+```
+
 ## Use cases
 
 ### Deploy when commits are merged to main
@@ -220,7 +234,7 @@ For more advanced usage or to programmatically trigger the workflow from scripts
 
 ### Upload a Worker Version
 
-To create a new version of your Worker that is not deployed immediately, use the `wrangler versions upload --experimental-versions` command. Worker versions created in this way can then be deployed all at once at a later time or gradually deployed using the `wranger versions deploy --experimental-versions` command or via the Cloudflare dashboard under the Deployments tab. For now, the `--experimental-versions` flag and wrangler v3.40.0 or above is required to use this feature.
+To create a new version of your Worker that is not deployed immediately, use the `wrangler versions upload` command. Worker versions created in this way can then be deployed all at once at a later time or gradually deployed using the `wranger versions deploy` command or via the Cloudflare dashboard under the Deployments tab. Wrangler v3.40.0 or above is required to use this feature.
 
 ```yaml
 jobs:
@@ -234,10 +248,26 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: versions upload --experimental-versions
+          command: versions upload
 ```
 
 ## Advanced Usage
+
+### Setting A Worker Secret for A Specific Environment
+
+There is an environment parameter that can be set within the workflow to enable this. Example:
+
+```yaml
+- uses: cloudflare/wrangler-action@v3
+  with:
+    apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    command: deploy --env production
+    secrets: |
+      SUPER_SECRET
+    environment: production
+  env:
+    SUPER_SECRET: ${{ secrets.SUPER_SECRET }}
+```
 
 ### Using Wrangler Command Output in Subsequent Steps
 
