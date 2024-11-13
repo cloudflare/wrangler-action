@@ -404,12 +404,9 @@ async function wranglerCommands(
 
 			// Check if this command is a workers deployment
 			if (command.startsWith("deploy") || command.startsWith("publish")) {
-				const { deploymentUrl, aliasUrl } =
+				const { deploymentUrl } =
 					extractDeploymentUrlsFromStdout(stdOut);
 				setOutput("deployment-url", deploymentUrl);
-				// DEPRECATED: deployment-alias-url in favour of pages-deployment-alias, drop in next wrangler-action major version change
-				setOutput("deployment-alias-url", aliasUrl);
-				setOutput("pages-deployment-alias-url", aliasUrl);
 			}
 			// Check if this command is a pages deployment
 			if (
