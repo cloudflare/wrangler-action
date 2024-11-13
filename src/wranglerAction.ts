@@ -15,6 +15,8 @@ import { exec, execShell } from "./exec";
 import { PackageManager } from "./packageManagers";
 import { semverCompare } from "./utils";
 import { getDetailedPagesDeployOutput } from "./wranglerArtifactManager";
+import { createGitHubDeployment, createJobSummary } from "./github";
+import { getOctokit } from "@actions/github";
 
 export type WranglerActionConfig = z.infer<typeof wranglerActionConfig>;
 export const wranglerActionConfig = z.object({
@@ -30,6 +32,7 @@ export const wranglerActionConfig = z.object({
 	QUIET_MODE: z.boolean(),
 	PACKAGE_MANAGER: z.string(),
 	WRANGLER_OUTPUT_DIR: z.string(),
+	GITHUB_TOKEN: z.string(),
 });
 
 function info(
@@ -424,6 +427,36 @@ async function wranglerCommands(
 					setOutput("pages-deployment-alias-url", pagesArtifactFields.alias);
 					setOutput("pages-deployment-id", pagesArtifactFields.deployment_id);
 					setOutput("pages-environment", pagesArtifactFields.environment);
+					// create github deployment, if GITHUB_TOKEN is provided
+					if (
+						config.GITHUB_TOKEN &&
+						pagesArtifactFields.production_branch &&
+						pagesArtifactFields.project_name &&
+						pagesArtifactFields.deployment_trigger &&
+						pagesArtifactFields.stages
+					) {
+						const octokit = getOctokit(config.GITHUB_TOKEN);
+						await Promise.all([
+							createGitHubDeployment({
+								config,
+								octokit,
+								deploymentUrl: pagesArtifactFields.url,
+								productionBranch: pagesArtifactFields.production_branch,
+								environment: pagesArtifactFields.environment,
+								deploymentId: pagesArtifactFields.deployment_id,
+								projectName: pagesArtifactFields.project_name,
+							}),
+							createJobSummary({
+								commitHash:
+									pagesArtifactFields.deployment_trigger.metadata.commit_hash.substring(
+										0,
+										8,
+									),
+								deploymentUrl: pagesArtifactFields.url,
+								aliasUrl: pagesArtifactFields.alias,
+							}),
+						]);
+					}
 				} else {
 					info(
 						config,
