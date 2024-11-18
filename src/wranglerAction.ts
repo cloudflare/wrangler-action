@@ -15,7 +15,7 @@ import { exec, execShell } from "./exec";
 import { PackageManager } from "./packageManagers";
 import { semverCompare } from "./utils";
 import { getDetailedPagesDeployOutput } from "./wranglerArtifactManager";
-import { createGitHubDeployment, createJobSummary } from "./github";
+import { createGitHubDeployment, createJobSummary } from "./service/github";
 import { getOctokit } from "@actions/github";
 
 export type WranglerActionConfig = z.infer<typeof wranglerActionConfig>;
@@ -404,8 +404,7 @@ async function wranglerCommands(
 
 			// Check if this command is a workers deployment
 			if (command.startsWith("deploy") || command.startsWith("publish")) {
-				const { deploymentUrl } =
-					extractDeploymentUrlsFromStdout(stdOut);
+				const { deploymentUrl } = extractDeploymentUrlsFromStdout(stdOut);
 				setOutput("deployment-url", deploymentUrl);
 			}
 			// Check if this command is a pages deployment

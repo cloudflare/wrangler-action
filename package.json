@@ -42,6 +42,7 @@
 		"@types/semver": "^7.5.8",
 		"@vercel/ncc": "^0.38.2",
 		"mock-fs": "^5.4.1",
+		"msw": "^2.6.4",
 		"prettier": "^3.3.3",
 		"semver": "^7.6.3",
 		"typescript": "^5.6.3",
