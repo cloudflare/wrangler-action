@@ -241,26 +241,6 @@ function getEnvVar(envVar: string) {
 	return value;
 }
 
-async function legacyUploadSecrets(
-	config: WranglerActionConfig,
-	packageManager: PackageManager,
-	secrets: string[],
-	environment?: string,
-	workingDirectory?: string,
-) {
-	for (const secret of secrets) {
-		const args = ["wrangler", "secret", "put", secret];
-		if (environment) {
-			args.push("--env", environment);
-		}
-		await exec(packageManager.exec, args, {
-			cwd: workingDirectory,
-			silent: config["QUIET_MODE"],
-			input: Buffer.from(getSecret(secret)),
-		});
-	}
-}
-
 async function uploadSecrets(
 	config: WranglerActionConfig,
 	packageManager: PackageManager,
@@ -276,33 +256,18 @@ async function uploadSecrets(
 	startGroup(config, "🔑 Uploading secrets...");
 
 	try {
-		if (semverCompare(config["WRANGLER_VERSION"], "3.4.0")) {
-			return legacyUploadSecrets(
-				config,
-				packageManager,
-				secrets,
-				environment,
-				workingDirectory,
-			);
+		for (const secret of secrets) {
+			const args = ["wrangler", "secret", "put", secret];
+			if (environment) {
+				args.push("--env", environment);
+			}
+
+			await exec(packageManager.exec, args, {
+				cwd: workingDirectory,
+				silent: config["QUIET_MODE"],
+				input: Buffer.from(getSecret(secret)),
+			});
 		}
-
-		const args = ["wrangler", "secret:bulk"];
-
-		if (environment) {
-			args.push("--env", environment);
-		}
-
-		await exec(packageManager.exec, args, {
-			cwd: workingDirectory,
-			silent: config["QUIET_MODE"],
-			input: Buffer.from(
-				JSON.stringify(
-					Object.fromEntries(
-						secrets.map((secret) => [secret, getSecret(secret)]),
-					),
-				),
-			),
-		});
 	} catch (err: unknown) {
 		if (err instanceof Error) {
 			error(config, err.message);
