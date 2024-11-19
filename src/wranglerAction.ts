@@ -2,8 +2,6 @@ import {
 	debug,
 	getMultilineInput,
 	endGroup as originalEndGroup,
-	error as originalError,
-	info as originalInfo,
 	startGroup as originalStartGroup,
 	setFailed,
 	setOutput,
@@ -13,10 +11,9 @@ import semverEq from "semver/functions/eq";
 import { z } from "zod";
 import { exec, execShell } from "./exec";
 import { PackageManager } from "./packageManagers";
-import { semverCompare } from "./utils";
+import { error, info, semverCompare } from "./utils";
 import { getDetailedPagesDeployOutput } from "./wranglerArtifactManager";
-import { createGitHubDeployment, createJobSummary } from "./service/github";
-import { getOctokit } from "@actions/github";
+import { createGitHubDeploymentAndJobSummary } from "./service/github";
 
 export type WranglerActionConfig = z.infer<typeof wranglerActionConfig>;
 export const wranglerActionConfig = z.object({
@@ -34,26 +31,6 @@ export const wranglerActionConfig = z.object({
 	WRANGLER_OUTPUT_DIR: z.string(),
 	GITHUB_TOKEN: z.string(),
 });
-
-function info(
-	config: WranglerActionConfig,
-	message: string,
-	bypass?: boolean,
-): void {
-	if (!config.QUIET_MODE || bypass) {
-		originalInfo(message);
-	}
-}
-
-function error(
-	config: WranglerActionConfig,
-	message: string,
-	bypass?: boolean,
-): void {
-	if (!config.QUIET_MODE || bypass) {
-		originalError(message);
-	}
-}
 
 function startGroup(config: WranglerActionConfig, name: string): void {
 	if (!config.QUIET_MODE) {
@@ -423,36 +400,11 @@ async function wranglerCommands(
 					setOutput("pages-deployment-alias-url", pagesArtifactFields.alias);
 					setOutput("pages-deployment-id", pagesArtifactFields.deployment_id);
 					setOutput("pages-environment", pagesArtifactFields.environment);
-					// create github deployment, if GITHUB_TOKEN is provided
-					if (
-						config.GITHUB_TOKEN &&
-						pagesArtifactFields.production_branch &&
-						pagesArtifactFields.project_name &&
-						pagesArtifactFields.deployment_trigger &&
-						pagesArtifactFields.stages
-					) {
-						const octokit = getOctokit(config.GITHUB_TOKEN);
-						await Promise.all([
-							createGitHubDeployment({
-								config,
-								octokit,
-								deploymentUrl: pagesArtifactFields.url,
-								productionBranch: pagesArtifactFields.production_branch,
-								environment: pagesArtifactFields.environment,
-								deploymentId: pagesArtifactFields.deployment_id,
-								projectName: pagesArtifactFields.project_name,
-							}),
-							createJobSummary({
-								commitHash:
-									pagesArtifactFields.deployment_trigger.metadata.commit_hash.substring(
-										0,
-										8,
-									),
-								deploymentUrl: pagesArtifactFields.url,
-								aliasUrl: pagesArtifactFields.alias,
-							}),
-						]);
-					}
+					// Create github deployment, if GITHUB_TOKEN is present in config
+					await createGitHubDeploymentAndJobSummary(
+						config,
+						pagesArtifactFields,
+					);
 				} else {
 					info(
 						config,

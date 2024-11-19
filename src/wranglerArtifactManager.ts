@@ -15,8 +15,6 @@ const OutputEntryPagesDeployment = OutputEntryBase.merge(
 		alias: z.string().optional(),
 		environment: z.enum(["production", "preview"]),
 		// optional, added in wrangler@TBD
-		project_name: z.string().optional(),
-		// optional, added in wrangler@TBD
 		production_branch: z.string().optional(),
 		// optional, added in wrangler@TBD
 		stages: z
@@ -54,7 +52,9 @@ const OutputEntryPagesDeployment = OutputEntryBase.merge(
 	}),
 );
 
-type OutputEntryPagesDeployment = z.infer<typeof OutputEntryPagesDeployment>;
+export type OutputEntryPagesDeployment = z.infer<
+	typeof OutputEntryPagesDeployment
+>;
 
 /**
  * Parses file names in a directory to find wrangler artifact files
