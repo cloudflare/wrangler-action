@@ -2,8 +2,6 @@ import {
 	debug,
 	getMultilineInput,
 	endGroup as originalEndGroup,
-	error as originalError,
-	info as originalInfo,
 	startGroup as originalStartGroup,
 	setFailed,
 	setOutput,
@@ -13,8 +11,9 @@ import semverEq from "semver/functions/eq";
 import { z } from "zod";
 import { exec, execShell } from "./exec";
 import { PackageManager } from "./packageManagers";
-import { semverCompare } from "./utils";
+import { error, info, semverCompare } from "./utils";
 import { getDetailedPagesDeployOutput } from "./wranglerArtifactManager";
+import { createGitHubDeploymentAndJobSummary } from "./service/github";
 
 export type WranglerActionConfig = z.infer<typeof wranglerActionConfig>;
 export const wranglerActionConfig = z.object({
@@ -30,27 +29,8 @@ export const wranglerActionConfig = z.object({
 	QUIET_MODE: z.boolean(),
 	PACKAGE_MANAGER: z.string(),
 	WRANGLER_OUTPUT_DIR: z.string(),
+	GITHUB_TOKEN: z.string(),
 });
-
-function info(
-	config: WranglerActionConfig,
-	message: string,
-	bypass?: boolean,
-): void {
-	if (!config.QUIET_MODE || bypass) {
-		originalInfo(message);
-	}
-}
-
-function error(
-	config: WranglerActionConfig,
-	message: string,
-	bypass?: boolean,
-): void {
-	if (!config.QUIET_MODE || bypass) {
-		originalError(message);
-	}
-}
 
 function startGroup(config: WranglerActionConfig, name: string): void {
 	if (!config.QUIET_MODE) {
@@ -401,12 +381,8 @@ async function wranglerCommands(
 
 			// Check if this command is a workers deployment
 			if (command.startsWith("deploy") || command.startsWith("publish")) {
-				const { deploymentUrl, aliasUrl } =
-					extractDeploymentUrlsFromStdout(stdOut);
+				const { deploymentUrl } = extractDeploymentUrlsFromStdout(stdOut);
 				setOutput("deployment-url", deploymentUrl);
-				// DEPRECATED: deployment-alias-url in favour of pages-deployment-alias, drop in next wrangler-action major version change
-				setOutput("deployment-alias-url", aliasUrl);
-				setOutput("pages-deployment-alias-url", aliasUrl);
 			}
 			// Check if this command is a pages deployment
 			if (
@@ -424,6 +400,11 @@ async function wranglerCommands(
 					setOutput("pages-deployment-alias-url", pagesArtifactFields.alias);
 					setOutput("pages-deployment-id", pagesArtifactFields.deployment_id);
 					setOutput("pages-environment", pagesArtifactFields.environment);
+					// Create github deployment, if GITHUB_TOKEN is present in config
+					await createGitHubDeploymentAndJobSummary(
+						config,
+						pagesArtifactFields,
+					);
 				} else {
 					info(
 						config,

@@ -14,10 +14,47 @@ const OutputEntryPagesDeployment = OutputEntryBase.merge(
 		url: z.string().optional(),
 		alias: z.string().optional(),
 		environment: z.enum(["production", "preview"]),
+		// optional, added in wrangler@TBD
+		production_branch: z.string().optional(),
+		// optional, added in wrangler@TBD
+		stages: z
+			.array(
+				z.object({
+					name: z.enum([
+						"queued",
+						"initialize",
+						"clone_repo",
+						"build",
+						"deploy",
+					]),
+					status: z.enum([
+						"idle",
+						"active",
+						"canceled",
+						"success",
+						"failure",
+						"skipped",
+					]),
+					started_on: z.string().nullable(),
+					ended_on: z.string().nullable(),
+				}),
+			)
+			.optional(),
+		// optional, added in wrangler@TBD
+		deployment_trigger: z
+			.object({
+				metadata: z.object({
+					/** Commit hash of the deployment trigger metadata for the pages project */
+					commit_hash: z.string(),
+				}),
+			})
+			.optional(),
 	}),
 );
 
-type OutputEntryPagesDeployment = z.infer<typeof OutputEntryPagesDeployment>;
+export type OutputEntryPagesDeployment = z.infer<
+	typeof OutputEntryPagesDeployment
+>;
 
 /**
  * Parses file names in a directory to find wrangler artifact files

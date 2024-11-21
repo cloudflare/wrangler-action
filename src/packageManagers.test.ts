@@ -3,8 +3,9 @@ import { getPackageManager } from "./packageManagers";
 
 describe("getPackageManager", () => {
 	test("should use provided value instead of inferring from lockfile", () => {
-		expect(getPackageManager("npm", { workingDirectory: "test/npm" }))
-			.toMatchInlineSnapshot(`
+		expect(
+			getPackageManager("npm", { workingDirectory: "src/test/fixtures/npm" }),
+		).toMatchInlineSnapshot(`
 				{
 				  "exec": "npx",
 				  "execNoInstall": "npx --no-install",
@@ -12,8 +13,9 @@ describe("getPackageManager", () => {
 				}
 			`);
 
-		expect(getPackageManager("yarn", { workingDirectory: "test/npm" }))
-			.toMatchInlineSnapshot(`
+		expect(
+			getPackageManager("yarn", { workingDirectory: "src/test/fixtures/npm" }),
+		).toMatchInlineSnapshot(`
 				{
 				  "exec": "yarn",
 				  "execNoInstall": "yarn",
@@ -21,8 +23,9 @@ describe("getPackageManager", () => {
 				}
 			`);
 
-		expect(getPackageManager("pnpm", { workingDirectory: "test/npm" }))
-			.toMatchInlineSnapshot(`
+		expect(
+			getPackageManager("pnpm", { workingDirectory: "src/test/fixtures/npm" }),
+		).toMatchInlineSnapshot(`
 				{
 				  "exec": "pnpm exec",
 				  "execNoInstall": "pnpm exec",
@@ -30,8 +33,9 @@ describe("getPackageManager", () => {
 				}
 			`);
 
-		expect(getPackageManager("bun", { workingDirectory: "test/bun" }))
-			.toMatchInlineSnapshot(`
+		expect(
+			getPackageManager("bun", { workingDirectory: "src/test/fixtures/bun" }),
+		).toMatchInlineSnapshot(`
 				{
 				  "exec": "bunx",
 				  "execNoInstall": "bun run",
@@ -41,7 +45,7 @@ describe("getPackageManager", () => {
 	});
 
 	test("should use npm if no value provided and package-lock.json exists", () => {
-		expect(getPackageManager("", { workingDirectory: "test/npm" }))
+		expect(getPackageManager("", { workingDirectory: "src/test/fixtures/npm" }))
 			.toMatchInlineSnapshot(`
 				{
 				  "exec": "npx",
@@ -52,8 +56,9 @@ describe("getPackageManager", () => {
 	});
 
 	test("should use yarn if no value provided and yarn.lock exists", () => {
-		expect(getPackageManager("", { workingDirectory: "test/yarn" }))
-			.toMatchInlineSnapshot(`
+		expect(
+			getPackageManager("", { workingDirectory: "src/test/fixtures/yarn" }),
+		).toMatchInlineSnapshot(`
 				{
 				  "exec": "yarn",
 				  "execNoInstall": "yarn",
@@ -63,8 +68,9 @@ describe("getPackageManager", () => {
 	});
 
 	test("should use pnpm if no value provided and pnpm-lock.yaml exists", () => {
-		expect(getPackageManager("", { workingDirectory: "test/pnpm" }))
-			.toMatchInlineSnapshot(`
+		expect(
+			getPackageManager("", { workingDirectory: "src/test/fixtures/pnpm" }),
+		).toMatchInlineSnapshot(`
 				{
 				  "exec": "pnpm exec",
 				  "execNoInstall": "pnpm exec",
@@ -74,7 +80,7 @@ describe("getPackageManager", () => {
 	});
 
 	test("should use bun if no value provided and bun.lockb exists", () => {
-		expect(getPackageManager("", { workingDirectory: "test/bun" }))
+		expect(getPackageManager("", { workingDirectory: "src/test/fixtures/bun" }))
 			.toMatchInlineSnapshot(`
 				{
 				  "exec": "bunx",
@@ -85,8 +91,9 @@ describe("getPackageManager", () => {
 	});
 
 	test("should use npm if no value provided and no lockfile is present", () => {
-		expect(getPackageManager("", { workingDirectory: "test/empty" }))
-			.toMatchInlineSnapshot(`
+		expect(
+			getPackageManager("", { workingDirectory: "src/test/fixtures/empty" }),
+		).toMatchInlineSnapshot(`
 				{
 				  "exec": "npx",
 				  "execNoInstall": "npx --no-install",
@@ -97,7 +104,7 @@ describe("getPackageManager", () => {
 
 	test("should throw if an invalid value is provided", () => {
 		expect(() =>
-			getPackageManager("cargo", { workingDirectory: "test/npm" }),
+			getPackageManager("cargo", { workingDirectory: "src/test/fixtures/npm" }),
 		).toThrowError();
 	});
 });

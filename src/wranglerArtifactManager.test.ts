@@ -1,17 +1,17 @@
-import mock from "mock-fs";
+import mockfs from "mock-fs";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	getDetailedPagesDeployOutput,
 	getWranglerArtifacts,
 } from "./wranglerArtifactManager";
 
-afterEach(async () => {
-	mock.restore();
+afterEach(() => {
+	mockfs.restore();
 });
 describe("wranglerArtifactsManager", () => {
 	describe("getWranglerArtifacts()", async () => {
 		it("Returns only wrangler output files from a given directory", async () => {
-			mock({
+			mockfs({
 				testOutputDir: {
 					"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
                     {"version": 1, "type":"wrangler-session", "wrangler_version":"3.81.0", "command_line_args":["what's up"], "log_file_path": "/here"}
@@ -27,7 +27,7 @@ describe("wranglerArtifactsManager", () => {
 			]);
 		});
 		it("Returns an empty list when the output directory doesn't exist", async () => {
-			mock({
+			mockfs({
 				notTheDirWeWant: {},
 			});
 
@@ -38,7 +38,7 @@ describe("wranglerArtifactsManager", () => {
 
 	describe("getDetailedPagesDeployOutput()", async () => {
 		it("Returns only detailed pages deploy output from wrangler artifacts", async () => {
-			mock({
+			mockfs({
 				testOutputDir: {
 					"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
                     {"version": 1, "type":"wrangler-session", "wrangler_version":"3.81.0", "command_line_args":["what's up"], "log_file_path": "/here"}
@@ -60,7 +60,7 @@ describe("wranglerArtifactsManager", () => {
 			});
 		}),
 			it("Skips artifact entries that are not parseable", async () => {
-				mock({
+				mockfs({
 					testOutputDir: {
 						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
                     this line is invalid json.

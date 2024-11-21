@@ -30,7 +30,7 @@ jobs:
       - name: Only build app
         uses: ./
         with:
-          workingDirectory: "./test/only-build"
+          workingDirectory: "./src/test/fixtures/only-build"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
@@ -39,7 +39,7 @@ jobs:
         uses: ./
         with:
           quiet: true
-          workingDirectory: "./test/build-quiet"
+          workingDirectory: "./src/test/fixtures/build-quiet"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
@@ -47,7 +47,7 @@ jobs:
       - name: Environment support
         uses: ./
         with:
-          workingDirectory: "./test/environment"
+          workingDirectory: "./src/test/fixtures/environment"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           environment: dev
@@ -65,7 +65,7 @@ jobs:
         uses: ./
         with:
           wranglerVersion: "2.20.0"
-          workingDirectory: "./test/secrets-v2"
+          workingDirectory: "./src/test/fixtures/secrets-v2"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           secrets: |
@@ -82,7 +82,7 @@ jobs:
       - name: Deploy app secrets w/ default version
         uses: ./
         with:
-          workingDirectory: "./test/secrets-default"
+          workingDirectory: "./src/test/fixtures/secrets-default"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           secrets: |
@@ -99,7 +99,7 @@ jobs:
       - name: Clean Up Deployed Workers
         uses: ./
         with:
-          workingDirectory: "./test/secrets-default"
+          workingDirectory: "./src/test/fixtures/secrets-default"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: delete --name wrangler-action-test-secrets-v2 --force
@@ -109,7 +109,7 @@ jobs:
       - name: Support packageManager variable
         uses: ./
         with:
-          workingDirectory: "./test/specify-package-manager"
+          workingDirectory: "./src/test/fixtures/specify-package-manager"
           packageManager: "npm"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -118,7 +118,7 @@ jobs:
       - name: Support unspecified packageManager with no lockfile
         uses: ./
         with:
-          workingDirectory: "./test/unspecified-package-manager"
+          workingDirectory: "./src/test/fixtures/unspecified-package-manager"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
@@ -126,7 +126,7 @@ jobs:
       - name: Support npm package manager
         uses: ./
         with:
-          workingDirectory: "./test/npm"
+          workingDirectory: "./src/test/fixtures/npm"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
@@ -137,7 +137,7 @@ jobs:
       - name: Support yarn package manager
         uses: ./
         with:
-          workingDirectory: "./test/yarn"
+          workingDirectory: "./src/test/fixtures/yarn"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
@@ -148,18 +148,18 @@ jobs:
       - name: Support pnpm package manager
         uses: ./
         with:
-          workingDirectory: "./test/pnpm"
+          workingDirectory: "./src/test/fixtures/pnpm"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
 
       - name: Change directory to pre-installed-wrangler and install dependencies
         run: |
-          cd ./test/pre-installed-wrangler
+          cd ./src/test/fixtures/pre-installed-wrangler
           npm install
 
       - name: Support pre-installed wrangler
         uses: ./
         with:
-          workingDirectory: "./test/pre-installed-wrangler"
+          workingDirectory: "./src/test/fixtures/pre-installed-wrangler"
           command: action-test

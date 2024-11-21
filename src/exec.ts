@@ -43,7 +43,7 @@ export async function execShell(
 
 		await promise;
 		return child.exitCode;
-	} catch (err: any) {
+	} catch (err) {
 		if (isExecAsyncException(err)) {
 			process.stderr.write(err.stderr);
 			throw new Error(`Process failed with exit code ${err.code}`);

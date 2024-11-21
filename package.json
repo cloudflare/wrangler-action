@@ -29,20 +29,24 @@
 		"check": "prettier --check ."
 	},
 	"dependencies": {
-		"@actions/core": "^1.10.1",
+		"@actions/core": "^1.11.1",
 		"@actions/exec": "^1.1.1",
+		"@actions/github": "^6.0.0",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
-		"@changesets/changelog-github": "^0.4.8",
-		"@changesets/cli": "^2.26.2",
-		"@cloudflare/workers-types": "^4.20231121.0",
-		"@types/node": "^20.10.4",
-		"@vercel/ncc": "^0.38.1",
-		"prettier": "^3.1.0",
-		"mock-fs": "^5.4.0",
-		"semver": "^7.5.4",
-		"typescript": "^5.3.3",
-		"vitest": "^1.0.3"
+		"@changesets/changelog-github": "^0.5.0",
+		"@changesets/cli": "^2.27.9",
+		"@cloudflare/workers-types": "^4.20241022.0",
+		"@types/mock-fs": "^4.13.4",
+		"@types/node": "^22.9.0",
+		"@types/semver": "^7.5.8",
+		"@vercel/ncc": "^0.38.2",
+		"mock-fs": "^5.4.1",
+		"msw": "^2.6.4",
+		"prettier": "^3.3.3",
+		"semver": "^7.6.3",
+		"typescript": "^5.6.3",
+		"vitest": "^2.1.4"
 	}
 }
