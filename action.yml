@@ -44,7 +44,7 @@ inputs:
   packageManager:
     description: "The package manager you'd like to use to install and run wrangler. If not specified, the preferred package manager will be inferred based on the presence of a lockfile or fallback to using npm if no lockfile is found. Valid values are `npm` | `pnpm` | `yarn` | `bun`."
     required: false
-  githubToken:
+  gitHubToken:
     description: "GitHub Token"
     required: false
 outputs:
