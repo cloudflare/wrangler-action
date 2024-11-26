@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.13.0
+
+### Minor Changes
+
+- [#325](https://github.com/cloudflare/wrangler-action/pull/325) [`cada7a6`](https://github.com/cloudflare/wrangler-action/commit/cada7a63124ded3471bef7e8001b76356b838e40) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - Add GitHub deployments and job summaries for parity with pages-action
+
+- [#334](https://github.com/cloudflare/wrangler-action/pull/334) [`9fed19a`](https://github.com/cloudflare/wrangler-action/commit/9fed19aa4ed79946f009e8aad7437a922e62d523) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - Bump default wrangler version to 3.90.0
+
 ## 3.12.1
 
 ### Patch Changes
