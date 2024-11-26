@@ -14,9 +14,9 @@ const OutputEntryPagesDeployment = OutputEntryBase.merge(
 		url: z.string().optional(),
 		alias: z.string().optional(),
 		environment: z.enum(["production", "preview"]),
-		// optional, added in wrangler@TBD
+		// optional, added in wrangler@3.89.0
 		production_branch: z.string().optional(),
-		// optional, added in wrangler@TBD
+		// optional, added in wrangler@3.89.0
 		stages: z
 			.array(
 				z.object({
@@ -40,7 +40,7 @@ const OutputEntryPagesDeployment = OutputEntryBase.merge(
 				}),
 			)
 			.optional(),
-		// optional, added in wrangler@TBD
+		// optional, added in wrangler@3.89.0
 		deployment_trigger: z
 			.object({
 				metadata: z.object({
