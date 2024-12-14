@@ -240,7 +240,7 @@ For more advanced usage or to programmatically trigger the workflow from scripts
 
 ### Upload a Worker Version
 
-To create a new version of your Worker that is not deployed immediately, use the `wrangler versions upload` command. Worker versions created in this way can then be deployed all at once at a later time or gradually deployed using the `wranger versions deploy` command or via the Cloudflare dashboard under the Deployments tab. Wrangler v3.40.0 or above is required to use this feature.
+To create a new version of your Worker that is not deployed immediately, use the `wrangler versions upload` command. Worker versions created in this way can then be deployed all at once at a later time or gradually deployed using the `wrangler versions deploy` command or via the Cloudflare dashboard under the Deployments tab. Wrangler v3.40.0 or above is required to use this feature.
 
 ```yaml
 jobs:
