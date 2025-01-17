@@ -92,8 +92,7 @@ export async function createGitHubDeploymentAndJobSummary(
 		config.GITHUB_TOKEN &&
 		pagesArtifactFields.production_branch &&
 		pagesArtifactFields.pages_project &&
-		pagesArtifactFields.deployment_trigger &&
-		pagesArtifactFields.stages
+		pagesArtifactFields.deployment_trigger
 	) {
 		const octokit = getOctokit(config.GITHUB_TOKEN);
 		await Promise.all([

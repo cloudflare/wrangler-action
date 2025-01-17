@@ -17,30 +17,6 @@ const OutputEntryPagesDeployment = OutputEntryBase.merge(
 		// optional, added in wrangler@3.89.0
 		production_branch: z.string().optional(),
 		// optional, added in wrangler@3.89.0
-		stages: z
-			.array(
-				z.object({
-					name: z.enum([
-						"queued",
-						"initialize",
-						"clone_repo",
-						"build",
-						"deploy",
-					]),
-					status: z.enum([
-						"idle",
-						"active",
-						"canceled",
-						"success",
-						"failure",
-						"skipped",
-					]),
-					started_on: z.string().nullable(),
-					ended_on: z.string().nullable(),
-				}),
-			)
-			.optional(),
-		// optional, added in wrangler@3.89.0
 		deployment_trigger: z
 			.object({
 				metadata: z.object({
