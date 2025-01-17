@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.13.1
+
+### Patch Changes
+
+- [#345](https://github.com/cloudflare/wrangler-action/pull/345) [`e819570`](https://github.com/cloudflare/wrangler-action/commit/e819570b2d0a69816a1c2e9d2f2954e278748d80) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - fix: Pages GitHub Deployment not triggering
+
 ## 3.13.0
 
 ### Minor Changes
