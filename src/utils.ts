@@ -1,7 +1,11 @@
 import { existsSync } from "node:fs";
 import * as path from "node:path";
 import semverGt from "semver/functions/gt";
-import { info as originalInfo, error as originalError } from "@actions/core";
+import {
+	info as originalInfo,
+	error as originalError,
+	warning as originalWarn,
+} from "@actions/core";
 import { WranglerActionConfig } from "./wranglerAction";
 
 /**
@@ -29,6 +33,16 @@ export function info(
 ): void {
 	if (!config.QUIET_MODE || bypass) {
 		originalInfo(message);
+	}
+}
+
+export function warn(
+	config: WranglerActionConfig,
+	message: string,
+	bypass?: boolean,
+): void {
+	if (!config.QUIET_MODE || bypass) {
+		originalWarn(message);
 	}
 }
 
