@@ -6,6 +6,9 @@ const OutputEntryBase = z.object({
 	type: z.string(),
 });
 
+export type OutputEntryPagesDeployment = z.infer<
+	typeof OutputEntryPagesDeployment
+>;
 const OutputEntryPagesDeployment = OutputEntryBase.merge(
 	z.object({
 		type: z.literal("pages-deploy-detailed"),
@@ -28,9 +31,31 @@ const OutputEntryPagesDeployment = OutputEntryBase.merge(
 	}),
 );
 
-export type OutputEntryPagesDeployment = z.infer<
-	typeof OutputEntryPagesDeployment
->;
+export type OutputEntryDeployment = z.infer<typeof OutputEntryDeployment>;
+const OutputEntryDeployment = OutputEntryBase.merge(
+	z.object({
+		type: z.literal("deploy"),
+		/** A list of URLs that represent the HTTP triggers associated with this deployment */
+		/** basically, for wrangler-action purposes this is the deployment urls */
+		targets: z.array(z.string()).optional(),
+	}),
+);
+
+export type OutputEntryVersionUpload = z.infer<typeof OutputEntryVersionUpload>;
+const OutputEntryVersionUpload = OutputEntryBase.merge(
+	z.object({
+		type: z.literal("version-upload"),
+		/** The preview URL associated with this version upload */
+		preview_url: z.string().optional(),
+	}),
+);
+
+export type SupportedOutputEntry = z.infer<typeof SupportedOutputEntry>;
+const SupportedOutputEntry = z.discriminatedUnion("type", [
+	OutputEntryPagesDeployment,
+	OutputEntryDeployment,
+	OutputEntryVersionUpload,
+]);
 
 /**
  * Parses file names in a directory to find wrangler artifact files
@@ -65,34 +90,32 @@ export async function getWranglerArtifacts(
 }
 
 /**
- * Searches for detailed wrangler output from a pages deploy
+ * Searches for a supported wrangler OutputEntry
  *
  * @param artifactDirectory
- * @returns The first pages-output-detailed found within a wrangler artifact directory
+ * @returns The first SupportedOutputEntry found within a wrangler artifact directory
  */
-export async function getDetailedPagesDeployOutput(
+export async function getOutputEntry(
 	artifactDirectory: string,
-): Promise<OutputEntryPagesDeployment | null> {
+): Promise<SupportedOutputEntry | null> {
 	const artifactFilePaths = await getWranglerArtifacts(artifactDirectory);
 
-	for (let i = 0; i < artifactFilePaths.length; i++) {
-		const file = await open(artifactFilePaths[i], "r");
-
-		for await (const line of file.readLines()) {
-			try {
-				const output = JSON.parse(line);
-				const parsedOutput = OutputEntryPagesDeployment.parse(output);
-				if (parsedOutput.type === "pages-deploy-detailed") {
-					// Assume, in the context of the action, the first detailed deploy instance seen will suffice
-					return parsedOutput;
+	for (const filePath of artifactFilePaths) {
+		const file = await open(filePath, "r");
+		try {
+			for await (const line of file.readLines()) {
+				try {
+					// Attempt to parse and validate the JSON line against the union schema.
+					// Assume, in the context of the action, the first OutputEntry seen will suffice
+					return SupportedOutputEntry.parse(JSON.parse(line));
+				} catch {
+					// Skip lines that are invalid JSON or don't match any schema.
+					continue;
 				}
-			} catch (err) {
-				// If the line can't be parsed, skip it
-				continue;
 			}
+		} finally {
+			await file.close();
 		}
-
-		await file.close();
 	}
 
 	return null;

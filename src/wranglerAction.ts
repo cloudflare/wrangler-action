@@ -12,8 +12,7 @@ import { z } from "zod";
 import { exec, execShell } from "./exec";
 import { PackageManager } from "./packageManagers";
 import { error, info, semverCompare } from "./utils";
-import { getDetailedPagesDeployOutput } from "./wranglerArtifactManager";
-import { createGitHubDeploymentAndJobSummary } from "./service/github";
+import { handleCommandOutputParsing } from "./commandOutputParsing";
 
 export type WranglerActionConfig = z.infer<typeof wranglerActionConfig>;
 export const wranglerActionConfig = z.object({
@@ -294,29 +293,6 @@ async function uploadSecrets(
 	}
 }
 
-// fallback to trying to extract the deployment-url and pages-deployment-alias-url from stdout for wranglerVersion < 3.81.0
-function extractDeploymentUrlsFromStdout(stdOut: string): {
-	deploymentUrl?: string;
-	aliasUrl?: string;
-} {
-	let deploymentUrl = "";
-	let aliasUrl = "";
-
-	// Try to extract the deployment URL
-	const deploymentUrlMatch = stdOut.match(/https?:\/\/[a-zA-Z0-9-./]+/);
-	if (deploymentUrlMatch && deploymentUrlMatch[0]) {
-		deploymentUrl = deploymentUrlMatch[0].trim();
-	}
-
-	// And also try to extract the alias URL (since wrangler@3.78.0)
-	const aliasUrlMatch = stdOut.match(/alias URL: (https?:\/\/[a-zA-Z0-9-./]+)/);
-	if (aliasUrlMatch && aliasUrlMatch[1]) {
-		aliasUrl = aliasUrlMatch[1].trim();
-	}
-
-	return { deploymentUrl, aliasUrl };
-}
-
 async function wranglerCommands(
 	config: WranglerActionConfig,
 	packageManager: PackageManager,
@@ -379,47 +355,8 @@ async function wranglerCommands(
 			setOutput("command-output", stdOut);
 			setOutput("command-stderr", stdErr);
 
-			// Check if this command is a workers deployment
-			if (command.startsWith("deploy") || command.startsWith("publish")) {
-				const { deploymentUrl } = extractDeploymentUrlsFromStdout(stdOut);
-				setOutput("deployment-url", deploymentUrl);
-			}
-			// Check if this command is a pages deployment
-			if (
-				command.startsWith("pages publish") ||
-				command.startsWith("pages deploy")
-			) {
-				const pagesArtifactFields = await getDetailedPagesDeployOutput(
-					config.WRANGLER_OUTPUT_DIR,
-				);
-
-				if (pagesArtifactFields) {
-					setOutput("deployment-url", pagesArtifactFields.url);
-					// DEPRECATED: deployment-alias-url in favour of pages-deployment-alias, drop in next wrangler-action major version change
-					setOutput("deployment-alias-url", pagesArtifactFields.alias);
-					setOutput("pages-deployment-alias-url", pagesArtifactFields.alias);
-					setOutput("pages-deployment-id", pagesArtifactFields.deployment_id);
-					setOutput("pages-environment", pagesArtifactFields.environment);
-					// Create github deployment, if GITHUB_TOKEN is present in config
-					await createGitHubDeploymentAndJobSummary(
-						config,
-						pagesArtifactFields,
-					);
-				} else {
-					info(
-						config,
-						"Unable to find a WRANGLER_OUTPUT_DIR, environment and id fields will be unavailable for output. Have you updated wrangler to version >=3.81.0?",
-					);
-					// DEPRECATED: deployment-alias-url in favour of pages-deployment-alias, drop in next wrangler-action major version change
-					const { deploymentUrl, aliasUrl } =
-						extractDeploymentUrlsFromStdout(stdOut);
-
-					setOutput("deployment-url", deploymentUrl);
-					// DEPRECATED: deployment-alias-url in favour of pages-deployment-alias, drop in next wrangler-action major version change
-					setOutput("deployment-alias-url", aliasUrl);
-					setOutput("pages-deployment-alias-url", aliasUrl);
-				}
-			}
+			// Handles setting github action outputs and creating github deployment and job summary
+			await handleCommandOutputParsing(config, command, stdOut);
 		}
 	} finally {
 		endGroup(config);
