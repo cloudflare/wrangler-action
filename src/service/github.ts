@@ -1,7 +1,7 @@
 import { summary } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { env } from "process";
-import { info } from "../utils";
+import { info, warn } from "../utils";
 import { OutputEntryPagesDeployment } from "../wranglerArtifactManager";
 import { WranglerActionConfig } from "../wranglerAction";
 
@@ -95,25 +95,34 @@ export async function createGitHubDeploymentAndJobSummary(
 		pagesArtifactFields.deployment_trigger
 	) {
 		const octokit = getOctokit(config.GITHUB_TOKEN);
-		await Promise.all([
-			createGitHubDeployment({
-				config,
-				octokit,
-				deploymentUrl: pagesArtifactFields.url,
-				productionBranch: pagesArtifactFields.production_branch,
-				environment: pagesArtifactFields.environment,
-				deploymentId: pagesArtifactFields.deployment_id,
-				projectName: pagesArtifactFields.pages_project,
-			}),
-			createJobSummary({
-				commitHash:
-					pagesArtifactFields.deployment_trigger.metadata.commit_hash.substring(
-						0,
-						8,
-					),
-				deploymentUrl: pagesArtifactFields.url,
-				aliasUrl: pagesArtifactFields.alias,
-			}),
-		]);
+		const [createGitHubDeploymentRes, createJobSummaryRes] =
+			await Promise.allSettled([
+				createGitHubDeployment({
+					config,
+					octokit,
+					deploymentUrl: pagesArtifactFields.url,
+					productionBranch: pagesArtifactFields.production_branch,
+					environment: pagesArtifactFields.environment,
+					deploymentId: pagesArtifactFields.deployment_id,
+					projectName: pagesArtifactFields.pages_project,
+				}),
+				createJobSummary({
+					commitHash:
+						pagesArtifactFields.deployment_trigger.metadata.commit_hash.substring(
+							0,
+							8,
+						),
+					deploymentUrl: pagesArtifactFields.url,
+					aliasUrl: pagesArtifactFields.alias,
+				}),
+			]);
+
+		if (createGitHubDeploymentRes.status === "rejected") {
+			warn(config, "Creating Github Deployment failed");
+		}
+
+		if (createJobSummaryRes.status === "rejected") {
+			warn(config, "Creating Github Job summary failed");
+		}
 	}
 }
