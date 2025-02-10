@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.14.0
+
+### Minor Changes
+
+- [#351](https://github.com/cloudflare/wrangler-action/pull/351) [`4ff07f4`](https://github.com/cloudflare/wrangler-action/commit/4ff07f4310dc5067d84a254cd9af3d2e91df119e) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - Use wrangler outputs for version upload and wrangler deploy
+
+### Patch Changes
+
+- [#350](https://github.com/cloudflare/wrangler-action/pull/350) [`e209094`](https://github.com/cloudflare/wrangler-action/commit/e209094e624c6f6b418141b7e9d0ab7838d794a3) Thanks [@Maximo-Guk](https://github.com/Maximo-Guk)! - Handle failures in createGitHubDeployment and createGitHubJobSummary
+
 ## 3.13.1
 
 ### Patch Changes
