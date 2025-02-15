@@ -112,6 +112,7 @@ function handleVersionsUploadOutputEntry(
 	versionsOutputEntry: OutputEntryVersionUpload,
 ) {
 	setOutput("deployment-url", versionsOutputEntry.preview_url);
+	setOutput("version-id", versionsOutputEntry.version_id);
 }
 
 /**
