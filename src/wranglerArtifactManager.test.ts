@@ -1,4 +1,5 @@
 import mockfs from "mock-fs";
+import { randomUUID } from "node:crypto";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	getOutputEntry,
@@ -137,11 +138,13 @@ describe("wranglerArtifactsManager", () => {
 
 		describe("OutputEntryVersionUpload", async () => {
 			it("Returns only version upload output from wrangler artifacts", async () => {
+				const version_id = randomUUID();
+
 				mockfs({
 					testOutputDir: {
 						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
 						{"version": 1, "type":"wrangler-session", "wrangler_version":"3.81.0", "command_line_args":["what's up"], "log_file_path": "/here"}
-						{"version": 1, "type":"version-upload", "preview_url": "https://example.com"}`,
+						{"version": 1, "type":"version-upload", "version_id":"${version_id}", "preview_url": "https://example.com"}`,
 						"not-wrangler-output.json": "test",
 					},
 				});
@@ -154,30 +157,50 @@ describe("wranglerArtifactsManager", () => {
 				expect(artifact).toEqual({
 					version: 1,
 					type: "version-upload",
+					version_id,
 					preview_url: "https://example.com",
 				});
-			}),
-				it("Skips artifact entries that are not parseable", async () => {
-					mockfs({
-						testOutputDir: {
-							"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
+			});
+
+			it("Skips artifact entries that are not parseable", async () => {
+				const version_id = randomUUID();
+
+				mockfs({
+					testOutputDir: {
+						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
 						this line is invalid json.
-						{"version": 1, "type":"version-upload", "preview_url": "https://example.com"}`,
-							"not-wrangler-output.json": "test",
-						},
-					});
-
-					const artifact = await getOutputEntry("./testOutputDir");
-					if (artifact?.type !== "version-upload") {
-						throw new Error(`Unexpected type ${artifact?.type}`);
-					}
-
-					expect(artifact).toEqual({
-						version: 1,
-						type: "version-upload",
-						preview_url: "https://example.com",
-					});
+						{"version": 1, "type":"version-upload", "version_id":"${version_id}", "preview_url": "https://example.com"}`,
+						"not-wrangler-output.json": "test",
+					},
 				});
+
+				const artifact = await getOutputEntry("./testOutputDir");
+				if (artifact?.type !== "version-upload") {
+					throw new Error(`Unexpected type ${artifact?.type}`);
+				}
+
+				expect(artifact).toEqual({
+					version: 1,
+					type: "version-upload",
+					version_id,
+					preview_url: "https://example.com",
+				});
+			});
+
+			it("Skips uploads with invalid version ids", async () => {
+				mockfs({
+					testOutputDir: {
+						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
+						this line is invalid json.
+						{"version": 1, "type":"version-upload", "version_id":"invalid-value", "preview_url": "https://example.com"}`,
+						"not-wrangler-output.json": "test",
+					},
+				});
+
+				const artifact = await getOutputEntry("./testOutputDir");
+
+				expect(artifact).toBeNull();
+			});
 		});
 	});
 });
