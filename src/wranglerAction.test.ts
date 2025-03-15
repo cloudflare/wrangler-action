@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import * as exec from "@actions/exec";
 import { describe, expect, it, vi } from "vitest";
-import { installWrangler } from "./wranglerAction";
+import { installWrangler, uploadSecrets } from "./wranglerAction";
 import { getTestConfig } from "./test/test-utils";
 
 describe("installWrangler", () => {
@@ -74,5 +74,92 @@ describe("installWrangler", () => {
 		const infoSpy = vi.spyOn(core, "info");
 		await installWrangler(testConfig, testPackageManager);
 		expect(infoSpy).toBeCalledWith("✅ Wrangler installed");
+	});
+});
+
+describe("uploadSecrets", () => {
+	const testPackageManager = {
+		install: "npm i",
+		exec: "npx",
+		execNoInstall: "npx --no-install",
+	};
+
+	it("WRANGLER_VERSION < 3.4.0 uses wrangler secret put", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				WRANGLER_VERSION: "3.3.0",
+				didUserProvideWranglerVersion: true,
+				secrets: ["FAKE_SECRET"],
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+			expect(cmd).toBe("npx");
+			expect(args).toStrictEqual([
+				"wrangler",
+				"secret",
+				"put",
+				"FAKE_SECRET",
+				"--env",
+				"dev",
+			]);
+			return 0;
+		});
+		const startGroup = vi.spyOn(core, "startGroup");
+		const endGroup = vi.spyOn(core, "endGroup");
+
+		await uploadSecrets(testConfig, testPackageManager);
+		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
+		expect(endGroup).toHaveBeenCalledOnce();
+	});
+
+	it("WRANGLER_VERSION < 3.60.0 uses wrangler secret:bulk", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				WRANGLER_VERSION: "3.59.0",
+				didUserProvideWranglerVersion: true,
+				secrets: ["FAKE_SECRET"],
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+			expect(cmd).toBe("npx");
+			expect(args).toStrictEqual(["wrangler", "secret:bulk", "--env", "dev"]);
+			return 0;
+		});
+		const startGroup = vi.spyOn(core, "startGroup");
+		const endGroup = vi.spyOn(core, "endGroup");
+
+		await uploadSecrets(testConfig, testPackageManager);
+		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
+		expect(endGroup).toHaveBeenCalledOnce();
+	});
+
+	it("WRANGLER_VERSION 3.61.0 uses wrangler secret bulk", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				WRANGLER_VERSION: "3.61.0",
+				didUserProvideWranglerVersion: true,
+				secrets: ["FAKE_SECRET"],
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+			expect(cmd).toBe("npx");
+			expect(args).toStrictEqual([
+				"wrangler",
+				"secret",
+				"bulk",
+				"--env",
+				"dev",
+			]);
+			return 0;
+		});
+		const startGroup = vi.spyOn(core, "startGroup");
+		const endGroup = vi.spyOn(core, "endGroup");
+
+		await uploadSecrets(testConfig, testPackageManager);
+		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
+		expect(endGroup).toHaveBeenCalledOnce();
 	});
 });
