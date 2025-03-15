@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.14.1
+
+### Patch Changes
+
+- [#358](https://github.com/cloudflare/wrangler-action/pull/358) [`cd6314a`](https://github.com/cloudflare/wrangler-action/commit/cd6314a97b09d9a764e30cacd0870edc86f92986) Thanks [@penalosa](https://github.com/penalosa)! - Use `secret bulk` instead of deprecated `secret:bulk` command
+
 ## 3.14.0
 
 ### Minor Changes
