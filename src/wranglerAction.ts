@@ -13,6 +13,7 @@ import { exec, execShell } from "./exec";
 import { PackageManager } from "./packageManagers";
 import { error, info, semverCompare } from "./utils";
 import { handleCommandOutputParsing } from "./commandOutputParsing";
+import semverLt from "semver/functions/lt";
 
 export type WranglerActionConfig = z.infer<typeof wranglerActionConfig>;
 export const wranglerActionConfig = z.object({
@@ -265,7 +266,11 @@ async function uploadSecrets(
 			);
 		}
 
-		const args = ["wrangler", "secret", "bulk"];
+		let args = ["wrangler", "secret", "bulk"];
+		// if we're on a WRANGLER_VERSION prior to 3.60.0 use wrangler secret:bulk
+		if (semverLt(config["WRANGLER_VERSION"], "3.60.0")) {
+			args = ["wrangler", "secret:bulk"];
+		}
 
 		if (environment) {
 			args.push("--env", environment);
