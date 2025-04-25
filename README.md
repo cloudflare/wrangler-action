@@ -34,6 +34,25 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 ```
 
+Or deploy static files to a Pages project:
+
+```yaml
+jobs:
+  deploy-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: |
+            pages project list
+            pages deploy .vercel/output/static --project-name=demo-actions --branch=test
+```
+
+
 ## Authentication
 
 You'll need to configure Wrangler using GitHub's Secrets feature - go to "Settings -> Secrets" and add your Cloudflare API token (for help finding this, see the [Workers documentation](https://developers.cloudflare.com/workers/wrangler/ci-cd/#api-token)). Your API token is encrypted by GitHub, and the action won't print it into logs, so it should be safe!
