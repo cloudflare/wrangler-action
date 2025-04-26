@@ -46,6 +46,7 @@ jobs:
     steps:
       - uses: cloudflare/wrangler-action@v3
         with:
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: |
             pages project list
