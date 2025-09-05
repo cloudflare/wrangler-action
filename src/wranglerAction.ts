@@ -19,6 +19,7 @@ export type WranglerActionConfig = z.infer<typeof wranglerActionConfig>;
 export const wranglerActionConfig = z.object({
 	WRANGLER_VERSION: z.string(),
 	didUserProvideWranglerVersion: z.boolean(),
+	useVersionsSecrets: z.boolean(),
 	secrets: z.array(z.string()),
 	workingDirectory: z.string(),
 	CLOUDFLARE_API_TOKEN: z.string(),
@@ -253,6 +254,15 @@ async function uploadSecrets(
 		return;
 	}
 
+	if (
+		semverLt(config["WRANGLER_VERSION"], "3.62.0") &&
+		config["useVersionsSecrets"]
+	) {
+		throw new Error(
+			"Wrangler version 3.62.0 or greater is required to use `versions secret bulk`",
+		);
+	}
+
 	startGroup(config, "🔑 Uploading secrets...");
 
 	try {
@@ -270,6 +280,10 @@ async function uploadSecrets(
 		// if we're on a WRANGLER_VERSION prior to 3.60.0 use wrangler secret:bulk
 		if (semverLt(config["WRANGLER_VERSION"], "3.60.0")) {
 			args = ["wrangler", "secret:bulk"];
+		}
+
+		if (config["useVersionsSecrets"]) {
+			args = ["wrangler", "versions", "secret", "bulk"];
 		}
 
 		if (environment) {
