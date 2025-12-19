@@ -67,7 +67,7 @@ function handlePagesDeployCommand(
 	setOutput("pages-deployment-alias-url", aliasUrl);
 }
 
-function handleWranglerDeployOutputEntry(
+export function handleWranglerDeployOutputEntry(
 	config: WranglerActionConfig,
 	wranglerDeployOutputEntry: OutputEntryDeployment,
 ) {
@@ -89,7 +89,28 @@ function handleWranglerDeployOutputEntry(
 		);
 	}
 
-	setOutput("deployment-url", wranglerDeployOutputEntry.targets[0]);
+	let deploymentUrl = (wranglerDeployOutputEntry.targets?.[0] ?? "").trim();
+
+	// Clean up suffix annotations like "(...)"
+	deploymentUrl = deploymentUrl.replace(/\s*\([^)]*\)\s*$/, "");
+
+	// Add protocol if missing
+	if (deploymentUrl && !/^https?:\/\//i.test(deploymentUrl)) {
+		deploymentUrl = `https://${deploymentUrl}`;
+	}
+
+	// Validate
+	try {
+		const u = new URL(deploymentUrl);
+		deploymentUrl =
+			u.pathname === "/" && !u.search && !u.hash ? u.origin : u.toString();
+	} catch {
+		deploymentUrl = "";
+	}
+
+	if (deploymentUrl) {
+		setOutput("deployment-url", deploymentUrl);
+	}
 }
 
 /**
