@@ -233,7 +233,8 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: deploy --env ${{ github.event.inputs.environment }}
+          command: deploy
+          environment: ${{ github.event.inputs.environment }}  
 ```
 
 For more advanced usage or to programmatically trigger the workflow from scripts, refer to [the GitHub documentation](https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event) for making API calls.
@@ -267,7 +268,7 @@ There is an environment parameter that can be set within the workflow to enable 
 - uses: cloudflare/wrangler-action@v3
   with:
     apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-    command: deploy --env production
+    command: deploy
     secrets: |
       SUPER_SECRET
     environment: production
