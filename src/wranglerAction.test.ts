@@ -162,4 +162,32 @@ describe("uploadSecrets", () => {
 		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
 		expect(endGroup).toHaveBeenCalledOnce();
 	});
+
+	it("WRANGLER_VERSION 4.x uses wrangler secret bulk", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				WRANGLER_VERSION: "4.72.0",
+				didUserProvideWranglerVersion: true,
+				secrets: ["FAKE_SECRET"],
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+			expect(cmd).toBe("npx");
+			expect(args).toStrictEqual([
+				"wrangler",
+				"secret",
+				"bulk",
+				"--env",
+				"dev",
+			]);
+			return 0;
+		});
+		const startGroup = vi.spyOn(core, "startGroup");
+		const endGroup = vi.spyOn(core, "endGroup");
+
+		await uploadSecrets(testConfig, testPackageManager);
+		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
+		expect(endGroup).toHaveBeenCalledOnce();
+	});
 });
