@@ -2,7 +2,7 @@
 
 Easy-to-use GitHub Action to use [Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/). Makes deploying Workers a breeze.
 
-## Wrangler v4 Support
+## Wrangler v3 Support
 
 The action now defaults to **Wrangler v4**. If you need to stay on Wrangler v3, you can pin the version explicitly:
 
