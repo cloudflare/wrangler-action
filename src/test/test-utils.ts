@@ -7,7 +7,7 @@ export function getTestConfig({
 } = {}): WranglerActionConfig {
 	return Object.assign(
 		{
-			WRANGLER_VERSION: "3.81.0",
+			WRANGLER_VERSION: "4.79.0",
 			didUserProvideWranglerVersion: false,
 			secrets: [],
 			workingDirectory: "/src/test/fixtures",

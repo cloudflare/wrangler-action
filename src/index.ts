@@ -5,13 +5,22 @@ import { getPackageManager } from "./packageManagers";
 import { checkWorkingDirectory } from "./utils";
 import { main, WranglerActionConfig } from "./wranglerAction";
 
-const DEFAULT_WRANGLER_VERSION = "3.90.0";
+const DEFAULT_WRANGLER_V4_VERSION = "4.79.0";
+const DEFAULT_WRANGLER_V3_VERSION = "3.114.17";
+
+function getDefaultWranglerVersion(): string {
+	const majorVersion = getInput("wranglerMajorVersion") || "4";
+	return majorVersion === "3"
+		? DEFAULT_WRANGLER_V3_VERSION
+		: DEFAULT_WRANGLER_V4_VERSION;
+}
 
 /**
  * A configuration object that contains all the inputs & immutable state for the action.
  */
 const config: WranglerActionConfig = {
-	WRANGLER_VERSION: getInput("wranglerVersion") || DEFAULT_WRANGLER_VERSION,
+	WRANGLER_VERSION:
+		getInput("wranglerVersion") || getDefaultWranglerVersion(),
 	didUserProvideWranglerVersion: Boolean(getInput("wranglerVersion")),
 	secrets: getMultilineInput("secrets"),
 	workingDirectory: checkWorkingDirectory(getInput("workingDirectory")),
