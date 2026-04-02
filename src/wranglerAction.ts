@@ -354,7 +354,18 @@ async function wranglerCommands(
 			};
 
 			// Execute the wrangler command
-			await exec(`${packageManager.exec} wrangler ${command}`, args, options);
+			try {
+				await exec(
+					`${packageManager.exec} wrangler ${command}`,
+					args,
+					options,
+				);
+			} catch (err: unknown) {
+				if (stdErr) {
+					error(config, stdErr);
+				}
+				throw err;
+			}
 
 			// Set the outputs for the command
 			setOutput("command-output", stdOut);
