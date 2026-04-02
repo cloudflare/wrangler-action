@@ -9,9 +9,11 @@ import {
 import { getExecOutput } from "@actions/exec";
 import semverEq from "semver/functions/eq";
 import { z } from "zod";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { exec, execShell } from "./exec";
 import { PackageManager } from "./packageManagers";
-import { error, info, semverCompare } from "./utils";
+import { error, info, semverCompare, warn } from "./utils";
 import { handleCommandOutputParsing } from "./commandOutputParsing";
 import semverLt from "semver/functions/lt";
 
@@ -331,6 +333,18 @@ async function wranglerCommands(
 				for (const v of config["VARS"]) {
 					args.push(`${v}:${getEnvVar(v)}`);
 				}
+			}
+
+			if (
+				(command.startsWith("pages deploy") ||
+					command.startsWith("pages publish")) &&
+				!existsSync(resolve(config["workingDirectory"], ".git"))
+			) {
+				warn(
+					config,
+					"⚠️ No git checkout detected. Pages deploy may deploy to production instead of a preview environment. Ensure actions/checkout runs before this step.",
+					true,
+				);
 			}
 
 			// Used for saving the wrangler output
