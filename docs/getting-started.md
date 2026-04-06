@@ -14,11 +14,13 @@ The GitHub Action authenticates with Cloudflare using an API token. You must cre
 1. Go to the [Cloudflare dashboard](https://dash.cloudflare.com) and click your profile icon (top right), then **My Profile**.
 2. Select **API Tokens** in the left sidebar.
 3. Click **Create Token**.
-4. Use the **Edit Cloudflare Workers** template (this covers both Workers and Pages). Alternatively, create a custom token with:
-   - **Account** > **Cloudflare Pages** > **Edit**
-   - **Account** > **Workers Scripts** > **Edit**
+4. Use the **Edit Cloudflare Workers** template (this covers both Workers and Pages). Alternatively, create a custom token with only the permissions you need:
+   - **Account** > **Cloudflare Pages** > **Edit** (if deploying a Pages project)
+   - **Account** > **Workers Scripts** > **Edit** (if deploying a Worker)
    - **Account** > **Account Settings** > **Read**
    - **Zone** > **Zone** > **Read** (if your Worker uses a custom domain)
+
+   > You do not need both Pages and Workers permissions — include only what applies to your project.
 5. Under **Account Resources**, select the account you want to deploy to.
 6. Click **Continue to summary**, then **Create Token**.
 7. **Copy the token** — you won't be able to see it again.
@@ -52,6 +54,8 @@ cd my-worker
 ```
 
 This creates a `wrangler.toml` configuration file and a basic Worker. Push it to your GitHub repo.
+
+The `wrangler.toml` file must be in the root of your repository (or in the directory specified by the `workingDirectory` input if you use one). The action looks for it automatically — you do not need to pass it as a parameter.
 
 Your `wrangler.toml` should include at minimum:
 
