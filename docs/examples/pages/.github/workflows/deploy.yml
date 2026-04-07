@@ -25,14 +25,7 @@ jobs:
           pip install mkdocs-material
           mkdocs build
 
-      # If your Pages project does not exist yet, uncomment the step
-      # below to create it before the first deploy.
-      # - name: Create Pages project (first-time only)
-      #   env:
-      #     CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      #     CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      #   run: npx wrangler pages project create my-pages-site --production-branch main
-
+      # Note: "pages deploy" auto-creates the Pages project if it doesn't exist yet.
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
