@@ -18,7 +18,8 @@ The GitHub Action authenticates with Cloudflare using an API token. You must cre
    - **Account** > **Cloudflare Pages** > **Edit** (if deploying a Pages project)
    - **Account** > **Workers Scripts** > **Edit** (if deploying a Worker)
    - **Account** > **Account Settings** > **Read**
-   - **Zone** > **Zone** > **Read** (if your Worker uses a custom domain)
+   - **Zone** > **Zone** > **Read** (if your project uses a custom domain or you need zone-level access)
+   - **Zone** > **Zone Resources** > **Read** (required for zone-scoped operations)
 
    > You do not need both Pages and Workers permissions — include only what applies to your project.
 5. Under **Account Resources**, select the account you want to deploy to.
@@ -28,7 +29,7 @@ The GitHub Action authenticates with Cloudflare using an API token. You must cre
 ## Step 2: Find Your Cloudflare Account ID
 
 1. Go to the [Cloudflare dashboard](https://dash.cloudflare.com).
-2. Select any zone (domain), or go to **Workers & Pages**.
+2. Select any zone (domain), or go to **Workers & Pages** under the **Compute** section.
 3. Your **Account ID** is shown on the right sidebar. Copy it.
 
 You can also find it in the URL: `https://dash.cloudflare.com/<ACCOUNT_ID>/...`
@@ -71,8 +72,12 @@ compatibility_date = "2024-01-01"
 
 If you have a static site (e.g. built with mkdocs, Next.js, Astro, etc.):
 
-1. **You do not need to create a Pages project in the Cloudflare dashboard first.** The `wrangler pages deploy` command will create it for you on the first run.
-2. Make sure your build step produces a directory of static files (e.g. `site/`, `dist/`, `build/`).
+1. Make sure your build step produces a directory of static files (e.g. `site/`, `dist/`, `build/`).
+2. If your Pages project does not exist yet, you can either create it in the Cloudflare dashboard or let `wrangler pages deploy` attempt to create it on the first run. However, automatic creation may not work in all cases. If you run into issues, create the project explicitly before deploying:
+
+   ```sh
+   npx wrangler pages project create my-docs-site --production-branch main
+   ```
 
 ## Step 5: Create the GitHub Actions Workflow
 
@@ -135,7 +140,7 @@ jobs:
           command: pages deploy site --project-name=my-docs-site
 ```
 
-Replace `site` with your build output directory and `my-docs-site` with whatever you want your Pages project to be named. If the project doesn't exist yet, Wrangler will create it automatically.
+Replace `site` with your build output directory and `my-docs-site` with whatever you want your Pages project to be named. If the project doesn't exist yet, Wrangler will attempt to create it automatically — but see Step 4 if you need to create it explicitly.
 
 ## Step 6: Push and Verify
 
@@ -164,7 +169,13 @@ Make sure your API token has the correct permissions (see Step 1) and that the `
 
 ### Pages project not found
 
-If using `pages deploy`, Wrangler will create the project automatically on the first deploy. Make sure:
+If using `pages deploy`, Wrangler will attempt to create the project on the first deploy, but this may fail depending on your token permissions. If it does, create the project explicitly first:
+
+```sh
+npx wrangler pages project create my-docs-site --production-branch main
+```
+
+Also make sure:
 - You're specifying a `--project-name`
 - Your API token has Pages edit permissions
 - You've set the `accountId`
