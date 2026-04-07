@@ -142,6 +142,33 @@ jobs:
 
 Replace `site` with your build output directory and `my-docs-site` with whatever you want your Pages project to be named. If the project doesn't exist yet, Wrangler will attempt to create it automatically — but see Step 4 if you need to create it explicitly.
 
+### GitHub-Hosted vs Self-Hosted Runners
+
+The examples above use `runs-on: ubuntu-latest`, which runs on a [GitHub-hosted runner](https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners). These are managed by GitHub, come with Node.js and common tools pre-installed, and work out of the box with no setup.
+
+If your organization uses [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners), replace the `runs-on` value with your runner's label:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: self-hosted          # or a custom label like [self-hosted, linux]
+```
+
+Key differences to be aware of:
+
+| | GitHub-Hosted | Self-Hosted |
+|---|---|---|
+| **Setup** | None — managed by GitHub | You provision and maintain the runner |
+| **Environment** | Clean VM each run; Node.js pre-installed | Persistent environment; you must ensure Node.js is available |
+| **Network** | Public internet access | Can access private networks (useful for internal APIs) |
+| **Cost** | Free tier minutes included; paid beyond that | You pay for your own infrastructure |
+| **Security** | Isolated per job | Shared across jobs unless you configure otherwise — avoid on public repos |
+
+When using self-hosted runners, make sure:
+- **Node.js** is installed (the action requires it).
+- The runner can reach the **Cloudflare API** (`api.cloudflare.com`) and **npm registry** (`registry.npmjs.org`) to install and run Wrangler.
+- You trust all workflows that will run on the runner, especially if the repository is public.
+
 ## Step 6: Push and Verify
 
 1. Commit and push the workflow file to your `main` branch.

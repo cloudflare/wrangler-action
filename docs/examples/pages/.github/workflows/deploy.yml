@@ -1,0 +1,43 @@
+name: Deploy Pages Site
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    # Use "ubuntu-latest" for a GitHub-hosted runner, or replace with your
+    # self-hosted runner label (e.g. "self-hosted" or [self-hosted, linux]).
+    runs-on: ubuntu-latest
+    name: Deploy to Cloudflare Pages
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # Replace this with your actual build step.
+      # The example below is for an mkdocs site — adapt it for
+      # your framework (Next.js, Astro, Hugo, plain HTML, etc.).
+      - name: Build site
+        run: |
+          pip install mkdocs-material
+          mkdocs build
+
+      # If your Pages project does not exist yet, uncomment the step
+      # below to create it before the first deploy.
+      # - name: Create Pages project (first-time only)
+      #   env:
+      #     CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      #     CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      #   run: npx wrangler pages project create my-pages-site --production-branch main
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Change "site" to your build output directory (e.g. dist/, build/, out/)
+          # Change "my-pages-site" to your desired project name
+          command: pages deploy site --project-name=my-pages-site
