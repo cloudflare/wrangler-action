@@ -52,6 +52,8 @@ jobs:
 
 ## Configuration
 
+### wranglerVersion
+
 If you need to install a specific version of Wrangler to use for deployment, you can also pass the input `wranglerVersion` to install a specific version of Wrangler from NPM. This should be a [SemVer](https://semver.org/)-style version number, such as `2.20.0`:
 
 ```yaml
@@ -64,6 +66,8 @@ jobs:
         wranglerVersion: "2.20.0"
 ```
 
+### workingDirectory
+
 Optionally, you can also pass a `workingDirectory` key to the action. This will allow you to specify a subdirectory of the repo to run the Wrangler command from.
 
 ```yaml
@@ -75,6 +79,8 @@ jobs:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         workingDirectory: "subfoldername"
 ```
+
+### Secrets
 
 [Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can optionally be passed in via `secrets` as a string of names separated by newlines. Each secret name must match the name of an environment variable specified in the `env` field. This creates or replaces the value for the Worker secret using the `wrangler secret put` command. It's also possible to specify worker environment using environment parameter.
 
@@ -93,6 +99,8 @@ jobs:
         SECRET1: ${{ secrets.SECRET1 }}
         SECRET2: ${{ secrets.SECRET2 }}
 ```
+
+### Commands
 
 If you need to run additional shell commands before or after your command, you can specify them as input to `preCommands` (before `deploy`) or `postCommands` (after `deploy`). These can include additional `wrangler` commands (that is, `whoami`, `kv:key put`) or any other commands available inside the `wrangler-action` context.
 
