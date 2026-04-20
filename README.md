@@ -78,7 +78,11 @@ jobs:
         workingDirectory: "subfoldername"
 ```
 
-[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can optionally be passed in via `secrets` as a string of names separated by newlines. Each secret name must match the name of an environment variable specified in the `env` field. This creates or replaces the value for the Worker secret using the `wrangler secret put` command. It's also possible to specify worker environment using environment parameter.
+[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can optionally be passed in via `secrets` as a string of names separated by newlines. Each secret name must match the name of an environment variable specified in the `env` field. This upserts the value for the Worker secret. It's also possible to specify worker environment using environment parameter.
+
+The default command used to upsert is `wrangler secret bulk` for `wrangler` versions >= `3.4.0`. This command attempts to deploy the latest version with modified settings. For `wrangler` versions >= `3.62.0`, run the action with `useVersionsSecrets: true` to run `wrangler versions secret bulk` which creates a new version without a deployment.
+
+For `wrangler` versions < `3.4.0`, the command used for secrets is `wrangler secret put`.
 
 ```yaml
 jobs:

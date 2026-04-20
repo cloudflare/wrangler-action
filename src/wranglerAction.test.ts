@@ -410,6 +410,52 @@ describe("uploadSecrets", () => {
 		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
 		expect(endGroup).toHaveBeenCalledOnce();
 	});
+
+	it("WRANGLER_VERSION 3.62.0 can use wrangler versions secret bulk", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				WRANGLER_VERSION: "3.62.0",
+				didUserProvideWranglerVersion: true,
+				useVersionsSecrets: true,
+				secrets: ["FAKE_SECRET"],
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+			expect(cmd).toBe("npx");
+			expect(args).toStrictEqual([
+				"wrangler",
+				"versions",
+				"secret",
+				"bulk",
+				"--env",
+				"dev",
+			]);
+			return 0;
+		});
+		const startGroup = vi.spyOn(core, "startGroup");
+		const endGroup = vi.spyOn(core, "endGroup");
+
+		await uploadSecrets(testConfig, testPackageManager);
+		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
+		expect(endGroup).toHaveBeenCalledOnce();
+	});
+
+	it("WRANGLER_VERSION 3.61.0 cannot use wrangler versions secret bulk", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				WRANGLER_VERSION: "3.61.0",
+				didUserProvideWranglerVersion: true,
+				useVersionsSecrets: true,
+				secrets: ["FAKE_SECRET"],
+			},
+		});
+
+		expect(uploadSecrets(testConfig, testPackageManager)).rejects.toThrowError(
+			/3\.62\.0/,
+		);
+	});
 });
 
 describe("main", () => {

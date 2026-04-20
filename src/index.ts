@@ -15,6 +15,7 @@ const config: WranglerActionConfig = {
 	didUserProvideWranglerVersion: Boolean(getInput("wranglerVersion")),
 	secrets: getMultilineInput("secrets"),
 	workingDirectory: checkWorkingDirectory(getInput("workingDirectory")),
+	useVersionsSecrets: getBooleanInput("useVersionSecrets"),
 	CLOUDFLARE_API_TOKEN: getInput("apiToken"),
 	CLOUDFLARE_ACCOUNT_ID: getInput("accountId"),
 	ENVIRONMENT: getInput("environment"),

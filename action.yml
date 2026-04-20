@@ -47,6 +47,10 @@ inputs:
   gitHubToken:
     description: "GitHub Token"
     required: false
+  useVersionSecrets:
+    description: "Use the `versions secret bulk` command to upload secrets. This will create a new version without deploying it when uploading secrets. This is only available for wrangler >= 3.62.0."
+    required: false
+    default: "false"
 outputs:
   command-output:
     description: "The output of the Wrangler command (comes from stdout)"
