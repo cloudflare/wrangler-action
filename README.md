@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
@@ -56,7 +56,7 @@ jobs:
 
 ## Configuration
 
-If you need to install a specific version of Wrangler to use for deployment, you can also pass the input `wranglerVersion` to install a specific version of Wrangler from NPM. This should be a [SemVer](https://semver.org/)-style version number, such as `3.60.0`:
+You can pass `wranglerVersion` to install a specific version of Wrangler from NPM. This accepts any version format NPM understands: an exact version like `4.81.0`, a major version like `4`, a range like `^4.0.0` or `4.x`, or `latest`.
 
 ```yaml
 jobs:
@@ -67,8 +67,10 @@ jobs:
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          wranglerVersion: "3.60.0"
+          wranglerVersion: "4"
 ```
+
+If you omit `wranglerVersion` and Wrangler is already installed in your environment, the action uses the existing installation. If Wrangler is not installed, the action installs a default version.
 
 Optionally, you can also pass a `workingDirectory` key to the action. This will allow you to specify a subdirectory of the repo to run the Wrangler command from.
 
@@ -202,7 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
@@ -226,7 +228,7 @@ jobs:
       contents: read
       deployments: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
@@ -251,7 +253,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Deploy app
         uses: cloudflare/wrangler-action@v3
         with:
@@ -277,7 +279,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Deploy app
         uses: cloudflare/wrangler-action@v3
         with:
@@ -297,7 +299,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Upload Worker Version
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Upload Worker Version
         uses: cloudflare/wrangler-action@v3
         with:
@@ -438,7 +440,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Deploy app
         uses: cloudflare/wrangler-action@v3
         with:

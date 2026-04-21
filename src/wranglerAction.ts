@@ -7,7 +7,8 @@ import {
 	setOutput,
 } from "@actions/core";
 import { getExecOutput } from "@actions/exec";
-import semverEq from "semver/functions/eq";
+import semverSatisfies from "semver/functions/satisfies";
+import semverValid from "semver/functions/valid";
 import { z } from "zod";
 import { exec, execShell } from "./exec";
 import { PackageManager } from "./packageManagers";
@@ -51,32 +52,60 @@ async function main(
 	try {
 		wranglerActionConfig.parse(config);
 		authenticationSetup(config);
-		await installWrangler(config, packageManager);
+		const resolvedVersion = await installWrangler(config, packageManager);
+		const resolvedConfig = { ...config, WRANGLER_VERSION: resolvedVersion };
+
 		await execCommands(
-			config,
+			resolvedConfig,
 			packageManager,
 			getMultilineInput("preCommands"),
 			"pre",
 		);
-		await uploadSecrets(config, packageManager);
-		await wranglerCommands(config, packageManager);
+		await uploadSecrets(resolvedConfig, packageManager);
+		await wranglerCommands(resolvedConfig, packageManager);
 		await execCommands(
-			config,
+			resolvedConfig,
 			packageManager,
 			getMultilineInput("postCommands"),
 			"post",
 		);
-		info(config, "🏁 Wrangler Action completed", true);
+		info(resolvedConfig, "🏁 Wrangler Action completed", true);
 	} catch (err: unknown) {
 		err instanceof Error && error(config, err.message);
 		setFailed("🚨 Action failed");
 	}
 }
 
+function parseWranglerVersion(stdout: string): string {
+	const match =
+		stdout.match(/wrangler (\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?)/) ??
+		stdout.match(/^(\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?)/m);
+	return match ? match[1] : "";
+}
+
+function isExactSemver(version: string): boolean {
+	return semverValid(version) !== null;
+}
+
+async function resolveInstalledVersion(
+	config: WranglerActionConfig,
+	packageManager: PackageManager,
+): Promise<string> {
+	const { stdout } = await getExecOutput(
+		packageManager.execNoInstall,
+		["wrangler", "--version"],
+		{
+			cwd: config["workingDirectory"],
+			silent: config.QUIET_MODE,
+		},
+	);
+	return parseWranglerVersion(stdout);
+}
+
 async function installWrangler(
 	config: WranglerActionConfig,
 	packageManager: PackageManager,
-) {
+): Promise<string> {
 	if (config["WRANGLER_VERSION"].startsWith("1")) {
 		throw new Error(
 			`Wrangler v1 is no longer supported by this action. Please use major version 2 or greater`,
@@ -85,33 +114,25 @@ async function installWrangler(
 
 	startGroup(config, "🔍 Checking for existing Wrangler installation");
 	let installedVersion = "";
-	let installedVersionSatisfiesRequirement = false;
+	let versionSatisfied = false;
 	try {
-		const { stdout } = await getExecOutput(
-			// We want to simply invoke wrangler to check if it's installed, but don't want to auto-install it at this stage
-			packageManager.execNoInstall,
-			["wrangler", "--version"],
-			{
-				cwd: config["workingDirectory"],
-				silent: config.QUIET_MODE,
-			},
-		);
+		installedVersion = await resolveInstalledVersion(config, packageManager);
 
-		// There are two possible outputs from `wrangler --version`:
-		// ` ⛅️ wrangler 3.48.0 (update available 3.53.1)`
-		// and
-		// `3.48.0`
-		const versionMatch =
-			stdout.match(/wrangler (\d+\.\d+\.\d+)/) ??
-			stdout.match(/^(\d+\.\d+\.\d+)/m);
-		if (versionMatch) {
-			installedVersion = versionMatch[1];
-		}
-		if (config.didUserProvideWranglerVersion) {
-			installedVersionSatisfiesRequirement = semverEq(
-				installedVersion,
-				config["WRANGLER_VERSION"],
-			);
+		if (config.didUserProvideWranglerVersion && installedVersion) {
+			if (isExactSemver(config["WRANGLER_VERSION"])) {
+				versionSatisfied = installedVersion === config["WRANGLER_VERSION"];
+			} else {
+				// semverSatisfies handles ranges like "4", "^4.0.0", "4.x".
+				// Returns false for dist-tags like "latest", falling through to reinstall.
+				try {
+					versionSatisfied = semverSatisfies(
+						installedVersion,
+						config["WRANGLER_VERSION"],
+					);
+				} catch {
+					versionSatisfied = false;
+				}
+			}
 		}
 		if (!config.didUserProvideWranglerVersion && installedVersion) {
 			info(
@@ -120,15 +141,12 @@ async function installWrangler(
 				true,
 			);
 			endGroup(config);
-			return;
+			return installedVersion;
 		}
-		if (
-			config.didUserProvideWranglerVersion &&
-			installedVersionSatisfiesRequirement
-		) {
+		if (config.didUserProvideWranglerVersion && versionSatisfied) {
 			info(config, `✅ Using Wrangler ${installedVersion}`, true);
 			endGroup(config);
-			return;
+			return installedVersion;
 		}
 		info(
 			config,
@@ -161,6 +179,27 @@ async function installWrangler(
 	} finally {
 		endGroup(config);
 	}
+
+	let resolvedVersion = "";
+	try {
+		resolvedVersion = await resolveInstalledVersion(config, packageManager);
+	} catch (err) {
+		debug(`Error resolving installed Wrangler version: ${err}`);
+	}
+
+	if (resolvedVersion) {
+		return resolvedVersion;
+	}
+
+	// Fall back to the raw version string if it's already valid semver.
+	// This preserves pre-existing behavior for exact version inputs.
+	if (isExactSemver(config["WRANGLER_VERSION"])) {
+		return config["WRANGLER_VERSION"];
+	}
+
+	throw new Error(
+		`Failed to determine installed Wrangler version after installing wrangler@${config["WRANGLER_VERSION"]}`,
+	);
 }
 
 function authenticationSetup(config: WranglerActionConfig) {
@@ -373,7 +412,9 @@ export {
 	execCommands,
 	info,
 	installWrangler,
+	isExactSemver,
 	main,
+	parseWranglerVersion,
 	uploadSecrets,
 	wranglerCommands,
 };
