@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.15.0
+
+### Minor Changes
+
+- [#426](https://github.com/cloudflare/wrangler-action/pull/426) [`febbda6`](https://github.com/cloudflare/wrangler-action/commit/febbda69f8c5838bf8b07fd6b9dfc836f00962db) Thanks [@WillTaylorDev](https://github.com/WillTaylorDev)! - Support version ranges and tags in `wranglerVersion` input. You can now set `wranglerVersion` to values like `4`, `^4.0.0`, `4.x`, or `latest` instead of only exact versions like `4.81.0`.
+
 ## 3.14.1
 
 ### Patch Changes
