@@ -5,7 +5,7 @@ branding:
 description: "Deploy your Cloudflare projects from GitHub using Wrangler"
 runs:
   # Possible values: https://github.com/actions/runner/blob/main/src/Runner.Common/Util/NodeUtil.cs#L9
-  using: "node20"
+  using: "node24"
   main: "dist/index.mjs"
 inputs:
   apiToken:
@@ -24,8 +24,12 @@ inputs:
     description: "The relative path which Wrangler commands should be run from"
     required: false
   wranglerVersion:
-    description: "The version of Wrangler you'd like to use to deploy your Workers project"
+    description: "The exact version of Wrangler you'd like to use to deploy your Workers project. Takes precedence over wranglerMajorVersion."
     required: false
+  wranglerMajorVersion:
+    description: "The major version of Wrangler to use. Set to '3' to pin to the latest Wrangler v3 release. Defaults to '4'."
+    required: false
+    default: "4"
   secrets:
     description: "A string of environment variable names, separated by newlines. These will be bound to your Worker as Secrets and must match the names of environment variables declared in `env` of this workflow."
     required: false
