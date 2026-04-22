@@ -5,7 +5,7 @@ import { getPackageManager } from "./packageManagers";
 import { checkWorkingDirectory } from "./utils";
 import { main, WranglerActionConfig } from "./wranglerAction";
 
-const DEFAULT_WRANGLER_VERSION = "3.90.0";
+const DEFAULT_WRANGLER_VERSION = "4.22.0";
 
 /**
  * A configuration object that contains all the inputs & immutable state for the action.
