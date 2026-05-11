@@ -2,6 +2,17 @@
 
 Easy-to-use GitHub Action to use [Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/). Makes deploying Workers a breeze.
 
+## Wrangler v3 Support
+
+The action now defaults to **Wrangler v4**. If you need to stay on Wrangler v3, you can pin the version explicitly:
+
+```yaml
+- uses: cloudflare/wrangler-action@v3
+  with:
+    apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    wranglerVersion: "3.90.0"
+```
+
 ## Big Changes in v3
 
 - Wrangler v1 is no longer supported.
