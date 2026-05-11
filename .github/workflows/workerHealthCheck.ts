@@ -1,3 +1,5 @@
+import { Result } from "better-result";
+
 async function workerHealthCheck(workerName) {
 	const url = `https://${workerName}.devprod-testing7928.workers.dev/secret-health-check`;
 
@@ -22,7 +24,18 @@ if (!workerName) {
 	);
 }
 
-workerHealthCheck(workerName).catch((err) => {
-	console.error(err);
-	process.exit(1);
+const result = await Result.tryPromise(() => workerHealthCheck(workerName), {
+	retry: {
+		times: 5,
+		delayMs: 2000,
+		backoff: "exponential",
+	},
+});
+
+result.match({
+	ok: () => {},
+	err: (error) => {
+		console.error(error);
+		process.exit(1);
+	},
 });
