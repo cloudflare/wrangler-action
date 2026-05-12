@@ -1,0 +1,23 @@
+.github/workflows/deploy.yml
+  a18a6f5ebe2e547f 10-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "f501f05fbd4ebbb022ab1f9815588c529f8cfe45",
+  "prompts": {
+    "a18a6f5ebe2e547f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e7955c79ffe6QK0GBnByIegAu",
+        "model": "cloudflare-workers-ai/@cf/moonshotai/kimi-k2.6"
+      },
+      "human_author": "Eric Clemmons",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 0,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}
