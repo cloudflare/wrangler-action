@@ -1,4 +1,0 @@
-name = "wrangler-action-test-build-quiet"
-main = "./index.ts"
-compatibility_date = "2023-07-07"
-workers_dev = true
