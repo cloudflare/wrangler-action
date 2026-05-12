@@ -9,13 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v5
         with:
-          # Pinned due to compatibility issues on 23.2.0
-          node-version: "22"
+          node-version: "24"
           cache: "npm"
 
       - name: Install modules and build
@@ -76,7 +75,7 @@ jobs:
           SECRET2: ${{ secrets.SECRET2 }}
 
       - name: Health Check Deployed Worker
-        run: node .github/workflows/workerHealthCheck.cjs wrangler-action-test-secrets-v2
+        run: node .github/workflows/workerHealthCheck.ts wrangler-action-test-secrets-v2
         shell: bash
 
       - name: Deploy app secrets w/ default version
@@ -93,7 +92,7 @@ jobs:
           SECRET2: ${{ secrets.SECRET2 }}
 
       - name: Health Check Deployed Worker
-        run: node .github/workflows/workerHealthCheck.cjs wrangler-action-test-secrets-default
+        run: node .github/workflows/workerHealthCheck.ts wrangler-action-test-secrets-default
         shell: bash
 
       - name: Clean Up Deployed Workers
