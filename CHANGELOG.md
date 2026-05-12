@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.0
+
+### Major Changes
+
+- [#412](https://github.com/cloudflare/wrangler-action/pull/412) [`1029e90`](https://github.com/cloudflare/wrangler-action/commit/1029e90033977ccf46c2a9b3ddc55e42ad5da467) Thanks [@ericclemmons](https://github.com/ericclemmons)! - Update default Wrangler version to v4 (`latest`). The action now installs Wrangler v4 by default when no `wranglerVersion` input is specified. Users can still pin to v3 by setting `wranglerVersion: "3.90.0"` explicitly.
+
 ## 3.15.0
 
 ### Minor Changes
@@ -119,7 +125,6 @@
 ### Minor Changes
 
 - [#213](https://github.com/cloudflare/wrangler-action/pull/213) [`d13856dfc92816473ebf47f66e263a2668a97896`](https://github.com/cloudflare/wrangler-action/commit/d13856dfc92816473ebf47f66e263a2668a97896) Thanks [@GrantBirki](https://github.com/GrantBirki)! - This change introduces three new GitHub Actions output variables. These variables are as follows:
-
   - `command-output` - contains the string results of `stdout`
   - `command-stderr` - contains the string results of `stderr`
   - `deployment-url` - contains the string results of the URL that was deployed (ex: `https://<your_pages_site>.pages.dev`)
