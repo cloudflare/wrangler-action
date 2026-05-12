@@ -27,6 +27,9 @@ const config: WranglerActionConfig = {
 		`wranglerArtifacts-${crypto.randomUUID()}`,
 	)}`,
 	GITHUB_TOKEN: getInput("gitHubToken", { required: false }),
+	DEPLOYMENT_ENVIRONMENT: getInput("deploymentEnvironment", {
+		required: false,
+	}),
 } as const;
 
 const packageManager = getPackageManager(config.PACKAGE_MANAGER, {
