@@ -216,7 +216,9 @@ jobs:
     name: Deploy
     steps:
       - uses: actions/checkout@v6
-      - name: Deploy app
+      - run: npm ci
+      - run: npm run build
+      - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
