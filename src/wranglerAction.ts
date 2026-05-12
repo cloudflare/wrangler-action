@@ -363,7 +363,7 @@ async function wranglerCommands(
 
 			if (
 				config["VARS"].length &&
-				(command.startsWith("deploy") || command.startsWith("publish")) &&
+				(command.startsWith("deploy") || command.startsWith("publish") || command.startsWith("versions upload")) &&
 				!command.includes("--var")
 			) {
 				args.push("--var");
