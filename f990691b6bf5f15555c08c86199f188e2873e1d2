@@ -1,0 +1,23 @@
+package.json
+  a18a6f5ebe2e547f 51-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "f990691b6bf5f15555c08c86199f188e2873e1d2",
+  "prompts": {
+    "a18a6f5ebe2e547f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e7955c79ffe6QK0GBnByIegAu",
+        "model": "cloudflare-workers-ai/@cf/moonshotai/kimi-k2.6"
+      },
+      "human_author": "Eric Clemmons",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 1,
+      "accepted_lines": 4,
+      "overriden_lines": 0
+    }
+  }
+}
