@@ -4,6 +4,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   wrangler_action_self_testing:
     runs-on: ubuntu-latest
