@@ -48,8 +48,7 @@ jobs:
 
       - name: Push dist-tags
         if: steps.changesets.outputs.published == 'true'
-        uses: JasonEtco/build-and-tag-action@v2
+        uses: Daniel-H123/build-and-tag-action@v3
         with:
           tag_name: v${{ fromJSON(steps.changesets.outputs.publishedPackages)[0].version }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          github_token: ${{ github.token }}
