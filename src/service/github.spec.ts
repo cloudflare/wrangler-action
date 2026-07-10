@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { setupServer } from "msw/node";
-import { createGitHubDeployment, createJobSummary } from "./github";
+import {
+	createGitHubDeployment,
+	createJobSummary,
+	createVersionUploadJobSummary,
+} from "./github";
 import { getOctokit } from "@actions/github";
 import { mockGithubDeployments } from "../test/mocks";
 import { getTestConfig } from "../test/test-utils";
@@ -53,6 +57,26 @@ describe("github", () => {
 			| **Last commit:**        | fake-commit-hash |
 			| **Preview URL**:        | https://fake-deployment-url.com |
 			| **Branch Preview URL**: | https://fake-alias-url.com |
+			  "
+		`);
+	});
+	it("Calls createVersionUploadJobSummary successfully", async () => {
+		vi.stubEnv("GITHUB_STEP_SUMMARY", "summary");
+		mockfs({
+			summary: mockfs.file(),
+		});
+		await createVersionUploadJobSummary({
+			deploymentUrl: "https://fake-deployment-url.com",
+			aliasUrl: "https://fake-alias-url.com",
+		});
+		expect((await readFile("summary")).toString()).toMatchInlineSnapshot(`
+			"
+			## Worker version preview deploy
+
+			| URL | Value |
+			| --- | --- |
+			| Deployment | https://fake-deployment-url.com |
+			| Alias | https://fake-alias-url.com |
 			  "
 		`);
 	});

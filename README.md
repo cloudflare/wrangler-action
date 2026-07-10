@@ -139,6 +139,8 @@ Worker versions are supported:
 | `pages-deployment-id`        | Pages deployment ID when available.                       |
 | `pages-environment`          | Pages deployment environment when available.              |
 
+When `command` is `versions upload` and Wrangler reports preview URLs, the action also adds a GitHub job summary with the deployment URL and preview alias URL.
+
 ## Environment Variables and Secrets
 
 Do not pass Worker variables or secrets through this action. Define them in `.env.schema` and the matching `.env` files instead.

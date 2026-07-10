@@ -6,7 +6,10 @@ import {
 	OutputEntryPagesDeployment,
 	OutputEntryVersionUpload,
 } from "./wranglerArtifactManager";
-import { createGitHubDeploymentAndJobSummary } from "./service/github";
+import {
+	createGitHubDeploymentAndJobSummary,
+	createVersionUploadJobSummary,
+} from "./service/github";
 
 // fallback to trying to extract the deployment-url and pages-deployment-alias-url from stdout for wranglerVersion < 3.81.0
 function extractDeploymentUrlsFromStdout(stdOut: string): {
@@ -108,7 +111,8 @@ function handleWranglerDeployCommand(
 	setOutput("deployment-url", deploymentUrl);
 }
 
-function handleVersionsUploadOutputEntry(
+async function handleVersionsUploadOutputEntry(
+	config: WranglerActionConfig,
 	versionsOutputEntry: OutputEntryVersionUpload,
 ) {
 	setOutput("deployment-url", versionsOutputEntry.preview_url);
@@ -116,6 +120,14 @@ function handleVersionsUploadOutputEntry(
 		"pages-deployment-alias-url",
 		versionsOutputEntry.preview_alias_url,
 	);
+	try {
+		await createVersionUploadJobSummary({
+			deploymentUrl: versionsOutputEntry.preview_url,
+			aliasUrl: versionsOutputEntry.preview_alias_url,
+		});
+	} catch {
+		info(config, "Creating GitHub Job summary failed");
+	}
 }
 
 /**
@@ -178,7 +190,7 @@ export async function handleCommandOutputParsing(
 			handleWranglerDeployOutputEntry(config, outputEntry);
 			break;
 		case "version-upload":
-			handleVersionsUploadOutputEntry(outputEntry);
+			await handleVersionsUploadOutputEntry(config, outputEntry);
 			break;
 	}
 }

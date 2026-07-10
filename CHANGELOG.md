@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - Expose Worker version preview alias URLs through `pages-deployment-alias-url`.
+- Add a GitHub job summary for Worker version preview uploads.
 
 ## 4.0.1
 

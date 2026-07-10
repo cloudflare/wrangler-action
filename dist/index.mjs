@@ -40694,6 +40694,18 @@ async function createJobSummary({ commitHash, deploymentUrl, aliasUrl, }) {
   `)
         .write();
 }
+async function createVersionUploadJobSummary({ deploymentUrl, aliasUrl, }) {
+    await core.summary
+        .addRaw(`
+## Worker version preview deploy
+
+| URL | Value |
+| --- | --- |
+| Deployment | ${deploymentUrl || ""} |
+| Alias | ${aliasUrl || ""} |
+  `)
+        .write();
+}
 /**
  * Create github deployment, if GITHUB_TOKEN is present in config
  */
@@ -40795,9 +40807,18 @@ function handleWranglerDeployCommand(config, stdOut) {
     const { deploymentUrl } = extractDeploymentUrlsFromStdout(stdOut);
     (0,core.setOutput)("deployment-url", deploymentUrl);
 }
-function handleVersionsUploadOutputEntry(versionsOutputEntry) {
+async function handleVersionsUploadOutputEntry(config, versionsOutputEntry) {
     (0,core.setOutput)("deployment-url", versionsOutputEntry.preview_url);
     (0,core.setOutput)("pages-deployment-alias-url", versionsOutputEntry.preview_alias_url);
+    try {
+        await createVersionUploadJobSummary({
+            deploymentUrl: versionsOutputEntry.preview_url,
+            aliasUrl: versionsOutputEntry.preview_alias_url,
+        });
+    }
+    catch {
+        info(config, "Creating GitHub Job summary failed");
+    }
 }
 /**
  * If no wrangler output file found, log a message stating deployment-url will be unavailable for output.
@@ -40840,7 +40861,7 @@ async function handleCommandOutputParsing(config, command, stdOut) {
             handleWranglerDeployOutputEntry(config, outputEntry);
             break;
         case "version-upload":
-            handleVersionsUploadOutputEntry(outputEntry);
+            await handleVersionsUploadOutputEntry(config, outputEntry);
             break;
     }
 }

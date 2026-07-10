@@ -81,6 +81,27 @@ export async function createJobSummary({
 		.write();
 }
 
+export async function createVersionUploadJobSummary({
+	deploymentUrl,
+	aliasUrl,
+}: {
+	deploymentUrl?: string;
+	aliasUrl?: string;
+}) {
+	await summary
+		.addRaw(
+			`
+## Worker version preview deploy
+
+| URL | Value |
+| --- | --- |
+| Deployment | ${deploymentUrl || ""} |
+| Alias | ${aliasUrl || ""} |
+  `,
+		)
+		.write();
+}
+
 /**
  * Create github deployment, if GITHUB_TOKEN is present in config
  */
