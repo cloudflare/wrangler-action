@@ -125,7 +125,7 @@ function handleVersionsOutputCommand(config: WranglerActionConfig) {
 	);
 }
 
-function handleDeprectatedStdoutParsing(
+function handleDeprecatedStdoutParsing(
 	config: WranglerActionConfig,
 	command: string,
 	stdOut: string,
@@ -162,7 +162,7 @@ export async function handleCommandOutputParsing(
 
 	if (outputEntry === null) {
 		// if no outputEntry found, fallback to deprecated stdOut parsing
-		handleDeprectatedStdoutParsing(config, command, stdOut);
+		handleDeprecatedStdoutParsing(config, command, stdOut);
 		return;
 	}
 

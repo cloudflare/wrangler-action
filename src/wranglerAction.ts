@@ -31,6 +31,7 @@ export const wranglerActionConfig = z.object({
 	PACKAGE_MANAGER: z.string(),
 	WRANGLER_OUTPUT_DIR: z.string(),
 	GITHUB_TOKEN: z.string(),
+	DEPLOYMENT_ENVIRONMENT: z.string().optional(),
 });
 
 function startGroup(config: WranglerActionConfig, name: string): void {
