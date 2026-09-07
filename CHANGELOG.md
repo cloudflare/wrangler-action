@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.1
+
+### Patch Changes
+
+- [#418](https://github.com/cloudflare/wrangler-action/pull/418) [`789ac84`](https://github.com/cloudflare/wrangler-action/commit/789ac84b82c924003a8037fc2f754887eaf88303) Thanks [@vliggio](https://github.com/vliggio)! - Surface wrangler error messages in the action step output instead of showing only a generic failure message.
+
 ## 4.0.0
 
 ### Major Changes
