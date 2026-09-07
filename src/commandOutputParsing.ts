@@ -4,9 +4,13 @@ import {
 	getOutputEntry,
 	OutputEntryDeployment,
 	OutputEntryPagesDeployment,
+	OutputEntryPreview,
 	OutputEntryVersionUpload,
 } from "./wranglerArtifactManager";
-import { createGitHubDeploymentAndJobSummary } from "./service/github";
+import {
+	createGitHubDeploymentAndJobSummary,
+	createPreviewGitHubDeploymentAndJobSummary,
+} from "./service/github";
 
 // fallback to trying to extract the deployment-url and pages-deployment-alias-url from stdout for wranglerVersion < 3.81.0
 function extractDeploymentUrlsFromStdout(stdOut: string): {
@@ -114,6 +118,27 @@ function handleVersionsUploadOutputEntry(
 	setOutput("deployment-url", versionsOutputEntry.preview_url);
 }
 
+async function handlePreviewOutputEntry(
+	config: WranglerActionConfig,
+	previewOutputEntry: OutputEntryPreview,
+) {
+	const previewUrl = previewOutputEntry.preview_urls?.[0] ?? undefined;
+	const deploymentUrl = previewOutputEntry.deployment_urls?.[0] ?? undefined;
+
+	// Set the primary deployment-url to the preview URL (stable branch URL)
+	setOutput("deployment-url", previewUrl);
+
+	// Set preview-specific outputs
+	setOutput("preview-url", previewUrl);
+	setOutput("preview-deployment-url", deploymentUrl);
+	setOutput("preview-name", previewOutputEntry.preview_name);
+	setOutput("preview-id", previewOutputEntry.preview_id);
+	setOutput("preview-deployment-id", previewOutputEntry.deployment_id);
+
+	// Create GitHub Deployment and Job Summary for the preview
+	await createPreviewGitHubDeploymentAndJobSummary(config, previewOutputEntry);
+}
+
 /**
  * If no wrangler output file found, log a message stating deployment-url will be unavailable for output.
  * @deprecated Use {@link handleVersionsOutputEntry} instead.
@@ -150,6 +175,17 @@ function handleDeprectatedStdoutParsing(
 		handleVersionsOutputCommand(config);
 		return;
 	}
+
+	// Check if this command is a preview deployment
+	if (command.startsWith("preview")) {
+		info(
+			config,
+			"Unable to find a WRANGLER_OUTPUT_DIR, preview outputs will be unavailable. Have you updated wrangler to the latest version?",
+		);
+		const { deploymentUrl } = extractDeploymentUrlsFromStdout(stdOut);
+		setOutput("deployment-url", deploymentUrl);
+		return;
+	}
 }
 
 export async function handleCommandOutputParsing(
@@ -175,6 +211,9 @@ export async function handleCommandOutputParsing(
 			break;
 		case "version-upload":
 			handleVersionsUploadOutputEntry(outputEntry);
+			break;
+		case "preview":
+			await handlePreviewOutputEntry(config, outputEntry);
 			break;
 	}
 }

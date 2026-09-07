@@ -50,11 +50,33 @@ const OutputEntryVersionUpload = OutputEntryBase.merge(
 	}),
 );
 
+export type OutputEntryPreview = z.infer<typeof OutputEntryPreview>;
+const OutputEntryPreview = OutputEntryBase.merge(
+	z.object({
+		type: z.literal("preview"),
+		/** The name of the Worker */
+		worker_name: z.string().nullable(),
+		/** The ID of the Preview resource */
+		preview_id: z.string(),
+		/** The human-readable name of the Preview (typically the branch name) */
+		preview_name: z.string(),
+		/** The URL-safe slug of the Preview */
+		preview_slug: z.string(),
+		/** URLs associated with the Preview (e.g. branch preview URL) */
+		preview_urls: z.array(z.string()).optional(),
+		/** The ID of the deployment within this Preview */
+		deployment_id: z.string(),
+		/** Immutable URLs for this specific deployment */
+		deployment_urls: z.array(z.string()).optional(),
+	}),
+);
+
 export type SupportedOutputEntry = z.infer<typeof SupportedOutputEntry>;
 const SupportedOutputEntry = z.discriminatedUnion("type", [
 	OutputEntryPagesDeployment,
 	OutputEntryDeployment,
 	OutputEntryVersionUpload,
+	OutputEntryPreview,
 ]);
 
 /**

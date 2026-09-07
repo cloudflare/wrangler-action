@@ -270,6 +270,80 @@ jobs:
           command: versions upload
 ```
 
+### Deploy a Workers Preview
+
+Workers Previews let you test non-production branches with their own URLs, variables, secrets, and bindings. Use `command: preview` instead of the default `deploy` command.
+
+Before using this workflow, add your Cloudflare credentials as GitHub Actions secrets:
+
+```sh
+gh auth login
+gh secret set CLOUDFLARE_API_TOKEN
+gh secret set CLOUDFLARE_ACCOUNT_ID
+```
+
+GitHub Actions provides `${{ secrets.GITHUB_TOKEN }}` automatically. You do not need to create it yourself.
+
+If you prefer plain YAML without this action, run Wrangler directly:
+
+```yaml
+name: Preview
+
+on: [pull_request]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: npx wrangler preview --json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+```
+
+Add install or build steps before `npx wrangler preview --json` if your Worker needs them. To use `wrangler-action` instead, use this workflow:
+
+```yaml
+name: Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  preview:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Deploy preview
+        id: preview
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: preview
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The action sets the following outputs for preview commands:
+
+| Output                   | Description                                        |
+| ------------------------ | -------------------------------------------------- |
+| `deployment-url`         | The stable preview URL (same as `preview-url`)     |
+| `preview-url`            | The stable Preview URL for the branch              |
+| `preview-deployment-url` | The immutable URL for this specific deployment     |
+| `preview-name`           | The Preview name (defaults to the git branch name) |
+| `preview-id`             | The Preview resource ID                            |
+| `preview-deployment-id`  | The deployment ID within the Preview               |
+
+When `gitHubToken` is provided, the action creates a GitHub Deployment with the Preview URL linked as the environment URL and writes a job summary. For the plain `wrangler preview --json` workflow, PR comments, and cleanup examples, refer to [Automation examples](https://developers.cloudflare.com/workers/previews/automation-examples/).
+
 ## Advanced Usage
 
 ### Setting A Worker Secret for A Specific Environment

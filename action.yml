@@ -60,3 +60,13 @@ outputs:
     description: "If the command was a Pages deployment, this will be the ID of the deployment - needs wrangler >= 3.81.0"
   pages-environment:
     description: "If the command was a Pages deployment, this will be the environment of the deployment - needs wrangler >= 3.81.0"
+  preview-url:
+    description: "If the command was a Workers Preview deployment, this will be the stable Preview URL for the branch"
+  preview-deployment-url:
+    description: "If the command was a Workers Preview deployment, this will be the immutable deployment URL"
+  preview-name:
+    description: "If the command was a Workers Preview deployment, this will be the Preview name (typically the branch name)"
+  preview-id:
+    description: "If the command was a Workers Preview deployment, this will be the Preview resource ID"
+  preview-deployment-id:
+    description: "If the command was a Workers Preview deployment, this will be the deployment ID within the Preview"
