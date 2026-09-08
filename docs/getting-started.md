@@ -1,0 +1,225 @@
+# Getting Started with `wrangler-action` from Scratch
+
+This guide walks you through every step needed to deploy a Cloudflare Workers or Pages project using this GitHub Action, starting from zero.
+
+## Prerequisites
+
+- A [Cloudflare account](https://dash.cloudflare.com/sign-up) (free tier is fine)
+- A GitHub repository containing the project you want to deploy
+
+## Step 1: Create a Cloudflare API Token
+
+The GitHub Action authenticates with Cloudflare using an API token. You must create one with the right permissions.
+
+1. Go to the [Cloudflare dashboard](https://dash.cloudflare.com) and click your profile icon (top right), then **My Profile**.
+2. Select **API Tokens** in the left sidebar.
+3. Click **Create Token**.
+4. Use the **Edit Cloudflare Workers** template (this covers both Workers and Pages). Alternatively, create a custom token with only the permissions you need:
+   - **Account** > **Cloudflare Pages** > **Edit** (if deploying a Pages project)
+   - **Account** > **Workers Scripts** > **Edit** (if deploying a Worker)
+   - **Account** > **Account Settings** > **Read**
+   - **Zone** > **Zone** > **Read** (if your project uses a custom domain or you need zone-level access)
+   - **Zone** > **Zone Resources** > **Read** (required for zone-scoped operations)
+
+   > You do not need both Pages and Workers permissions — include only what applies to your project.
+5. Under **Account Resources**, select the account you want to deploy to.
+6. Click **Continue to summary**, then **Create Token**.
+7. **Copy the token** — you won't be able to see it again.
+
+## Step 2: Find Your Cloudflare Account ID
+
+1. Go to the [Cloudflare dashboard](https://dash.cloudflare.com).
+2. Select any zone (domain), or go to **Workers & Pages** under the **Compute** section.
+3. Your **Account ID** is shown on the right sidebar. Copy it.
+
+You can also find it in the URL: `https://dash.cloudflare.com/<ACCOUNT_ID>/...`
+
+## Step 3: Add Secrets to Your GitHub Repository
+
+Store your Cloudflare credentials as GitHub Actions secrets so they stay encrypted and never appear in logs.
+
+1. In your GitHub repository, go to **Settings** > **Secrets and variables** > **Actions**.
+2. Click **New repository secret** and add:
+   - **Name:** `CLOUDFLARE_API_TOKEN` — **Value:** the API token from Step 1
+   - **Name:** `CLOUDFLARE_ACCOUNT_ID` — **Value:** the account ID from Step 2
+
+## Step 4: Set Up Your Project
+
+### For Cloudflare Workers
+
+If you don't have a Workers project yet:
+
+```sh
+npx wrangler init my-worker
+cd my-worker
+```
+
+This creates a `wrangler.toml` configuration file and a basic Worker. Push it to your GitHub repo.
+
+The `wrangler.toml` file must be in the root of your repository (or in the directory specified by the `workingDirectory` input if you use one). The action looks for it automatically — you do not need to pass it as a parameter.
+
+Your `wrangler.toml` should include at minimum:
+
+```toml
+name = "my-worker"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+```
+
+> **Note:** You do _not_ need to set `account_id` in `wrangler.toml` if you pass `accountId` to the GitHub Action (recommended — keeps credentials out of your repo).
+
+### For Cloudflare Pages
+
+If you have a static site (e.g. built with mkdocs, Next.js, Astro, etc.):
+
+1. Make sure your build step produces a directory of static files (e.g. `site/`, `dist/`, `build/`).
+2. If your Pages project does not exist yet, you can either create it in the Cloudflare dashboard or let `wrangler pages deploy` attempt to create it on the first run. However, automatic creation may not work in all cases. If you run into issues, create the project explicitly before deploying:
+
+   ```sh
+   npx wrangler pages project create my-docs-site --production-branch main
+   ```
+
+## Step 5: Create the GitHub Actions Workflow
+
+Create a file at `.github/workflows/deploy.yml` in your repository.
+
+### Workers Example
+
+```yaml
+name: Deploy Worker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+```
+
+### Pages Example (e.g. for an mkdocs site)
+
+```yaml
+name: Deploy Pages Site
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build site
+        run: |
+          pip install mkdocs-material
+          mkdocs build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=my-docs-site
+```
+
+Replace `site` with your build output directory and `my-docs-site` with whatever you want your Pages project to be named. If the project doesn't exist yet, Wrangler will attempt to create it automatically — but see Step 4 if you need to create it explicitly.
+
+### GitHub-Hosted vs Self-Hosted Runners
+
+The examples above use `runs-on: ubuntu-latest`, which runs on a [GitHub-hosted runner](https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners). These are managed by GitHub, come with Node.js and common tools pre-installed, and work out of the box with no setup.
+
+If your organization uses [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners), replace the `runs-on` value with your runner's label:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: self-hosted          # or a custom label like [self-hosted, linux]
+```
+
+Key differences to be aware of:
+
+| | GitHub-Hosted | Self-Hosted |
+|---|---|---|
+| **Setup** | None — managed by GitHub | You provision and maintain the runner |
+| **Environment** | Clean VM each run; Node.js pre-installed | Persistent environment; you must ensure Node.js is available |
+| **Network** | Public internet access | Can access private networks (useful for internal APIs) |
+| **Cost** | Free tier minutes included; paid beyond that | You pay for your own infrastructure |
+| **Security** | Isolated per job | Shared across jobs unless you configure otherwise — avoid on public repos |
+
+When using self-hosted runners, make sure:
+- **Node.js** is installed (the action requires it).
+- The runner can reach the **Cloudflare API** (`api.cloudflare.com`) and **npm registry** (`registry.npmjs.org`) to install and run Wrangler.
+- You trust all workflows that will run on the runner, especially if the repository is public.
+
+## Step 6: Push and Verify
+
+1. Commit and push the workflow file to your `main` branch.
+2. Go to the **Actions** tab in your GitHub repository.
+3. You should see the workflow running. Click into it to see logs.
+4. Once successful, your site/worker will be live at:
+   - **Workers:** `https://my-worker.<your-subdomain>.workers.dev`
+   - **Pages:** `https://my-docs-site.pages.dev`
+
+## Common Issues
+
+### "No account id found, quitting..."
+
+Either add `accountId` to the action inputs (recommended) or set `account_id` in your `wrangler.toml`:
+
+```yaml
+with:
+  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+```
+
+### "Authentication error"
+
+Make sure your API token has the correct permissions (see Step 1) and that the `CLOUDFLARE_API_TOKEN` secret is set correctly in your repository settings.
+
+### Pages project not found
+
+If using `pages deploy`, Wrangler will attempt to create the project on the first deploy, but this may fail depending on your token permissions. If it does, create the project explicitly first:
+
+```sh
+npx wrangler pages project create my-docs-site --production-branch main
+```
+
+Also make sure:
+- You're specifying a `--project-name`
+- Your API token has Pages edit permissions
+- You've set the `accountId`
+
+### Preview deployments
+
+Pushes to non-production branches automatically create preview deployments. You can access them at `https://<branch>.<project>.pages.dev`. To deploy only on `main`, restrict the workflow trigger:
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+```
+
+## Next Steps
+
+- See the [README](../README.md) for the full list of action inputs, outputs, and advanced usage (secrets, pre/post commands, custom wrangler versions, etc.)
+- See the [Cloudflare Workers docs](https://developers.cloudflare.com/workers/) and [Pages docs](https://developers.cloudflare.com/pages/) for platform-specific guidance
+- See [Wrangler documentation](https://developers.cloudflare.com/workers/wrangler/) for CLI reference

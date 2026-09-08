@@ -369,6 +369,10 @@ jobs:
         packageManager: pnpm
 ```
 
+## Getting Started from Scratch
+
+If you're new to Cloudflare Workers/Pages and want step-by-step instructions to get this action working from zero (creating API tokens, setting up secrets, configuring your first project), see the [Getting Started guide](docs/getting-started.md).
+
 ## Troubleshooting
 
 ### "I just started using Workers/Wrangler and I don't know what this is!"
