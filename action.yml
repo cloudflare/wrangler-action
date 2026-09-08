@@ -54,6 +54,10 @@ outputs:
     description: "The error output of the Wrangler command (comes from stderr)"
   deployment-url:
     description: "If the command was a Workers or Pages deployment, this will be the URL of the deployment"
+  deployment-alias-url:
+    description: "If the command was a Worker deployment, this will be the alias (if it exists)"
+  version-id:
+    description: "If the command was a Worker deployment, this will be the deployment id"
   pages-deployment-alias-url:
     description: "If the command was a Pages deployment, this will be the URL of the deployment alias (if it exists) - needs wrangler >= 3.78.0"
   pages-deployment-id:

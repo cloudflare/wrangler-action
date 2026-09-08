@@ -141,7 +141,7 @@ describe("wranglerArtifactsManager", () => {
 					testOutputDir: {
 						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
 						{"version": 1, "type":"wrangler-session", "wrangler_version":"3.81.0", "command_line_args":["what's up"], "log_file_path": "/here"}
-						{"version": 1, "type":"version-upload", "preview_url": "https://example.com"}`,
+						{"version": 1, "type":"version-upload", "preview_url": "https://example.com", "preview_alias_url":"https://example.alias", "version_id": "123"}`,
 						"not-wrangler-output.json": "test",
 					},
 				});
@@ -155,6 +155,8 @@ describe("wranglerArtifactsManager", () => {
 					version: 1,
 					type: "version-upload",
 					preview_url: "https://example.com",
+					preview_alias_url: "https://example.alias",
+					version_id: "123",
 				});
 			}),
 				it("Skips artifact entries that are not parseable", async () => {

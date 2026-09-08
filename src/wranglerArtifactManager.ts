@@ -47,6 +47,8 @@ const OutputEntryVersionUpload = OutputEntryBase.merge(
 		type: z.literal("version-upload"),
 		/** The preview URL associated with this version upload */
 		preview_url: z.string().optional(),
+		preview_alias_url: z.string().optional(),
+		version_id: z.string().optional(),
 	}),
 );
 
