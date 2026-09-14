@@ -95,14 +95,16 @@ export async function createGitHubDeploymentAndJobSummary(
 		pagesArtifactFields.deployment_trigger
 	) {
 		const octokit = getOctokit(config.GITHUB_TOKEN);
+		const environment =
+			config.DEPLOYMENT_ENVIRONMENT || pagesArtifactFields.environment;
 		const [createGitHubDeploymentRes, createJobSummaryRes] =
 			await Promise.allSettled([
 				createGitHubDeployment({
 					config,
 					octokit,
+					environment,
 					deploymentUrl: pagesArtifactFields.url,
 					productionBranch: pagesArtifactFields.production_branch,
-					environment: pagesArtifactFields.environment,
 					deploymentId: pagesArtifactFields.deployment_id,
 					projectName: pagesArtifactFields.pages_project,
 				}),

@@ -199,6 +199,8 @@ jobs:
           command: pages deploy YOUR_DIST_FOLDER --project-name=example
           # Optional: Enable this if you want to have GitHub Deployments triggered
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: Add a custom deployment environment for GitHub Deployments
+          deploymentEnvironment: Example Project
 ```
 
 ### Deploying on a schedule
