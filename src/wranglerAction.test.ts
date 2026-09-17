@@ -7,6 +7,7 @@ import {
 	main,
 	parseWranglerVersion,
 	uploadSecrets,
+	workerNameCommands,
 	wranglerCommands,
 } from "./wranglerAction";
 import { getTestConfig } from "./test/test-utils";
@@ -516,7 +517,7 @@ describe("wranglerCommands", () => {
 		execNoInstall: "npx --no-install",
 	};
 
-	it.each(["deploy", "publish"])(
+	it.each(workerNameCommands)(
 		"passes workerName to wrangler %s",
 		async (command) => {
 			const testConfig = getTestConfig({
@@ -535,6 +536,22 @@ describe("wranglerCommands", () => {
 			await wranglerCommands(testConfig, testPackageManager);
 		},
 	);
+
+	it("does not pass workerName to commands that do not accept --name", async () => {
+		const testConfig = getTestConfig({
+			config: {
+				COMMANDS: ["whoami"],
+				workerName: "preview-worker",
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (_cmd, args) => {
+			expect(args).not.toContain("--name");
+			expect(args).not.toContain("preview-worker");
+			return 0;
+		});
+
+		await wranglerCommands(testConfig, testPackageManager);
+	});
 });
 
 describe("main", () => {

@@ -30,7 +30,7 @@ inputs:
     description: "A string of environment variable names, separated by newlines. These will be bound to your Worker as Secrets and must match the names of environment variables declared in `env` of this workflow."
     required: false
   workerName:
-    description: "The name of the Worker to deploy or publish and bind secrets to."
+    description: "The name passed to Wrangler commands that accept `--name` and used when binding secrets to a Worker."
     required: false
   preCommands:
     description: "Commands to execute before deploying the Workers project"

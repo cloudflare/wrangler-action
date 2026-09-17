@@ -261,6 +261,38 @@ function getEnvVar(envVar: string) {
 	return value;
 }
 
+const workerNameCommands = [
+	"deploy",
+	"publish",
+	"dev",
+	"preview",
+	"rollback",
+	"deployments list",
+	"deployments status",
+	"secret put",
+	"secret delete",
+	"secret list",
+	"secret bulk",
+	"secret:bulk",
+	"versions view",
+	"versions list",
+	"versions upload",
+	"versions deploy",
+	"versions secret put",
+	"versions secret delete",
+	"versions secret list",
+	"versions secret bulk",
+	"triggers deploy",
+] as const;
+
+function commandAcceptsWorkerName(command: string): boolean {
+	return workerNameCommands.some(
+		(workerNameCommand) =>
+			command === workerNameCommand ||
+			command.startsWith(`${workerNameCommand} `),
+	);
+}
+
 function commandHasNameArgument(command: string): boolean {
 	return command
 		.split(/\s+/)
@@ -384,7 +416,7 @@ async function wranglerCommands(
 
 			if (
 				config["workerName"] &&
-				(command.startsWith("deploy") || command.startsWith("publish")) &&
+				commandAcceptsWorkerName(command) &&
 				!commandHasNameArgument(command)
 			) {
 				args.push("--name", config["workerName"]);
@@ -456,5 +488,6 @@ export {
 	main,
 	parseWranglerVersion,
 	uploadSecrets,
+	workerNameCommands,
 	wranglerCommands,
 };
