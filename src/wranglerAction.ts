@@ -266,17 +266,34 @@ async function legacyUploadSecrets(
 	secrets: string[],
 	environment?: string,
 	workingDirectory?: string,
+	workerName?: string,
 ) {
 	for (const secret of secrets) {
 		const args = ["wrangler", "secret", "put", secret];
 		if (environment) {
 			args.push("--env", environment);
 		}
+		if (workerName) {
+			args.push("--name", workerName);
+		}
 		await exec(packageManager.exec, args, {
 			cwd: workingDirectory,
 			silent: config["QUIET_MODE"],
 			input: Buffer.from(getSecret(secret)),
 		});
+	}
+}
+
+function getWorkerName(commands: string[]): string | undefined {
+	for (const command of commands) {
+		if (!command.startsWith("deploy") && !command.startsWith("publish")) {
+			continue;
+		}
+
+		const match = command.match(/(?:^|\s)--name(?:=|\s+)([^\s]+)/);
+		if (match) {
+			return match[1];
+		}
 	}
 }
 
@@ -287,6 +304,7 @@ async function uploadSecrets(
 	const secrets: string[] = config["secrets"];
 	const environment = config["ENVIRONMENT"];
 	const workingDirectory = config["workingDirectory"];
+	const workerName = getWorkerName(config["COMMANDS"]);
 
 	if (!secrets.length) {
 		return;
@@ -302,6 +320,7 @@ async function uploadSecrets(
 				secrets,
 				environment,
 				workingDirectory,
+				workerName,
 			);
 		}
 
@@ -313,6 +332,10 @@ async function uploadSecrets(
 
 		if (environment) {
 			args.push("--env", environment);
+		}
+
+		if (workerName) {
+			args.push("--name", workerName);
 		}
 
 		await exec(packageManager.exec, args, {
@@ -394,11 +417,7 @@ async function wranglerCommands(
 
 			// Execute the wrangler command
 			try {
-				await exec(
-					`${packageManager.exec} wrangler ${command}`,
-					args,
-					options,
-				);
+				await exec(`${packageManager.exec} wrangler ${command}`, args, options);
 			} catch (err: unknown) {
 				if (stdErr) {
 					error(config, stdErr);

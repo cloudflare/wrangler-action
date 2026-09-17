@@ -361,6 +361,33 @@ describe("uploadSecrets", () => {
 		expect(endGroup).toHaveBeenCalledOnce();
 	});
 
+	it("WRANGLER_VERSION < 3.4.0 passes the deploy --name value to wrangler secret put", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				WRANGLER_VERSION: "3.3.0",
+				secrets: ["FAKE_SECRET"],
+				COMMANDS: ["deploy --name preview-worker"],
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+			expect(cmd).toBe("npx");
+			expect(args).toStrictEqual([
+				"wrangler",
+				"secret",
+				"put",
+				"FAKE_SECRET",
+				"--env",
+				"dev",
+				"--name",
+				"preview-worker",
+			]);
+			return 0;
+		});
+
+		await uploadSecrets(testConfig, testPackageManager);
+	});
+
 	it("WRANGLER_VERSION < 3.60.0 uses wrangler secret:bulk", async () => {
 		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
 		const testConfig = getTestConfig({
@@ -438,6 +465,38 @@ describe("uploadSecrets", () => {
 		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
 		expect(endGroup).toHaveBeenCalledOnce();
 	});
+
+	it.each([
+		["deploy --name preview-worker", "preview-worker"],
+		["deploy --name=preview-worker", "preview-worker"],
+		["publish --name preview-worker", "preview-worker"],
+	])(
+		"passes the Worker name from %s to wrangler secret bulk",
+		async (command, workerName) => {
+			vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+			const testConfig = getTestConfig({
+				config: {
+					secrets: ["FAKE_SECRET"],
+					COMMANDS: [command],
+				},
+			});
+			vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+				expect(cmd).toBe("npx");
+				expect(args).toStrictEqual([
+					"wrangler",
+					"secret",
+					"bulk",
+					"--env",
+					"dev",
+					"--name",
+					workerName,
+				]);
+				return 0;
+			});
+
+			await uploadSecrets(testConfig, testPackageManager);
+		},
+	);
 });
 
 describe("main", () => {
