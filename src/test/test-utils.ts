@@ -10,6 +10,7 @@ export function getTestConfig({
 			WRANGLER_VERSION: "4.72.0",
 			didUserProvideWranglerVersion: false,
 			secrets: [],
+			workerName: "",
 			workingDirectory: "/src/test/fixtures",
 			CLOUDFLARE_API_TOKEN: "foo",
 			CLOUDFLARE_ACCOUNT_ID: "bar",

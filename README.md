@@ -89,7 +89,7 @@ jobs:
         workingDirectory: "subfoldername"
 ```
 
-[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can optionally be passed in via `secrets` as a string of names separated by newlines. Each secret name must match the name of an environment variable specified in the `env` field. This creates or replaces the value for the Worker secret using Wrangler's secret commands. When `command` is `deploy` or `publish` with a `--name` argument, the action uploads secrets to that Worker. It's also possible to specify a Worker environment using the `environment` input.
+[Worker secrets](https://developers.cloudflare.com/workers/tooling/wrangler/secrets/) can optionally be passed in via `secrets` as a string of names separated by newlines. Each secret name must match the name of an environment variable specified in the `env` field. This creates or replaces the value for the Worker secret using Wrangler's secret commands. Use the `workerName` input to deploy or publish a named Worker and upload secrets to that same Worker. When secrets are configured, passing `--name` through `command` fails with an error directing you to `workerName`. It's also possible to specify a Worker environment using the `environment` input.
 
 ```yaml
 jobs:
@@ -99,6 +99,7 @@ jobs:
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         environment: production
+        workerName: my-worker-pr-123
         secrets: |
           SECRET1
           SECRET2
