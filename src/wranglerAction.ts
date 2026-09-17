@@ -21,6 +21,7 @@ export const wranglerActionConfig = z.object({
 	WRANGLER_VERSION: z.string(),
 	didUserProvideWranglerVersion: z.boolean(),
 	secrets: z.array(z.string()),
+	workerName: z.string(),
 	workingDirectory: z.string(),
 	CLOUDFLARE_API_TOKEN: z.string(),
 	CLOUDFLARE_ACCOUNT_ID: z.string(),
@@ -260,6 +261,14 @@ function getEnvVar(envVar: string) {
 	return value;
 }
 
+function commandHasNameArgument(command: string): boolean {
+	return command
+		.split(/\s+/)
+		.some(
+			(argument) => argument === "--name" || argument.startsWith("--name="),
+		);
+}
+
 async function legacyUploadSecrets(
 	config: WranglerActionConfig,
 	packageManager: PackageManager,
@@ -284,19 +293,6 @@ async function legacyUploadSecrets(
 	}
 }
 
-function getWorkerName(commands: string[]): string | undefined {
-	for (const command of commands) {
-		if (!command.startsWith("deploy") && !command.startsWith("publish")) {
-			continue;
-		}
-
-		const match = command.match(/(?:^|\s)--name(?:=|\s+)([^\s]+)/);
-		if (match) {
-			return match[1];
-		}
-	}
-}
-
 async function uploadSecrets(
 	config: WranglerActionConfig,
 	packageManager: PackageManager,
@@ -304,10 +300,16 @@ async function uploadSecrets(
 	const secrets: string[] = config["secrets"];
 	const environment = config["ENVIRONMENT"];
 	const workingDirectory = config["workingDirectory"];
-	const workerName = getWorkerName(config["COMMANDS"]);
+	const workerName = config["workerName"];
 
 	if (!secrets.length) {
 		return;
+	}
+
+	if (config["COMMANDS"].some(commandHasNameArgument)) {
+		throw new Error(
+			"The command input cannot include --name when secrets are configured. Use the workerName input instead so the action uploads secrets and deploys to the same Worker.",
+		);
 	}
 
 	startGroup(config, "🔑 Uploading secrets...");
@@ -379,6 +381,14 @@ async function wranglerCommands(
 
 		for (let command of commands) {
 			const args = [];
+
+			if (
+				config["workerName"] &&
+				(command.startsWith("deploy") || command.startsWith("publish")) &&
+				!commandHasNameArgument(command)
+			) {
+				args.push("--name", config["workerName"]);
+			}
 
 			if (environment && !command.includes("--env")) {
 				args.push("--env", environment);

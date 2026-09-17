@@ -7,6 +7,7 @@ import {
 	main,
 	parseWranglerVersion,
 	uploadSecrets,
+	wranglerCommands,
 } from "./wranglerAction";
 import { getTestConfig } from "./test/test-utils";
 
@@ -361,13 +362,13 @@ describe("uploadSecrets", () => {
 		expect(endGroup).toHaveBeenCalledOnce();
 	});
 
-	it("WRANGLER_VERSION < 3.4.0 passes the deploy --name value to wrangler secret put", async () => {
+	it("WRANGLER_VERSION < 3.4.0 passes workerName to wrangler secret put", async () => {
 		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
 		const testConfig = getTestConfig({
 			config: {
 				WRANGLER_VERSION: "3.3.0",
 				secrets: ["FAKE_SECRET"],
-				COMMANDS: ["deploy --name preview-worker"],
+				workerName: "preview-worker",
 			},
 		});
 		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
@@ -466,35 +467,72 @@ describe("uploadSecrets", () => {
 		expect(endGroup).toHaveBeenCalledOnce();
 	});
 
-	it.each([
-		["deploy --name preview-worker", "preview-worker"],
-		["deploy --name=preview-worker", "preview-worker"],
-		["publish --name preview-worker", "preview-worker"],
-	])(
-		"passes the Worker name from %s to wrangler secret bulk",
-		async (command, workerName) => {
-			vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+	it("passes workerName to wrangler secret bulk", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				secrets: ["FAKE_SECRET"],
+				workerName: "preview-worker",
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+			expect(cmd).toBe("npx");
+			expect(args).toStrictEqual([
+				"wrangler",
+				"secret",
+				"bulk",
+				"--env",
+				"dev",
+				"--name",
+				"preview-worker",
+			]);
+			return 0;
+		});
+
+		await uploadSecrets(testConfig, testPackageManager);
+	});
+
+	it.each(["deploy --name preview-worker", "deploy --name=preview-worker"])(
+		"rejects %s when secrets are configured",
+		async (command) => {
 			const testConfig = getTestConfig({
 				config: {
 					secrets: ["FAKE_SECRET"],
 					COMMANDS: [command],
 				},
 			});
+
+			await expect(
+				uploadSecrets(testConfig, testPackageManager),
+			).rejects.toThrow("Use the workerName input instead");
+		},
+	);
+});
+
+describe("wranglerCommands", () => {
+	const testPackageManager = {
+		install: "npm i",
+		exec: "npx",
+		execNoInstall: "npx --no-install",
+	};
+
+	it.each(["deploy", "publish"])(
+		"passes workerName to wrangler %s",
+		async (command) => {
+			const testConfig = getTestConfig({
+				config: {
+					COMMANDS: [command],
+					workerName: "preview-worker",
+				},
+			});
 			vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
-				expect(cmd).toBe("npx");
-				expect(args).toStrictEqual([
-					"wrangler",
-					"secret",
-					"bulk",
-					"--env",
-					"dev",
-					"--name",
-					workerName,
-				]);
+				expect(cmd).toBe(`npx wrangler ${command}`);
+				expect(args).toContain("--name");
+				expect(args).toContain("preview-worker");
 				return 0;
 			});
 
-			await uploadSecrets(testConfig, testPackageManager);
+			await wranglerCommands(testConfig, testPackageManager);
 		},
 	);
 });

@@ -29,6 +29,9 @@ inputs:
   secrets:
     description: "A string of environment variable names, separated by newlines. These will be bound to your Worker as Secrets and must match the names of environment variables declared in `env` of this workflow."
     required: false
+  workerName:
+    description: "The name of the Worker to deploy or publish and bind secrets to. Use this instead of passing `--name` in `command` when secrets are configured."
+    required: false
   preCommands:
     description: "Commands to execute before deploying the Workers project"
     required: false
