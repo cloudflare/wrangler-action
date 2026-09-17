@@ -95,14 +95,34 @@ jobs:
         run: node .github/workflows/workerHealthCheck.ts wrangler-action-test-secrets-default
         shell: bash
 
-      - name: Clean Up Deployed Workers
+      - name: Deploy named app with secrets
         uses: ./
         with:
           workingDirectory: "./src/test/fixtures/secrets-default"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: delete --name wrangler-action-test-secrets-v2 --force
-          postCommands: npx wrangler delete --name wrangler-action-test-secrets-default --force
+          workerName: wrangler-action-test-secrets-named
+          secrets: |
+            SECRET1
+            SECRET2
+        env:
+          SECRET1: ${{ secrets.SECRET1 }}
+          SECRET2: ${{ secrets.SECRET2 }}
+
+      - name: Health Check Named Worker
+        run: node .github/workflows/workerHealthCheck.ts wrangler-action-test-secrets-named
+        shell: bash
+
+      - name: Clean Up Deployed Workers
+        if: always()
+        uses: ./
+        with:
+          workingDirectory: "./src/test/fixtures/secrets-default"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          preCommands: npx wrangler delete --name wrangler-action-test-secrets-v2 --force
+          command: delete --name wrangler-action-test-secrets-default --force
+          postCommands: npx wrangler delete --name wrangler-action-test-secrets-named --force
       # END Setup and teardown of Workers w/ Secrets Tests
 
       - name: Support packageManager variable

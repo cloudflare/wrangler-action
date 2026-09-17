@@ -21,6 +21,7 @@ export const wranglerActionConfig = z.object({
 	WRANGLER_VERSION: z.string(),
 	didUserProvideWranglerVersion: z.boolean(),
 	secrets: z.array(z.string()),
+	workerName: z.string(),
 	workingDirectory: z.string(),
 	CLOUDFLARE_API_TOKEN: z.string(),
 	CLOUDFLARE_ACCOUNT_ID: z.string(),
@@ -260,17 +261,61 @@ function getEnvVar(envVar: string) {
 	return value;
 }
 
+const workerNameCommands = [
+	"deploy",
+	"publish",
+	"dev",
+	"preview",
+	"rollback",
+	"deployments list",
+	"deployments status",
+	"secret put",
+	"secret delete",
+	"secret list",
+	"secret bulk",
+	"secret:bulk",
+	"versions view",
+	"versions list",
+	"versions upload",
+	"versions deploy",
+	"versions secret put",
+	"versions secret delete",
+	"versions secret list",
+	"versions secret bulk",
+	"triggers deploy",
+] as const;
+
+function commandAcceptsWorkerName(command: string): boolean {
+	return workerNameCommands.some(
+		(workerNameCommand) =>
+			command === workerNameCommand ||
+			command.startsWith(`${workerNameCommand} `),
+	);
+}
+
+function commandHasNameArgument(command: string): boolean {
+	return command
+		.split(/\s+/)
+		.some(
+			(argument) => argument === "--name" || argument.startsWith("--name="),
+		);
+}
+
 async function legacyUploadSecrets(
 	config: WranglerActionConfig,
 	packageManager: PackageManager,
 	secrets: string[],
 	environment?: string,
 	workingDirectory?: string,
+	workerName?: string,
 ) {
 	for (const secret of secrets) {
 		const args = ["wrangler", "secret", "put", secret];
 		if (environment) {
 			args.push("--env", environment);
+		}
+		if (workerName) {
+			args.push("--name", workerName);
 		}
 		await exec(packageManager.exec, args, {
 			cwd: workingDirectory,
@@ -287,9 +332,16 @@ async function uploadSecrets(
 	const secrets: string[] = config["secrets"];
 	const environment = config["ENVIRONMENT"];
 	const workingDirectory = config["workingDirectory"];
+	const workerName = config["workerName"];
 
 	if (!secrets.length) {
 		return;
+	}
+
+	if (config["COMMANDS"].some(commandHasNameArgument)) {
+		throw new Error(
+			"The command input cannot include --name when secrets are configured. Use the workerName input instead so the action uploads secrets and deploys to the same Worker.",
+		);
 	}
 
 	startGroup(config, "🔑 Uploading secrets...");
@@ -302,6 +354,7 @@ async function uploadSecrets(
 				secrets,
 				environment,
 				workingDirectory,
+				workerName,
 			);
 		}
 
@@ -313,6 +366,10 @@ async function uploadSecrets(
 
 		if (environment) {
 			args.push("--env", environment);
+		}
+
+		if (workerName) {
+			args.push("--name", workerName);
 		}
 
 		await exec(packageManager.exec, args, {
@@ -357,6 +414,14 @@ async function wranglerCommands(
 		for (let command of commands) {
 			const args = [];
 
+			if (
+				config["workerName"] &&
+				commandAcceptsWorkerName(command) &&
+				!commandHasNameArgument(command)
+			) {
+				args.push("--name", config["workerName"]);
+			}
+
 			if (environment && !command.includes("--env")) {
 				args.push("--env", environment);
 			}
@@ -394,11 +459,7 @@ async function wranglerCommands(
 
 			// Execute the wrangler command
 			try {
-				await exec(
-					`${packageManager.exec} wrangler ${command}`,
-					args,
-					options,
-				);
+				await exec(`${packageManager.exec} wrangler ${command}`, args, options);
 			} catch (err: unknown) {
 				if (stdErr) {
 					error(config, stdErr);
@@ -427,5 +488,6 @@ export {
 	main,
 	parseWranglerVersion,
 	uploadSecrets,
+	workerNameCommands,
 	wranglerCommands,
 };
