@@ -38,7 +38,7 @@ describe("wranglerArtifactsManager", () => {
 
 	describe("getOutputEntry()", async () => {
 		describe("OutputEntryPagesDeployment", async () => {
-			it("Returns only detailed pages deploy output from wrangler artifacts", async () => {
+			(it("Returns only detailed pages deploy output from wrangler artifacts", async () => {
 				mockfs({
 					testOutputDir: {
 						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
@@ -87,11 +87,11 @@ describe("wranglerArtifactsManager", () => {
 						deployment_id: "123",
 						alias: "test.com",
 					});
-				});
+				}));
 		});
 
 		describe("OutputEntryDeployment", async () => {
-			it("Returns only wrangler deploy output from wrangler artifacts", async () => {
+			(it("Returns only wrangler deploy output from wrangler artifacts", async () => {
 				mockfs({
 					testOutputDir: {
 						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
@@ -132,11 +132,11 @@ describe("wranglerArtifactsManager", () => {
 						type: "deploy",
 						targets: ["https://example.com"],
 					});
-				});
+				}));
 		});
 
 		describe("OutputEntryVersionUpload", async () => {
-			it("Returns only version upload output from wrangler artifacts", async () => {
+			(it("Returns only version upload output from wrangler artifacts", async () => {
 				mockfs({
 					testOutputDir: {
 						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
@@ -177,7 +177,7 @@ describe("wranglerArtifactsManager", () => {
 						type: "version-upload",
 						preview_url: "https://example.com",
 					});
-				});
+				}));
 		});
 	});
 });
