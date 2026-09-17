@@ -1,0 +1,19 @@
+src/wranglerArtifactManager.test.ts
+  s_ba35232b97178e::t_e071fe786efeee 41,90,94,135,139,180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4093a80981a39fb7bd2d1c8024ef58f5c660bd08",
+  "prompts": {},
+  "sessions": {
+    "s_ba35232b97178e": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a0b148-96c3-731d-8533-25aeaef7c024",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Christopher Little-Savage <clittle-savage@cloudflare.com>"
+    }
+  }
+}
