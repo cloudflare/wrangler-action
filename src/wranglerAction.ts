@@ -394,11 +394,7 @@ async function wranglerCommands(
 
 			// Execute the wrangler command
 			try {
-				await exec(
-					`${packageManager.exec} wrangler ${command}`,
-					args,
-					options,
-				);
+				await exec(`${packageManager.exec} wrangler ${command}`, args, options);
 			} catch (err: unknown) {
 				if (stdErr) {
 					error(config, stdErr);
