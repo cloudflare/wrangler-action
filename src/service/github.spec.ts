@@ -117,6 +117,7 @@ describe("github", () => {
 			createOctokit(token, { request: fetch }),
 		);
 		vi.stubEnv("GITHUB_REPOSITORY", `${githubUser}/${githubRepoName}`);
+		vi.stubEnv("GITHUB_HEAD_REF", "feature/branch");
 		vi.stubEnv("GITHUB_REF_NAME", "feature/branch");
 		vi.stubEnv("GITHUB_STEP_SUMMARY", "summary");
 		mockfs({ summary: mockfs.file() });
