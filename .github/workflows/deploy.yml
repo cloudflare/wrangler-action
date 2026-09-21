@@ -113,7 +113,7 @@ jobs:
 
       # START Setup and teardown of Workers Preview Tests
       - name: Deploy Workers Preview
-        if: vars.WORKERS_PREVIEWS_LIVE == 'true'
+        if: vars.WORKERS_PREVIEWS_LIVE == 'true' && github.event.pull_request.head.repo.full_name == github.repository
         id: preview
         uses: ./
         with:
@@ -124,11 +124,11 @@ jobs:
           command: preview --name wrangler-action-ci-test
 
       - name: Health Check Workers Preview
-        if: vars.WORKERS_PREVIEWS_LIVE == 'true'
+        if: vars.WORKERS_PREVIEWS_LIVE == 'true' && github.event.pull_request.head.repo.full_name == github.repository
         run: node .github/workflows/previewHealthCheck.ts "${{ steps.preview.outputs.preview-url }}"
 
       - name: Clean Up Workers Preview
-        if: vars.WORKERS_PREVIEWS_LIVE == 'true'
+        if: vars.WORKERS_PREVIEWS_LIVE == 'true' && github.event.pull_request.head.repo.full_name == github.repository
         uses: ./
         with:
           workingDirectory: "./src/test/fixtures/only-build"

@@ -7,13 +7,13 @@ import {
 	createPreviewGitHubDeploymentAndJobSummary,
 } from "./github";
 import * as actionsGithub from "@actions/github";
-import { getOctokit } from "@actions/github";
 import { mockGithubDeployments } from "../test/mocks";
 import { getTestConfig } from "../test/test-utils";
 import mockfs from "mock-fs";
 import { readFile } from "fs/promises";
 
-const createOctokit = getOctokit;
+// Keep the real implementation available after getOctokit is mocked below.
+const actualGetOctokit = actionsGithub.getOctokit;
 
 afterEach(() => {
 	mockfs.restore();
@@ -32,7 +32,9 @@ describe("github", () => {
 		vi.stubEnv("GITHUB_REPOSITORY", `${githubUser}/${githubRepoName}`);
 
 		const testConfig = getTestConfig();
-		const octokit = getOctokit(testConfig.GITHUB_TOKEN, { request: fetch });
+		const octokit = actualGetOctokit(testConfig.GITHUB_TOKEN, {
+			request: fetch,
+		});
 		await createGitHubDeployment({
 			config: testConfig,
 			octokit,
@@ -114,7 +116,7 @@ describe("github", () => {
 		);
 		server.listen({ onUnhandledRequest: "error" });
 		vi.spyOn(actionsGithub, "getOctokit").mockImplementation((token) =>
-			createOctokit(token, { request: fetch }),
+			actualGetOctokit(token, { request: fetch }),
 		);
 		vi.stubEnv("GITHUB_REPOSITORY", `${githubUser}/${githubRepoName}`);
 		vi.stubEnv("GITHUB_HEAD_REF", "feature/branch");
