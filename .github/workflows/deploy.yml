@@ -105,6 +105,33 @@ jobs:
           postCommands: npx wrangler delete --name wrangler-action-test-secrets-default --force
       # END Setup and teardown of Workers w/ Secrets Tests
 
+      # START Setup and teardown of Workers Preview Tests
+      - name: Deploy Workers Preview
+        if: vars.WORKERS_PREVIEWS_LIVE == 'true'
+        id: preview
+        uses: ./
+        with:
+          workingDirectory: "./src/test/fixtures/only-build"
+          wranglerVersion: "4.136.0"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: preview --name wrangler-action-ci-test
+
+      - name: Health Check Workers Preview
+        if: vars.WORKERS_PREVIEWS_LIVE == 'true'
+        run: node .github/workflows/previewHealthCheck.ts "${{ steps.preview.outputs.preview-url }}"
+
+      - name: Clean Up Workers Preview
+        if: vars.WORKERS_PREVIEWS_LIVE == 'true'
+        uses: ./
+        with:
+          workingDirectory: "./src/test/fixtures/only-build"
+          wranglerVersion: "4.136.0"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: preview delete --name wrangler-action-ci-test --skip-confirmation
+      # END Setup and teardown of Workers Preview Tests
+
       - name: Support packageManager variable
         uses: ./
         with:

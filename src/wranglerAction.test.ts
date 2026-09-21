@@ -7,6 +7,7 @@ import {
 	main,
 	parseWranglerVersion,
 	uploadSecrets,
+	wranglerCommands,
 } from "./wranglerAction";
 import { getTestConfig } from "./test/test-utils";
 
@@ -437,6 +438,37 @@ describe("uploadSecrets", () => {
 		await uploadSecrets(testConfig, testPackageManager);
 		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
 		expect(endGroup).toHaveBeenCalledOnce();
+	});
+});
+
+describe("wranglerCommands", () => {
+	const testPackageManager = {
+		install: "npm i",
+		exec: "npx",
+		execNoInstall: "npx --no-install",
+	};
+
+	it("injects vars into preview commands but not unrelated commands", async () => {
+		vi.stubEnv("PREVIEW_VAR", "preview-value");
+		const execSpy = vi.spyOn(exec, "exec").mockResolvedValue(0);
+		const config = getTestConfig({
+			config: {
+				COMMANDS: ["preview --name feature-branch", "whoami"],
+				VARS: ["PREVIEW_VAR"],
+				GITHUB_TOKEN: "",
+				WRANGLER_OUTPUT_DIR: "/missing-output-dir",
+			},
+		});
+
+		await wranglerCommands(config, testPackageManager);
+
+		expect(execSpy.mock.calls[0][1]).toEqual([
+			"--env",
+			"dev",
+			"--var",
+			"PREVIEW_VAR:preview-value",
+		]);
+		expect(execSpy.mock.calls[1][1]).toEqual(["--env", "dev"]);
 	});
 });
 

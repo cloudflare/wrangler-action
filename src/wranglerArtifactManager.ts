@@ -50,11 +50,26 @@ const OutputEntryVersionUpload = OutputEntryBase.merge(
 	}),
 );
 
+export type OutputEntryPreview = z.infer<typeof OutputEntryPreview>;
+const OutputEntryPreview = OutputEntryBase.merge(
+	z.object({
+		type: z.literal("preview"),
+		worker_name: z.string(),
+		preview_id: z.string(),
+		preview_name: z.string(),
+		preview_slug: z.string(),
+		preview_urls: z.array(z.string()),
+		deployment_id: z.string(),
+		deployment_urls: z.array(z.string()),
+	}),
+);
+
 export type SupportedOutputEntry = z.infer<typeof SupportedOutputEntry>;
 const SupportedOutputEntry = z.discriminatedUnion("type", [
 	OutputEntryPagesDeployment,
 	OutputEntryDeployment,
 	OutputEntryVersionUpload,
+	OutputEntryPreview,
 ]);
 
 /**

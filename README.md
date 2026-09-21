@@ -13,6 +13,55 @@ The action now defaults to **Wrangler v4**. If you need to stay on Wrangler v3, 
     wranglerVersion: "3.90.0"
 ```
 
+## Workers Previews
+
+Workers Previews require Wrangler **4.136.0 or newer**. To run Wrangler directly from a pull request workflow:
+
+```yaml
+name: Preview
+
+on: [pull_request]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: npx wrangler preview --json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+```
+
+To expose Preview outputs and create a GitHub Deployment and job summary, use `wrangler-action`:
+
+```yaml
+name: Preview
+
+on: [pull_request]
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Deploy preview
+        id: preview
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.136.0"
+          command: preview --name pr-${{ github.event.pull_request.number }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The action exposes `preview-url`, `preview-deployment-url`, `preview-name`, `preview-id`, and `preview-deployment-id` outputs. `deployment-url` is also set to the stable `preview-url`.
+
 ## Big Changes in v3
 
 - Wrangler v1 is no longer supported.
