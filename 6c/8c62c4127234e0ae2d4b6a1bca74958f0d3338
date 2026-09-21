@@ -1,0 +1,17 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6c8c62c4127234e0ae2d4b6a1bca74958f0d3338",
+  "prompts": {},
+  "sessions": {
+    "s_ba35232b97178e": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a0b148-96c3-731d-8533-25aeaef7c024",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Christopher Little-Savage <clittle-savage@cloudflare.com>"
+    }
+  }
+}

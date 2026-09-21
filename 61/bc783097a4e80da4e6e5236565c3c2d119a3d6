@@ -1,0 +1,21 @@
+src/wranglerAction.test.ts
+  s_ba35232b97178e::t_08d02fe2cdf009 10,365,371,470-497,504-527,529-531,535
+src/wranglerAction.ts
+  s_ba35232b97178e::t_80bb8f7ce1bfc0 24,264-271,303,309-314,385-392
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "61bc783097a4e80da4e6e5236565c3c2d119a3d6",
+  "prompts": {},
+  "sessions": {
+    "s_ba35232b97178e": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a0b148-96c3-731d-8533-25aeaef7c024",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Christopher Little-Savage <clittle-savage@cloudflare.com>"
+    }
+  }
+}
