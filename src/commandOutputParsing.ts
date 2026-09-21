@@ -191,7 +191,11 @@ function handleDeprectatedStdoutParsing(
 	}
 
 	// Check if this command is a Workers Preview deployment
-	if (command.startsWith("preview")) {
+	const [commandName, previewArgument] = command.trim().split(/\s+/);
+	if (
+		commandName === "preview" &&
+		(previewArgument === undefined || previewArgument.startsWith("-"))
+	) {
 		info(
 			config,
 			"Unable to find a WRANGLER_OUTPUT_DIR, preview outputs will be unavailable. Have you updated wrangler to version >=4.136.0?",

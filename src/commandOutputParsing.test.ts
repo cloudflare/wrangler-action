@@ -73,4 +73,26 @@ describe("handleCommandOutputParsing", () => {
 			"https://feature-branch.example-worker.workers.dev",
 		);
 	});
+
+	it.each([
+		"preview delete --name feature-branch --skip-confirmation",
+		"preview secret list --name feature-branch",
+		"preview base-config secret list",
+		"preview future-command",
+	])("does not use deployment fallback for `%s`", async (command) => {
+		mockfs({});
+		const setOutput = vi
+			.spyOn(core, "setOutput")
+			.mockImplementation(() => undefined);
+		const config = getTestConfig({
+			config: {
+				WRANGLER_OUTPUT_DIR: "./missing-output-dir",
+				GITHUB_TOKEN: "",
+			},
+		});
+
+		await handleCommandOutputParsing(config, command, "");
+
+		expect(setOutput).not.toHaveBeenCalled();
+	});
 });
