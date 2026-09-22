@@ -51,3 +51,4 @@ jobs:
           git push --force origin "${RELEASE_TAG}^{commit}:refs/tags/${MAJOR_TAG}"
           git fetch --force origin "refs/tags/${MAJOR_TAG}:refs/tags/${MAJOR_TAG}"
           git cat-file -e "${MAJOR_TAG}:dist/index.mjs"
+          test "$(git rev-parse "${RELEASE_TAG}^{commit}")" = "$(git rev-parse "${MAJOR_TAG}^{commit}")"
