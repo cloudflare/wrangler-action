@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.1.0
+
+### Minor Changes
+
+- [#450](https://github.com/cloudflare/wrangler-action/pull/450) [`9500699`](https://github.com/cloudflare/wrangler-action/commit/950069986814ffeaec7d90c9b32474fba9d3c165) Thanks [@podonnell-dev](https://github.com/podonnell-dev)! - Add support for Workers Previews, including Preview artifact parsing, Preview outputs, GitHub Deployments, and job summaries for `wrangler preview`.
+
+### Patch Changes
+
+- [#418](https://github.com/cloudflare/wrangler-action/pull/418) [`789ac84`](https://github.com/cloudflare/wrangler-action/commit/789ac84b82c924003a8037fc2f754887eaf88303) Thanks [@vliggio](https://github.com/vliggio)! - Surface wrangler error messages in the action step output instead of showing only a generic failure message.
+
 ## 4.0.0
 
 ### Major Changes
