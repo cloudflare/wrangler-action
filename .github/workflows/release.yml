@@ -41,14 +41,3 @@ jobs:
           publish: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push and verify dist-tags
-        if: steps.changesets.outputs.published == 'true'
-        env:
-          RELEASE_TAG: v${{ fromJSON(steps.changesets.outputs.publishedPackages)[0].version }}
-        run: |
-          MAJOR_TAG="${RELEASE_TAG%%.*}"
-          git push --force origin "${RELEASE_TAG}^{commit}:refs/tags/${MAJOR_TAG}"
-          git fetch --force origin "refs/tags/${MAJOR_TAG}:refs/tags/${MAJOR_TAG}"
-          git cat-file -e "${MAJOR_TAG}:dist/index.mjs"
-          test "$(git rev-parse "${RELEASE_TAG}^{commit}")" = "$(git rev-parse "${MAJOR_TAG}^{commit}")"
