@@ -118,7 +118,7 @@ jobs:
         uses: ./
         with:
           workingDirectory: "./src/test/fixtures/only-build"
-          wranglerVersion: "4.136.0"
+          wranglerVersion: "4.136.3"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: preview --name wrangler-action-ci-test
@@ -132,7 +132,7 @@ jobs:
         uses: ./
         with:
           workingDirectory: "./src/test/fixtures/only-build"
-          wranglerVersion: "4.136.0"
+          wranglerVersion: "4.136.3"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: preview delete --name wrangler-action-ci-test --skip-confirmation
