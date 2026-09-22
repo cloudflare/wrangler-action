@@ -182,5 +182,35 @@ describe("wranglerArtifactsManager", () => {
 				});
 			});
 		});
+
+		describe("OutputEntryPreview", async () => {
+			it("Returns only preview output from wrangler artifacts", async () => {
+				mockfs({
+					testOutputDir: {
+						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
+						{"version": 1, "type":"wrangler-session", "wrangler_version":"4.136.0", "command_line_args":["preview"], "log_file_path": "/here"}
+						{"version": 1, "type":"preview", "worker_name":"example-worker", "preview_id":"preview-id", "preview_name":"feature-branch", "preview_slug":"feature-branch", "preview_urls":["https://feature-branch.example-worker.workers.dev"], "deployment_id":"deployment-id", "deployment_urls":["https://deployment-id.example-worker.workers.dev"]}`,
+						"not-wrangler-output.json": "test",
+					},
+				});
+
+				const artifact = await getOutputEntry("./testOutputDir");
+				if (artifact?.type !== "preview") {
+					throw new Error(`Unexpected type ${artifact?.type}`);
+				}
+
+				expect(artifact).toEqual({
+					version: 1,
+					type: "preview",
+					worker_name: "example-worker",
+					preview_id: "preview-id",
+					preview_name: "feature-branch",
+					preview_slug: "feature-branch",
+					preview_urls: ["https://feature-branch.example-worker.workers.dev"],
+					deployment_id: "deployment-id",
+					deployment_urls: ["https://deployment-id.example-worker.workers.dev"],
+				});
+			});
+		});
 	});
 });

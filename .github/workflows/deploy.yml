@@ -44,6 +44,7 @@ jobs:
           command: deploy --dry-run
 
       - name: Environment support
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: ./
         with:
           workingDirectory: "./src/test/fixtures/environment"
@@ -61,6 +62,7 @@ jobs:
 
       # START Setup and teardown of Workers w/ Secrets Tests
       - name: Deploy app secrets w/ hardcoded Wrangler v2
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: ./
         with:
           wranglerVersion: "2.20.0"
@@ -75,10 +77,12 @@ jobs:
           SECRET2: ${{ secrets.SECRET2 }}
 
       - name: Health Check Deployed Worker
+        if: github.event.pull_request.head.repo.full_name == github.repository
         run: node .github/workflows/workerHealthCheck.ts wrangler-action-test-secrets-v2
         shell: bash
 
       - name: Deploy app secrets w/ default version
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: ./
         with:
           workingDirectory: "./src/test/fixtures/secrets-default"
@@ -92,10 +96,12 @@ jobs:
           SECRET2: ${{ secrets.SECRET2 }}
 
       - name: Health Check Deployed Worker
+        if: github.event.pull_request.head.repo.full_name == github.repository
         run: node .github/workflows/workerHealthCheck.ts wrangler-action-test-secrets-default
         shell: bash
 
       - name: Clean Up Deployed Workers
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: ./
         with:
           workingDirectory: "./src/test/fixtures/secrets-default"
@@ -104,6 +110,33 @@ jobs:
           command: delete --name wrangler-action-test-secrets-v2 --force
           postCommands: npx wrangler delete --name wrangler-action-test-secrets-default --force
       # END Setup and teardown of Workers w/ Secrets Tests
+
+      # START Setup and teardown of Workers Preview Tests
+      - name: Deploy Workers Preview
+        if: vars.WORKERS_PREVIEWS_LIVE == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        id: preview
+        uses: ./
+        with:
+          workingDirectory: "./src/test/fixtures/only-build"
+          wranglerVersion: "4.136.0"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: preview --name wrangler-action-ci-test
+
+      - name: Health Check Workers Preview
+        if: vars.WORKERS_PREVIEWS_LIVE == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        run: node .github/workflows/previewHealthCheck.ts "${{ steps.preview.outputs.preview-url }}"
+
+      - name: Clean Up Workers Preview
+        if: vars.WORKERS_PREVIEWS_LIVE == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: ./
+        with:
+          workingDirectory: "./src/test/fixtures/only-build"
+          wranglerVersion: "4.136.0"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: preview delete --name wrangler-action-ci-test --skip-confirmation
+      # END Setup and teardown of Workers Preview Tests
 
       - name: Support packageManager variable
         uses: ./

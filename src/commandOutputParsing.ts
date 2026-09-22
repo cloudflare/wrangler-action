@@ -4,9 +4,13 @@ import {
 	getOutputEntry,
 	OutputEntryDeployment,
 	OutputEntryPagesDeployment,
+	OutputEntryPreview,
 	OutputEntryVersionUpload,
 } from "./wranglerArtifactManager";
-import { createGitHubDeploymentAndJobSummary } from "./service/github";
+import {
+	createGitHubDeploymentAndJobSummary,
+	createPreviewGitHubDeploymentAndJobSummary,
+} from "./service/github";
 
 // fallback to trying to extract the deployment-url and pages-deployment-alias-url from stdout for wranglerVersion < 3.81.0
 function extractDeploymentUrlsFromStdout(stdOut: string): {
@@ -114,6 +118,41 @@ function handleVersionsUploadOutputEntry(
 	setOutput("deployment-url", versionsOutputEntry.preview_url);
 }
 
+async function handlePreviewOutputEntry(
+	config: WranglerActionConfig,
+	previewOutputEntry: OutputEntryPreview,
+) {
+	if (previewOutputEntry.preview_urls.length === 0) {
+		info(config, "No preview-url found in wrangler preview output file");
+	} else if (previewOutputEntry.preview_urls.length > 1) {
+		info(
+			config,
+			"Multiple preview urls found in wrangler preview output file, preview-url will be set to the first url",
+		);
+	}
+
+	if (previewOutputEntry.deployment_urls.length === 0) {
+		info(
+			config,
+			"No preview-deployment-url found in wrangler preview output file",
+		);
+	} else if (previewOutputEntry.deployment_urls.length > 1) {
+		info(
+			config,
+			"Multiple preview deployment urls found in wrangler preview output file, preview-deployment-url will be set to the first url",
+		);
+	}
+
+	setOutput("deployment-url", previewOutputEntry.preview_urls[0]);
+	setOutput("preview-url", previewOutputEntry.preview_urls[0]);
+	setOutput("preview-deployment-url", previewOutputEntry.deployment_urls[0]);
+	setOutput("preview-name", previewOutputEntry.preview_name);
+	setOutput("preview-id", previewOutputEntry.preview_id);
+	setOutput("preview-deployment-id", previewOutputEntry.deployment_id);
+
+	await createPreviewGitHubDeploymentAndJobSummary(config, previewOutputEntry);
+}
+
 /**
  * If no wrangler output file found, log a message stating deployment-url will be unavailable for output.
  * @deprecated Use {@link handleVersionsOutputEntry} instead.
@@ -150,6 +189,21 @@ function handleDeprectatedStdoutParsing(
 		handleVersionsOutputCommand(config);
 		return;
 	}
+
+	// Check if this command is a Workers Preview deployment
+	const [commandName, previewArgument] = command.trim().split(/\s+/);
+	if (
+		commandName === "preview" &&
+		(previewArgument === undefined || previewArgument.startsWith("-"))
+	) {
+		info(
+			config,
+			"Unable to find a WRANGLER_OUTPUT_DIR, preview outputs will be unavailable. Have you updated wrangler to version >=4.136.0?",
+		);
+		const { deploymentUrl } = extractDeploymentUrlsFromStdout(stdOut);
+		setOutput("deployment-url", deploymentUrl);
+		return;
+	}
 }
 
 export async function handleCommandOutputParsing(
@@ -175,6 +229,9 @@ export async function handleCommandOutputParsing(
 			break;
 		case "version-upload":
 			handleVersionsUploadOutputEntry(outputEntry);
+			break;
+		case "preview":
+			await handlePreviewOutputEntry(config, outputEntry);
 			break;
 	}
 }
