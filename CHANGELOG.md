@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.1.1
+
+### Patch Changes
+
+- [#451](https://github.com/cloudflare/wrangler-action/pull/451) [`429a99d`](https://github.com/cloudflare/wrangler-action/commit/429a99d89202d923dbff030c60c049998f7ebe3c) Thanks [@podonnell-dev](https://github.com/podonnell-dev)! - Pin Workers Preview examples and integration tests to Wrangler 4.136.3, which includes the Worker name in Preview artifacts.
+
 ## 4.1.0
 
 ### Minor Changes
