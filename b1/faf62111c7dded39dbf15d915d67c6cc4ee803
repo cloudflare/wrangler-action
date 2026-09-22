@@ -1,0 +1,19 @@
+src/wranglerArtifactManager.test.ts
+  s_b275ebf270821d::t_ff6390c5dfae71 41,65,67-70,73-91,95,115,117-120,123-137,141,161,163-166,169-183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b1faf62111c7dded39dbf15d915d67c6cc4ee803",
+  "prompts": {},
+  "sessions": {
+    "s_b275ebf270821d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f3a36b154ffeU9GsaRdGpxveAs",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Patrick O'Donnell <podonnell@cloudflare.com>"
+    }
+  }
+}

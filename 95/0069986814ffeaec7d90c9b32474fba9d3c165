@@ -1,0 +1,47 @@
+.github/workflows/previewHealthCheck.ts
+  s_5004fb7387ed00::t_2eeee92f3b24cc 1-40
+README.md
+  s_5004fb7387ed00::t_30ddd88e251a67 16-64
+src/commandOutputParsing.test.ts
+  s_09949e83fb22cd::t_99ad40fa5f46a8 1-76
+src/commandOutputParsing.ts
+  s_5004fb7387ed00::t_bd8528d4cb4bee 7,10-13,121-155,192-202,229-231
+src/service/github.spec.ts
+  s_dc35492407ee23::t_9d234be07d6af9 2,4-9,16-17,20-21,69-162
+src/service/github.ts
+  s_dc35492407ee23::t_811cba31e529c2 5-8,132-222
+src/test/fixtures/only-build/wrangler.toml
+  s_5004fb7387ed00::t_c20dd3191d905d 5-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "950069986814ffeaec7d90c9b32474fba9d3c165",
+  "prompts": {},
+  "sessions": {
+    "s_09949e83fb22cd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f3b7caf84ffeVhym9nk476hIFa",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Patrick O'Donnell <podonnell@cloudflare.com>"
+    },
+    "s_5004fb7387ed00": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f3bb67944ffeunk0ivNC8kjt7y",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Patrick O'Donnell <podonnell@cloudflare.com>"
+    },
+    "s_dc35492407ee23": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f3b60acb4ffemiptc1IGFFDBwN",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Patrick O'Donnell <podonnell@cloudflare.com>"
+    }
+  }
+}
