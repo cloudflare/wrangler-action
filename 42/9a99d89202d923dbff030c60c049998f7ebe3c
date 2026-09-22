@@ -1,0 +1,23 @@
+.github/workflows/deploy.yml
+  s_189f72cb6aa91a::t_9d3fc602ad6ddd 121,135
+README.md
+  s_189f72cb6aa91a::t_a300fad9876ed3 58
+src/wranglerArtifactManager.test.ts
+  s_189f72cb6aa91a::t_4582842a1e831b 191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "429a99d89202d923dbff030c60c049998f7ebe3c",
+  "prompts": {},
+  "sessions": {
+    "s_189f72cb6aa91a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f35f8c30effeOtrKFfyudru7bp",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Patrick O'Donnell <podonnell@cloudflare.com>"
+    }
+  }
+}
