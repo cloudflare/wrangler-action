@@ -37,57 +37,17 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          createGithubReleases: false
-          publish: npx changeset tag
+          createGithubReleases: true
+          publish: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push release tag
-        if: steps.changesets.outputs.published == 'true'
-        id: release
-        env:
-          VERSION: ${{ fromJSON(steps.changesets.outputs.publishedPackages)[0].version }}
-        run: |
-          echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
-          git push origin "v${VERSION}"
-
-      - name: Build action
-        if: steps.changesets.outputs.published == 'true'
-        run: npm run build
-
-      - name: Push dist-tags
-        if: steps.changesets.outputs.published == 'true'
-        uses: JasonEtco/build-and-tag-action@v2
-        with:
-          tag_name: ${{ steps.release.outputs.tag }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Verify dist-tags
+      - name: Push and verify dist-tags
         if: steps.changesets.outputs.published == 'true'
         env:
-          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_TAG: v${{ fromJSON(steps.changesets.outputs.publishedPackages)[0].version }}
         run: |
           MAJOR_TAG="${RELEASE_TAG%%.*}"
-          git fetch --force origin \
-            "refs/tags/${RELEASE_TAG}:refs/tags/${RELEASE_TAG}" \
-            "refs/tags/${MAJOR_TAG}:refs/tags/${MAJOR_TAG}"
-          git cat-file -e "${RELEASE_TAG}:dist/index.mjs"
+          git push --force origin "${RELEASE_TAG}^{commit}:refs/tags/${MAJOR_TAG}"
+          git fetch --force origin "refs/tags/${MAJOR_TAG}:refs/tags/${MAJOR_TAG}"
           git cat-file -e "${MAJOR_TAG}:dist/index.mjs"
-
-      - name: Create GitHub release
-        if: steps.changesets.outputs.published == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.release.outputs.tag }}
-        run: |
-          awk -v version="${RELEASE_TAG#v}" '
-            $0 == "## " version { found = 1; next }
-            found && /^## / { exit }
-            found { print }
-          ' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
-          test -s "$RUNNER_TEMP/release-notes.md"
-          gh release create "$RELEASE_TAG" \
-            --verify-tag \
-            --title "$RELEASE_TAG" \
-            --notes-file "$RUNNER_TEMP/release-notes.md"

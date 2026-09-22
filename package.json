@@ -24,6 +24,7 @@
 	"main": "dist/index.mjs",
 	"scripts": {
 		"build": "npx ncc build ./src/index.ts && mv ./dist/index.js ./dist/index.mjs",
+		"release": "./scripts/release.sh",
 		"test": "vitest",
 		"format": "prettier --write .",
 		"check": "prettier --check ."
