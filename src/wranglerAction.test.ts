@@ -7,6 +7,8 @@ import {
 	main,
 	parseWranglerVersion,
 	uploadSecrets,
+	workerNameCommands,
+	wranglerCommands,
 } from "./wranglerAction";
 import { getTestConfig } from "./test/test-utils";
 
@@ -361,6 +363,33 @@ describe("uploadSecrets", () => {
 		expect(endGroup).toHaveBeenCalledOnce();
 	});
 
+	it("WRANGLER_VERSION < 3.4.0 passes workerName to wrangler secret put", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				WRANGLER_VERSION: "3.3.0",
+				secrets: ["FAKE_SECRET"],
+				workerName: "preview-worker",
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+			expect(cmd).toBe("npx");
+			expect(args).toStrictEqual([
+				"wrangler",
+				"secret",
+				"put",
+				"FAKE_SECRET",
+				"--env",
+				"dev",
+				"--name",
+				"preview-worker",
+			]);
+			return 0;
+		});
+
+		await uploadSecrets(testConfig, testPackageManager);
+	});
+
 	it("WRANGLER_VERSION < 3.60.0 uses wrangler secret:bulk", async () => {
 		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
 		const testConfig = getTestConfig({
@@ -437,6 +466,91 @@ describe("uploadSecrets", () => {
 		await uploadSecrets(testConfig, testPackageManager);
 		expect(startGroup).toBeCalledWith("🔑 Uploading secrets...");
 		expect(endGroup).toHaveBeenCalledOnce();
+	});
+
+	it("passes workerName to wrangler secret bulk", async () => {
+		vi.stubEnv("FAKE_SECRET", "FAKE_VALUE");
+		const testConfig = getTestConfig({
+			config: {
+				secrets: ["FAKE_SECRET"],
+				workerName: "preview-worker",
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+			expect(cmd).toBe("npx");
+			expect(args).toStrictEqual([
+				"wrangler",
+				"secret",
+				"bulk",
+				"--env",
+				"dev",
+				"--name",
+				"preview-worker",
+			]);
+			return 0;
+		});
+
+		await uploadSecrets(testConfig, testPackageManager);
+	});
+
+	it.each(["deploy --name preview-worker", "deploy --name=preview-worker"])(
+		"rejects %s when secrets are configured",
+		async (command) => {
+			const testConfig = getTestConfig({
+				config: {
+					secrets: ["FAKE_SECRET"],
+					COMMANDS: [command],
+				},
+			});
+
+			await expect(
+				uploadSecrets(testConfig, testPackageManager),
+			).rejects.toThrow("Use the workerName input instead");
+		},
+	);
+});
+
+describe("wranglerCommands", () => {
+	const testPackageManager = {
+		install: "npm i",
+		exec: "npx",
+		execNoInstall: "npx --no-install",
+	};
+
+	it.each(workerNameCommands)(
+		"passes workerName to wrangler %s",
+		async (command) => {
+			const testConfig = getTestConfig({
+				config: {
+					COMMANDS: [command],
+					workerName: "preview-worker",
+				},
+			});
+			vi.spyOn(exec, "exec").mockImplementation(async (cmd, args) => {
+				expect(cmd).toBe(`npx wrangler ${command}`);
+				expect(args).toContain("--name");
+				expect(args).toContain("preview-worker");
+				return 0;
+			});
+
+			await wranglerCommands(testConfig, testPackageManager);
+		},
+	);
+
+	it("does not pass workerName to commands that do not accept --name", async () => {
+		const testConfig = getTestConfig({
+			config: {
+				COMMANDS: ["whoami"],
+				workerName: "preview-worker",
+			},
+		});
+		vi.spyOn(exec, "exec").mockImplementation(async (_cmd, args) => {
+			expect(args).not.toContain("--name");
+			expect(args).not.toContain("preview-worker");
+			return 0;
+		});
+
+		await wranglerCommands(testConfig, testPackageManager);
 	});
 });
 
