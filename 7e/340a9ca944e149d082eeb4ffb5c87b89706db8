@@ -1,0 +1,19 @@
+scripts/release.sh
+  s_907b8c8f8ea3bf::t_965548c40a773d 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7e340a9ca944e149d082eeb4ffb5c87b89706db8",
+  "prompts": {},
+  "sessions": {
+    "s_907b8c8f8ea3bf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ca2d-3d5a-7d21-aa37-de7a82075af2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Eric Clemmons <eclemmons@cloudflare.com>"
+    }
+  }
+}
