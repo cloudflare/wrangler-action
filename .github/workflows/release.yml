@@ -37,6 +37,9 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
+          # Changesets owns the final immutable GitHub release. The custom publish
+          # script replaces build-and-tag-action by compiling and verifying the
+          # version and floating tags before Changesets publishes the release.
           createGithubReleases: true
           publish: npm run release
         env:
