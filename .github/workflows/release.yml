@@ -37,19 +37,10 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
+          # Changesets owns the final immutable GitHub release. The custom publish
+          # script replaces build-and-tag-action by compiling and verifying the
+          # version and floating tags before Changesets publishes the release.
           createGithubReleases: true
-          publish: npx changeset tag
+          publish: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build action
-        if: steps.changesets.outputs.published == 'true'
-        run: npm run build
-
-      - name: Push dist-tags
-        if: steps.changesets.outputs.published == 'true'
-        uses: JasonEtco/build-and-tag-action@v2
-        with:
-          tag_name: v${{ fromJSON(steps.changesets.outputs.publishedPackages)[0].version }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
