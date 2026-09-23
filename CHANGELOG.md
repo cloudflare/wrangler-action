@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.1.2
+
+### Patch Changes
+
+- [#453](https://github.com/cloudflare/wrangler-action/pull/453) [`876f5b5`](https://github.com/cloudflare/wrangler-action/commit/876f5b58483467306651b5c47d5f9cbbaa1acf60) Thanks [@ericclemmons](https://github.com/ericclemmons)! - Create GitHub releases only after their compiled action tags are ready so immutable releases do not block publishing.
+
 ## 4.1.1
 
 ### Patch Changes
