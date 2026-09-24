@@ -15,7 +15,7 @@ The action now defaults to **Wrangler v4**. If you need to stay on Wrangler v3, 
 
 ## Workers Previews
 
-Workers Previews require Wrangler **4.136.0 or newer**. To run Wrangler directly from a pull request workflow:
+Workers Previews require Wrangler **4.136.3 or newer**. To run Wrangler directly from a pull request workflow:
 
 ```yaml
 name: Preview

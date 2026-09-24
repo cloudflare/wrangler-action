@@ -198,7 +198,7 @@ function handleDeprectatedStdoutParsing(
 	) {
 		info(
 			config,
-			"Unable to find a WRANGLER_OUTPUT_DIR, preview outputs will be unavailable. Have you updated wrangler to version >=4.136.0?",
+			"Unable to find a WRANGLER_OUTPUT_DIR, preview outputs will be unavailable. Have you updated wrangler to version >=4.136.3?",
 		);
 		const { deploymentUrl } = extractDeploymentUrlsFromStdout(stdOut);
 		setOutput("deployment-url", deploymentUrl);
