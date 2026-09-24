@@ -36,7 +36,7 @@ inputs:
     description: "Commands to execute after deploying the Workers project"
     required: false
   command:
-    description: 'The Wrangler command (along with any arguments) you wish to run. Multiple Wrangler commands can be run by separating each command with a newline. Defaults to `"deploy"`. The `preview` command requires Wrangler >= 4.136.0.'
+    description: 'The Wrangler command (along with any arguments) you wish to run. Multiple Wrangler commands can be run by separating each command with a newline. Defaults to `"deploy"`. The `preview` command requires Wrangler >= 4.136.3.'
     required: false
   vars:
     description: "A string of environment variable names, separated by newlines. These will be bound to your Worker using the values of matching environment variables declared in `env` of this workflow."
@@ -61,12 +61,12 @@ outputs:
   pages-environment:
     description: "If the command was a Pages deployment, this will be the environment of the deployment - needs wrangler >= 3.81.0"
   preview-url:
-    description: "If the command was a Workers Preview deployment, this will be the stable Preview URL - needs Wrangler >= 4.136.0"
+    description: "If the command was a Workers Preview deployment, this will be the stable Preview URL - needs Wrangler >= 4.136.3"
   preview-deployment-url:
-    description: "If the command was a Workers Preview deployment, this will be the immutable deployment URL - needs Wrangler >= 4.136.0"
+    description: "If the command was a Workers Preview deployment, this will be the immutable deployment URL - needs Wrangler >= 4.136.3"
   preview-name:
-    description: "If the command was a Workers Preview deployment, this will be the Preview name - needs Wrangler >= 4.136.0"
+    description: "If the command was a Workers Preview deployment, this will be the Preview name - needs Wrangler >= 4.136.3"
   preview-id:
-    description: "If the command was a Workers Preview deployment, this will be the Preview resource ID - needs Wrangler >= 4.136.0"
+    description: "If the command was a Workers Preview deployment, this will be the Preview resource ID - needs Wrangler >= 4.136.3"
   preview-deployment-id:
-    description: "If the command was a Workers Preview deployment, this will be the Preview deployment ID - needs Wrangler >= 4.136.0"
+    description: "If the command was a Workers Preview deployment, this will be the Preview deployment ID - needs Wrangler >= 4.136.3"
