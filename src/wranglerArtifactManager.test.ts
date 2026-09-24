@@ -9,7 +9,7 @@ afterEach(() => {
 	mockfs.restore();
 });
 describe("wranglerArtifactsManager", () => {
-	describe("getWranglerArtifacts()", async () => {
+	describe("getWranglerArtifacts()", () => {
 		it("Returns only wrangler output files from a given directory", async () => {
 			mockfs({
 				testOutputDir: {
@@ -36,8 +36,8 @@ describe("wranglerArtifactsManager", () => {
 		});
 	});
 
-	describe("getOutputEntry()", async () => {
-		describe("OutputEntryPagesDeployment", async () => {
+	describe("getOutputEntry()", () => {
+		describe("OutputEntryPagesDeployment", () => {
 			it("Returns only detailed pages deploy output from wrangler artifacts", async () => {
 				mockfs({
 					testOutputDir: {
@@ -62,35 +62,36 @@ describe("wranglerArtifactsManager", () => {
 					deployment_id: "123",
 					alias: "test.com",
 				});
-			}),
-				it("Skips artifact entries that are not parseable", async () => {
-					mockfs({
-						testOutputDir: {
-							"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
+			});
+
+			it("Skips artifact entries that are not parseable", async () => {
+				mockfs({
+					testOutputDir: {
+						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
 						this line is invalid json.
 						{"version": 1, "type":"pages-deploy-detailed", "pages_project": "project", "environment":"production", "alias":"test.com", "deployment_id": "123", "url":"url.com"}`,
-							"not-wrangler-output.json": "test",
-						},
-					});
-
-					const artifact = await getOutputEntry("./testOutputDir");
-					if (artifact?.type !== "pages-deploy-detailed") {
-						throw new Error(`Unexpected type ${artifact?.type}`);
-					}
-
-					expect(artifact).toEqual({
-						version: 1,
-						type: "pages-deploy-detailed",
-						pages_project: "project",
-						url: "url.com",
-						environment: "production",
-						deployment_id: "123",
-						alias: "test.com",
-					});
+						"not-wrangler-output.json": "test",
+					},
 				});
+
+				const artifact = await getOutputEntry("./testOutputDir");
+				if (artifact?.type !== "pages-deploy-detailed") {
+					throw new Error(`Unexpected type ${artifact?.type}`);
+				}
+
+				expect(artifact).toEqual({
+					version: 1,
+					type: "pages-deploy-detailed",
+					pages_project: "project",
+					url: "url.com",
+					environment: "production",
+					deployment_id: "123",
+					alias: "test.com",
+				});
+			});
 		});
 
-		describe("OutputEntryDeployment", async () => {
+		describe("OutputEntryDeployment", () => {
 			it("Returns only wrangler deploy output from wrangler artifacts", async () => {
 				mockfs({
 					testOutputDir: {
@@ -111,31 +112,32 @@ describe("wranglerArtifactsManager", () => {
 					type: "deploy",
 					targets: ["https://example.com"],
 				});
-			}),
-				it("Skips artifact entries that are not parseable", async () => {
-					mockfs({
-						testOutputDir: {
-							"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
+			});
+
+			it("Skips artifact entries that are not parseable", async () => {
+				mockfs({
+					testOutputDir: {
+						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
 						this line is invalid json.
 						{"version": 1, "type":"deploy", "targets": ["https://example.com"]}`,
-							"not-wrangler-output.json": "test",
-						},
-					});
-
-					const artifact = await getOutputEntry("./testOutputDir");
-					if (artifact?.type !== "deploy") {
-						throw new Error(`Unexpected type ${artifact?.type}`);
-					}
-
-					expect(artifact).toEqual({
-						version: 1,
-						type: "deploy",
-						targets: ["https://example.com"],
-					});
+						"not-wrangler-output.json": "test",
+					},
 				});
+
+				const artifact = await getOutputEntry("./testOutputDir");
+				if (artifact?.type !== "deploy") {
+					throw new Error(`Unexpected type ${artifact?.type}`);
+				}
+
+				expect(artifact).toEqual({
+					version: 1,
+					type: "deploy",
+					targets: ["https://example.com"],
+				});
+			});
 		});
 
-		describe("OutputEntryVersionUpload", async () => {
+		describe("OutputEntryVersionUpload", () => {
 			it("Returns only version upload output from wrangler artifacts", async () => {
 				mockfs({
 					testOutputDir: {
@@ -158,28 +160,59 @@ describe("wranglerArtifactsManager", () => {
 					preview_alias_url: "https://example.alias",
 					version_id: "123",
 				});
-			}),
-				it("Skips artifact entries that are not parseable", async () => {
-					mockfs({
-						testOutputDir: {
-							"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
+			});
+
+			it("Skips artifact entries that are not parseable", async () => {
+				mockfs({
+					testOutputDir: {
+						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
 						this line is invalid json.
 						{"version": 1, "type":"version-upload", "preview_url": "https://example.com"}`,
-							"not-wrangler-output.json": "test",
-						},
-					});
-
-					const artifact = await getOutputEntry("./testOutputDir");
-					if (artifact?.type !== "version-upload") {
-						throw new Error(`Unexpected type ${artifact?.type}`);
-					}
-
-					expect(artifact).toEqual({
-						version: 1,
-						type: "version-upload",
-						preview_url: "https://example.com",
-					});
+						"not-wrangler-output.json": "test",
+					},
 				});
+
+				const artifact = await getOutputEntry("./testOutputDir");
+				if (artifact?.type !== "version-upload") {
+					throw new Error(`Unexpected type ${artifact?.type}`);
+				}
+
+				expect(artifact).toEqual({
+					version: 1,
+					type: "version-upload",
+					preview_url: "https://example.com",
+				});
+			});
+		});
+
+		describe("OutputEntryPreview", async () => {
+			it("Returns only preview output from wrangler artifacts", async () => {
+				mockfs({
+					testOutputDir: {
+						"wrangler-output-2024-10-17_18-48-40_463-2e6e83.json": `
+						{"version": 1, "type":"wrangler-session", "wrangler_version":"4.136.3", "command_line_args":["preview"], "log_file_path": "/here"}
+						{"version": 1, "type":"preview", "worker_name":"example-worker", "preview_id":"preview-id", "preview_name":"feature-branch", "preview_slug":"feature-branch", "preview_urls":["https://feature-branch.example-worker.workers.dev"], "deployment_id":"deployment-id", "deployment_urls":["https://deployment-id.example-worker.workers.dev"]}`,
+						"not-wrangler-output.json": "test",
+					},
+				});
+
+				const artifact = await getOutputEntry("./testOutputDir");
+				if (artifact?.type !== "preview") {
+					throw new Error(`Unexpected type ${artifact?.type}`);
+				}
+
+				expect(artifact).toEqual({
+					version: 1,
+					type: "preview",
+					worker_name: "example-worker",
+					preview_id: "preview-id",
+					preview_name: "feature-branch",
+					preview_slug: "feature-branch",
+					preview_urls: ["https://feature-branch.example-worker.workers.dev"],
+					deployment_id: "deployment-id",
+					deployment_urls: ["https://deployment-id.example-worker.workers.dev"],
+				});
+			});
 		});
 	});
 });

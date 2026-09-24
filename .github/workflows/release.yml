@@ -19,16 +19,15 @@ jobs:
       issues: read
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: true
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v5
         with:
-          # Pinned due to compatibility issues on 23.2.0
-          node-version: "22"
+          node-version: "24"
           cache: "npm"
 
       - name: Install modules
@@ -38,19 +37,10 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
+          # Changesets owns the final immutable GitHub release. The custom publish
+          # script replaces build-and-tag-action by compiling and verifying the
+          # version and floating tags before Changesets publishes the release.
           createGithubReleases: true
-          publish: npx changeset tag
+          publish: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build action
-        if: steps.changesets.outputs.published == 'true'
-        run: npm run build
-
-      - name: Push dist-tags
-        if: steps.changesets.outputs.published == 'true'
-        uses: JasonEtco/build-and-tag-action@v2
-        with:
-          tag_name: v${{ fromJSON(steps.changesets.outputs.publishedPackages)[0].version }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}

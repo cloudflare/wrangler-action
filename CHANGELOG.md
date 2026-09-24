@@ -1,5 +1,39 @@
 # Changelog
 
+## 4.1.2
+
+### Patch Changes
+
+- [#453](https://github.com/cloudflare/wrangler-action/pull/453) [`876f5b5`](https://github.com/cloudflare/wrangler-action/commit/876f5b58483467306651b5c47d5f9cbbaa1acf60) Thanks [@ericclemmons](https://github.com/ericclemmons)! - Create GitHub releases only after their compiled action tags are ready so immutable releases do not block publishing.
+
+## 4.1.1
+
+### Patch Changes
+
+- [#451](https://github.com/cloudflare/wrangler-action/pull/451) [`429a99d`](https://github.com/cloudflare/wrangler-action/commit/429a99d89202d923dbff030c60c049998f7ebe3c) Thanks [@podonnell-dev](https://github.com/podonnell-dev)! - Pin Workers Preview examples and integration tests to Wrangler 4.136.3, which includes the Worker name in Preview artifacts.
+
+## 4.1.0
+
+### Minor Changes
+
+- [#450](https://github.com/cloudflare/wrangler-action/pull/450) [`9500699`](https://github.com/cloudflare/wrangler-action/commit/950069986814ffeaec7d90c9b32474fba9d3c165) Thanks [@podonnell-dev](https://github.com/podonnell-dev)! - Add support for Workers Previews, including Preview artifact parsing, Preview outputs, GitHub Deployments, and job summaries for `wrangler preview`.
+
+### Patch Changes
+
+- [#418](https://github.com/cloudflare/wrangler-action/pull/418) [`789ac84`](https://github.com/cloudflare/wrangler-action/commit/789ac84b82c924003a8037fc2f754887eaf88303) Thanks [@vliggio](https://github.com/vliggio)! - Surface wrangler error messages in the action step output instead of showing only a generic failure message.
+
+## 4.0.0
+
+### Major Changes
+
+- [#412](https://github.com/cloudflare/wrangler-action/pull/412) [`1029e90`](https://github.com/cloudflare/wrangler-action/commit/1029e90033977ccf46c2a9b3ddc55e42ad5da467) Thanks [@ericclemmons](https://github.com/ericclemmons)! - Update default Wrangler version to v4 (`latest`). The action now installs Wrangler v4 by default when no `wranglerVersion` input is specified. Users can still pin to v3 by setting `wranglerVersion: "3.90.0"` explicitly.
+
+## 3.15.0
+
+### Minor Changes
+
+- [#426](https://github.com/cloudflare/wrangler-action/pull/426) [`febbda6`](https://github.com/cloudflare/wrangler-action/commit/febbda69f8c5838bf8b07fd6b9dfc836f00962db) Thanks [@WillTaylorDev](https://github.com/WillTaylorDev)! - Support version ranges and tags in `wranglerVersion` input. You can now set `wranglerVersion` to values like `4`, `^4.0.0`, `4.x`, or `latest` instead of only exact versions like `4.81.0`.
+
 ## 3.14.1
 
 ### Patch Changes
@@ -113,7 +147,6 @@
 ### Minor Changes
 
 - [#213](https://github.com/cloudflare/wrangler-action/pull/213) [`d13856dfc92816473ebf47f66e263a2668a97896`](https://github.com/cloudflare/wrangler-action/commit/d13856dfc92816473ebf47f66e263a2668a97896) Thanks [@GrantBirki](https://github.com/GrantBirki)! - This change introduces three new GitHub Actions output variables. These variables are as follows:
-
   - `command-output` - contains the string results of `stdout`
   - `command-stderr` - contains the string results of `stderr`
   - `deployment-url` - contains the string results of the URL that was deployed (ex: `https://<your_pages_site>.pages.dev`)
