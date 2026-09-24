@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.1.3
+
+### Patch Changes
+
+- [#456](https://github.com/cloudflare/wrangler-action/pull/456) [`d3cfe74`](https://github.com/cloudflare/wrangler-action/commit/d3cfe7456c14d339eb4391c81662629e6ff6aace) Thanks [@podonnell-dev](https://github.com/podonnell-dev)! - Document Wrangler 4.136.3 as the minimum version required for Workers Previews.
+
 ## 4.1.2
 
 ### Patch Changes
