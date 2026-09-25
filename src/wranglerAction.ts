@@ -402,11 +402,11 @@ async function wranglerCommands(
 					error(config, stdErr);
 				}
 				throw err;
+			} finally {
+				// Set the outputs for the command so subsequent steps can access stdout/stderr even on failure
+				setOutput("command-output", stdOut);
+				setOutput("command-stderr", stdErr);
 			}
-
-			// Set the outputs for the command
-			setOutput("command-output", stdOut);
-			setOutput("command-stderr", stdErr);
 
 			// Handles setting github action outputs and creating github deployment and job summary
 			await handleCommandOutputParsing(config, command, stdOut);

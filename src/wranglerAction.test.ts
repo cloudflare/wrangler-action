@@ -470,6 +470,33 @@ describe("wranglerCommands", () => {
 		]);
 		expect(execSpy.mock.calls[1][1]).toEqual(["--env", "dev"]);
 	});
+
+	it("sets command-output and command-stderr outputs even when the wrangler command fails", async () => {
+		const stdoutData = "Database creation initiated...\n";
+		const stderrData = "Error: Database already exists\n";
+
+		vi.spyOn(exec, "exec").mockImplementation(async (_cmd, _args, options) => {
+			options?.listeners?.stdout?.(Buffer.from(stdoutData));
+			options?.listeners?.stderr?.(Buffer.from(stderrData));
+			throw new Error("Process failed with exit code 1");
+		});
+
+		const setOutputSpy = vi.spyOn(core, "setOutput");
+		const config = getTestConfig({
+			config: {
+				COMMANDS: ["d1 create test-db"],
+				GITHUB_TOKEN: "",
+				WRANGLER_OUTPUT_DIR: "/missing-output-dir",
+			},
+		});
+
+		await expect(wranglerCommands(config, testPackageManager)).rejects.toThrow(
+			"Process failed with exit code 1",
+		);
+
+		expect(setOutputSpy).toHaveBeenCalledWith("command-output", stdoutData);
+		expect(setOutputSpy).toHaveBeenCalledWith("command-stderr", stderrData);
+	});
 });
 
 describe("main", () => {
