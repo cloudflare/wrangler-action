@@ -46,7 +46,7 @@ describe("github", () => {
 		});
 		server.close();
 	});
-	it("Calls createJobSummary successfully", async () => {
+	it("Calls createJobSummary successfully for preview with alias", async () => {
 		vi.stubEnv("GITHUB_STEP_SUMMARY", "summary");
 		mockfs({
 			summary: mockfs.file(),
@@ -55,6 +55,7 @@ describe("github", () => {
 			commitHash: "fake-commit-hash",
 			deploymentUrl: "https://fake-deployment-url.com",
 			aliasUrl: "https://fake-alias-url.com",
+			environment: "preview",
 		});
 		expect((await readFile("summary")).toString()).toMatchInlineSnapshot(`
 			"
@@ -65,6 +66,49 @@ describe("github", () => {
 			| **Last commit:**        | fake-commit-hash |
 			| **Preview URL**:        | https://fake-deployment-url.com |
 			| **Branch Preview URL**: | https://fake-alias-url.com |
+			  "
+		`);
+	});
+
+	it("Calls createJobSummary successfully for production without alias", async () => {
+		vi.stubEnv("GITHUB_STEP_SUMMARY", "summary");
+		mockfs({
+			summary: mockfs.file(),
+		});
+		await createJobSummary({
+			commitHash: "fake-commit-hash",
+			deploymentUrl: "https://fake-deployment-url.com",
+			environment: "production",
+		});
+		expect((await readFile("summary")).toString()).toMatchInlineSnapshot(`
+			"
+			# Deploying with Cloudflare Pages
+
+			| Name                    | Result |
+			| ----------------------- | - |
+			| **Last commit:**        | fake-commit-hash |
+			| **Deployment URL**:     | https://fake-deployment-url.com |
+			  "
+		`);
+	});
+
+	it("Calls createJobSummary successfully for preview without alias", async () => {
+		vi.stubEnv("GITHUB_STEP_SUMMARY", "summary");
+		mockfs({
+			summary: mockfs.file(),
+		});
+		await createJobSummary({
+			commitHash: "fake-commit-hash",
+			deploymentUrl: "https://fake-deployment-url.com",
+		});
+		expect((await readFile("summary")).toString()).toMatchInlineSnapshot(`
+			"
+			# Deploying with Cloudflare Pages
+
+			| Name                    | Result |
+			| ----------------------- | - |
+			| **Last commit:**        | fake-commit-hash |
+			| **Preview URL**:        | https://fake-deployment-url.com |
 			  "
 		`);
 	});

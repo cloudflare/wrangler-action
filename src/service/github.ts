@@ -64,11 +64,19 @@ export async function createJobSummary({
 	commitHash,
 	deploymentUrl,
 	aliasUrl,
+	environment,
 }: {
 	commitHash: string;
 	deploymentUrl?: string;
 	aliasUrl?: string;
+	environment?: "production" | "preview" | string;
 }) {
+	const deploymentLabel =
+		environment === "production" ? "Deployment URL" : "Preview URL";
+	const deploymentField = `**${deploymentLabel}**:`.padEnd(24, " ");
+	const aliasField = "**Branch Preview URL**:".padEnd(24, " ");
+	const aliasRow = aliasUrl ? `\n| ${aliasField}| ${aliasUrl} |` : "";
+
 	await summary
 		.addRaw(
 			`
@@ -77,8 +85,7 @@ export async function createJobSummary({
 | Name                    | Result |
 | ----------------------- | - |
 | **Last commit:**        | ${commitHash} |
-| **Preview URL**:        | ${deploymentUrl} |
-| **Branch Preview URL**: | ${aliasUrl} |
+| ${deploymentField}| ${deploymentUrl} |${aliasRow}
   `,
 		)
 		.write();
@@ -117,6 +124,7 @@ export async function createGitHubDeploymentAndJobSummary(
 						),
 					deploymentUrl: pagesArtifactFields.url,
 					aliasUrl: pagesArtifactFields.alias,
+					environment: pagesArtifactFields.environment,
 				}),
 			]);
 
