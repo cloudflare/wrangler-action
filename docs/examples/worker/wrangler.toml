@@ -1,0 +1,13 @@
+# See https://developers.cloudflare.com/workers/wrangler/configuration/ for full reference.
+
+name = "my-worker"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Uncomment to set account_id here instead of passing it via the GitHub Action.
+# account_id = "your-account-id"
+
+# Uncomment to add a custom domain route.
+# [[routes]]
+# pattern = "example.com/*"
+# zone_name = "example.com"
