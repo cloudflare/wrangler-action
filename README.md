@@ -94,6 +94,17 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 ```
 
+> **Note:** If your application requires a compilation step or custom build output (such as Remix, Next.js / OpenNext, Astro, TanStack Start, SvelteKit, etc.), make sure to run your package manager install and build steps prior to `wrangler-action`:
+> ```yaml
+>       - uses: actions/checkout@v6
+>       - run: npm ci
+>       - run: npm run build
+>       - name: Deploy
+>         uses: cloudflare/wrangler-action@v4
+>         with:
+>           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+> ```
+
 ## Authentication
 
 You'll need to configure Wrangler using GitHub's Secrets feature - go to "Settings -> Secrets" and add your Cloudflare API token (for help finding this, see the [Workers documentation](https://developers.cloudflare.com/workers/wrangler/ci-cd/#api-token)). Your API token is encrypted by GitHub, and the action won't print it into logs, so it should be safe!
