@@ -15,6 +15,7 @@ import { PackageManager } from "./packageManagers";
 import { error, info, semverCompare } from "./utils";
 import { handleCommandOutputParsing } from "./commandOutputParsing";
 import semverLt from "semver/functions/lt";
+import { join } from "node:path";
 
 export type WranglerActionConfig = z.infer<typeof wranglerActionConfig>;
 export const wranglerActionConfig = z.object({
@@ -354,7 +355,7 @@ async function wranglerCommands(
 			commands.push(deployCommand);
 		}
 
-		for (let command of commands) {
+		for (const [index, command] of commands.entries()) {
 			const args = [];
 
 			if (environment && !command.includes("--env")) {
@@ -378,8 +379,16 @@ async function wranglerCommands(
 			let stdOut = "";
 			let stdErr = "";
 
+			// Give each command its own output directory, so that its outputs
+			// are not read from the artifact of a previous command
+			const commandConfig = {
+				...config,
+				WRANGLER_OUTPUT_DIR: join(config.WRANGLER_OUTPUT_DIR, String(index)),
+			};
+
 			// set WRANGLER_OUTPUT_FILE_DIRECTORY env for exec
-			process.env.WRANGLER_OUTPUT_FILE_DIRECTORY = config.WRANGLER_OUTPUT_DIR;
+			process.env.WRANGLER_OUTPUT_FILE_DIRECTORY =
+				commandConfig.WRANGLER_OUTPUT_DIR;
 
 			const options = {
 				cwd: config["workingDirectory"],
@@ -409,7 +418,7 @@ async function wranglerCommands(
 			setOutput("command-stderr", stdErr);
 
 			// Handles setting github action outputs and creating github deployment and job summary
-			await handleCommandOutputParsing(config, command, stdOut);
+			await handleCommandOutputParsing(commandConfig, command, stdOut);
 		}
 	} finally {
 		endGroup(config);
