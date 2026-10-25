@@ -1,5 +1,8 @@
 import * as core from "@actions/core";
 import * as exec from "@actions/exec";
+import mockfs from "mock-fs";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import {
 	installWrangler,
@@ -469,6 +472,63 @@ describe("wranglerCommands", () => {
 			"PREVIEW_VAR:preview-value",
 		]);
 		expect(execSpy.mock.calls[1][1]).toEqual(["--env", "dev"]);
+	});
+
+	it("sets outputs from the artifact of each command, not a previous one", async () => {
+		mockfs({ wranglerArtifacts: {} });
+		const artifacts = [
+			{
+				name: "wrangler-output-2024-10-17_18-48-40_463-2e6e83.json",
+				entry: {
+					version: 1,
+					type: "deploy",
+					targets: ["https://example-worker.workers.dev"],
+				},
+			},
+			{
+				name: "wrangler-output-2024-10-17_18-48-50_463-2e6e84.json",
+				entry: {
+					version: 1,
+					type: "version-upload",
+					preview_url: "https://abc123-example-worker.workers.dev",
+				},
+			},
+		];
+		vi.spyOn(exec, "exec").mockImplementation(async () => {
+			// Simulate wrangler writing its artifact to WRANGLER_OUTPUT_FILE_DIRECTORY
+			const outputDir = process.env.WRANGLER_OUTPUT_FILE_DIRECTORY as string;
+			const artifact = artifacts.shift()!;
+			mkdirSync(outputDir, { recursive: true });
+			writeFileSync(
+				join(outputDir, artifact.name),
+				JSON.stringify(artifact.entry),
+			);
+			return 0;
+		});
+		const setOutput = vi
+			.spyOn(core, "setOutput")
+			.mockImplementation(() => undefined);
+		const config = getTestConfig({
+			config: {
+				COMMANDS: ["deploy", "versions upload"],
+				GITHUB_TOKEN: "",
+				WRANGLER_OUTPUT_DIR: "wranglerArtifacts",
+			},
+		});
+
+		try {
+			await wranglerCommands(config, testPackageManager);
+		} finally {
+			mockfs.restore();
+		}
+
+		const deploymentUrls = setOutput.mock.calls
+			.filter(([name]) => name === "deployment-url")
+			.map(([, value]) => value);
+		expect(deploymentUrls).toEqual([
+			"https://example-worker.workers.dev",
+			"https://abc123-example-worker.workers.dev",
+		]);
 	});
 });
 
