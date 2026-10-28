@@ -1,5 +1,8 @@
+import { getExecOutput } from "@actions/exec";
 import { existsSync } from "node:fs";
 import * as path from "node:path";
+import semverGte from "semver/functions/gte";
+import semverValid from "semver/functions/valid";
 
 export interface PackageManager {
 	install: string;
@@ -73,4 +76,31 @@ export function getPackageManager(
 	return PACKAGE_MANAGERS[
 		name || detectPackageManager(workingDirectory) || "npm"
 	];
+}
+
+// Wrangler's dependencies with install scripts. pnpm 11 and later fail an install that leaves any
+// build script unapproved (ERR_PNPM_IGNORED_BUILDS), so installing Wrangler has to approve them.
+const WRANGLER_BUILD_DEPENDENCIES = ["esbuild", "workerd", "sharp"];
+
+export async function getInstallArgs(
+	packageManager: PackageManager,
+	{ workingDirectory = "." }: { workingDirectory?: string } = {},
+): Promise<string[]> {
+	if (packageManager !== PACKAGE_MANAGERS.pnpm) {
+		return [];
+	}
+
+	// Earlier versions only warn about unapproved build scripts, and those before 10.4.0 reject
+	// --allow-build, so leave their install as it was.
+	const { stdout } = await getExecOutput("pnpm", ["--version"], {
+		cwd: workingDirectory,
+		silent: true,
+		ignoreReturnCode: true,
+	});
+	const version = semverValid(stdout.trim());
+	if (!version || !semverGte(version, "11.0.0")) {
+		return [];
+	}
+
+	return WRANGLER_BUILD_DEPENDENCIES.map((name) => `--allow-build=${name}`);
 }

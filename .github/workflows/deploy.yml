@@ -185,6 +185,23 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --dry-run
 
+      # pnpm 11 and later fail installs that leave build scripts unapproved, which Wrangler's
+      # dependencies have. Start from the untouched fixture so the action installs Wrangler again.
+      - name: Install pnpm 12 and reset the pnpm fixture
+        run: |
+          npm i -g pnpm@12
+          test "$(pnpm --version | cut -d. -f1)" = 12
+          git checkout -- ./src/test/fixtures/pnpm
+          git clean -fdx ./src/test/fixtures/pnpm
+
+      - name: Support pnpm 12 package manager
+        uses: ./
+        with:
+          workingDirectory: "./src/test/fixtures/pnpm"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --dry-run
+
       - name: Change directory to pre-installed-wrangler and install dependencies
         run: |
           cd ./src/test/fixtures/pre-installed-wrangler

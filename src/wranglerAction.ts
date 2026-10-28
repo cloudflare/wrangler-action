@@ -11,7 +11,7 @@ import semverSatisfies from "semver/functions/satisfies";
 import semverValid from "semver/functions/valid";
 import { z } from "zod";
 import { exec, execShell } from "./exec";
-import { PackageManager } from "./packageManagers";
+import { getInstallArgs, PackageManager } from "./packageManagers";
 import { error, info, semverCompare } from "./utils";
 import { handleCommandOutputParsing } from "./commandOutputParsing";
 import semverLt from "semver/functions/lt";
@@ -168,7 +168,12 @@ async function installWrangler(
 	try {
 		await exec(
 			packageManager.install,
-			[`wrangler@${config["WRANGLER_VERSION"]}`],
+			[
+				`wrangler@${config["WRANGLER_VERSION"]}`,
+				...(await getInstallArgs(packageManager, {
+					workingDirectory: config["workingDirectory"],
+				})),
+			],
 			{
 				cwd: config["workingDirectory"],
 				silent: config["QUIET_MODE"],
