@@ -1,5 +1,6 @@
-import { describe, expect, test } from "vitest";
-import { getPackageManager } from "./packageManagers";
+import * as exec from "@actions/exec";
+import { describe, expect, test, vi } from "vitest";
+import { getInstallArgs, getPackageManager } from "./packageManagers";
 
 describe("getPackageManager", () => {
 	test("should use provided value instead of inferring from lockfile", () => {
@@ -106,5 +107,47 @@ describe("getPackageManager", () => {
 		expect(() =>
 			getPackageManager("cargo", { workingDirectory: "src/test/fixtures/npm" }),
 		).toThrowError();
+	});
+});
+
+describe("getInstallArgs", () => {
+	function mockPnpmVersion(version: string) {
+		return vi.spyOn(exec, "getExecOutput").mockResolvedValue({
+			exitCode: 0,
+			stderr: "",
+			stdout: `${version}\n`,
+		});
+	}
+
+	test("should allow Wrangler's build scripts on pnpm 11 and later", async () => {
+		for (const version of ["11.0.0", "12.5.1"]) {
+			mockPnpmVersion(version);
+			expect(await getInstallArgs(getPackageManager("pnpm"))).toEqual([
+				"--allow-build=esbuild",
+				"--allow-build=workerd",
+				"--allow-build=sharp",
+			]);
+		}
+	});
+
+	test("should add nothing on pnpm before 11", async () => {
+		for (const version of ["9.15.0", "10.33.0"]) {
+			mockPnpmVersion(version);
+			expect(await getInstallArgs(getPackageManager("pnpm"))).toEqual([]);
+		}
+	});
+
+	test("should add nothing if the pnpm version cannot be read", async () => {
+		mockPnpmVersion("");
+		expect(await getInstallArgs(getPackageManager("pnpm"))).toEqual([]);
+	});
+
+	test("should not run pnpm for other package managers", async () => {
+		const spy = mockPnpmVersion("12.5.1");
+		spy.mockClear();
+		for (const name of ["npm", "yarn", "bun"]) {
+			expect(await getInstallArgs(getPackageManager(name))).toEqual([]);
+		}
+		expect(spy).not.toHaveBeenCalled();
 	});
 });
