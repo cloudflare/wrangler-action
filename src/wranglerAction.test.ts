@@ -470,6 +470,37 @@ describe("wranglerCommands", () => {
 		]);
 		expect(execSpy.mock.calls[1][1]).toEqual(["--env", "dev"]);
 	});
+
+	it.each([
+		["deploy --env-file .env.staging", ["--env", "staging"]],
+		['deploy --env-file=".env staging"', ["--env", "staging"]],
+		['deploy --var "NOTE:keep --env unchanged"', ["--env", "staging"]],
+		["deploy --env production", []],
+		["deploy --env=production", []],
+		["deploy -e production", []],
+		["deploy -e=production", []],
+	])("handles the environment input for %s", async (command, args) => {
+		const execSpy = vi.spyOn(exec, "exec").mockResolvedValue(0);
+		const config = getTestConfig({
+			config: {
+				COMMANDS: [command],
+				ENVIRONMENT: "staging",
+				QUIET_MODE: true,
+				WRANGLER_OUTPUT_DIR: "/missing-output-dir",
+			},
+		});
+
+		try {
+			await wranglerCommands(config, testPackageManager);
+			expect(execSpy).toHaveBeenLastCalledWith(
+				`npx wrangler ${command}`,
+				args,
+				expect.any(Object),
+			);
+		} finally {
+			execSpy.mockRestore();
+		}
+	});
 });
 
 describe("main", () => {
