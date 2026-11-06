@@ -7,6 +7,7 @@ import {
 	setOutput,
 } from "@actions/core";
 import { getExecOutput } from "@actions/exec";
+import { argStringToArray } from "@actions/exec/lib/toolrunner.js";
 import semverSatisfies from "semver/functions/satisfies";
 import semverValid from "semver/functions/valid";
 import { z } from "zod";
@@ -357,7 +358,10 @@ async function wranglerCommands(
 		for (let command of commands) {
 			const args = [];
 
-			if (environment && !command.includes("--env")) {
+			if (
+				environment &&
+				!argStringToArray(command).some((arg) => /^(--env|-e)(=|$)/.test(arg))
+			) {
 				args.push("--env", environment);
 			}
 
